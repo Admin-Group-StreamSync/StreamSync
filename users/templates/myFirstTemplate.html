@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Document</title>
+</head>
+<body>
+<h1>
+HEllo
+que tal
+</h1>
+
+    <button class="boton" >Pulsame</button>
+
+
+    <ul>
+        {% for u in users %}
+        <li>{{ u.first_name }} {{ u.last_name }}</li>
+
+        {% endfor %}
+    </ul>
+
+
+<script>
+
+    const boton = document.querySelector(".boton");
+
+    boton.addEventListener('click', ()=>{
+        console.log("Boton pulsado")
+    })
+
+</script>
+
+</body>
+</html>
