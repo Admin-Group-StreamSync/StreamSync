@@ -11,10 +11,8 @@ def users(request: HttpResponse):
     template = loader.get_template('myFirstTemplate.html')
     users = Users.objects.all()
 
-
     context = {
         "users": users,
     }
-
 
     return HttpResponse(template.render(context, request))
