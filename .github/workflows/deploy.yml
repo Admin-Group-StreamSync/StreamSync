@@ -16,7 +16,7 @@ jobs:
         username: denis
         key: ${{ secrets.SSH_PRIVATE_KEY }}
         script: |
-          cd /var/www/myproject
+          cd ../../StramSync
           git pull origin master
           source venv/bin/activate
           pip install -r requirements.txt
