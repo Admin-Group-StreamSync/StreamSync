@@ -25,10 +25,6 @@ jobs:
       run: |
         python3 -m pip install --upgrade pip
         pip install -r requirements.txt
-        echo "HEllo from action CI"
-        pip --version
-        
-        touch fichero1
     - name: Run Tests
       run: |
         python3 manage.py test
