@@ -10,15 +10,21 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-      
-      - name: Installing dependencies
-        run: pip install -r requirements.txt && git pull
-      
-      - name: Migrate database
-        run: python manage.py migrate
-        
-      - name: Run server
+
+      - name: Install dependencies
         run: |
+          python3 -m venv venv
+          source venv/bin/activate
+          pip install -r requirements.txt
+
+      - name: Run migrations
+        run: |
+          source venv/bin/activate
+          python manage.py migrate
+
+      - name: Start server
+        run: |
+          source venv/bin/activate
           pkill -f runserver || true
           nohup python manage.py runserver 0.0.0.0:8000 > django.log 2>&1 &
           
