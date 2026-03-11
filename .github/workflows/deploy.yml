@@ -25,6 +25,6 @@ jobs:
       - name: Start server
         run: |
           source venv/bin/activate
-          pkill -f runserver || true
-          python manage.py runserver 0.0.0.0:8000
+          pkill -f runserver
+          python manage.py runserver
           
