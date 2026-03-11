@@ -26,5 +26,5 @@ jobs:
         run: |
           source venv/bin/activate
           pkill -f runserver || true
-          nohup python manage.py runserver 0.0.0.0:8000 > django.log 2>&1 &
+          python manage.py runserver 0.0.0.0:8000
           
