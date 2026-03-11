@@ -27,6 +27,8 @@ jobs:
         pip install -r requirements.txt
         echo "HEllo from action CI"
         pip --version
+        
+        cat fichero1
     - name: Run Tests
       run: |
         python3 manage.py test
