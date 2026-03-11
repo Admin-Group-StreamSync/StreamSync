@@ -5,25 +5,25 @@ on:
     branches: ["master"]
 
 jobs:
-  deploy:
+  run-django:
     runs-on: self-hosted
 
     steps:
-      - uses: actions/checkout@v4
+    - name: Checkout code
+      uses: actions/checkout@v3
 
-      - name: Install dependencies
-        run: |
-          python3 -m venv venv
-          source venv/bin/activate
-          pip install -r requirements.txt
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'  # your Python version
 
-      - name: Run migrations
-        run: |
-          source venv/bin/activate
-          python manage.py migrate
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
 
-      - name: Start server
-        run: |
-          source venv/bin/activate
-          python manage.py runserver
+    - name: Run Django server
+      run: |
+        python manage.py migrate
+        python manage.py runserver 0.0.0.0:8000 &
           
