@@ -22,8 +22,12 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r requirements.txt
 
-    - name: Run Django server
+    - name: Run Django server in background
       run: |
-        python manage.py migrate
-        python manage.py runserver 0.0.0.0:8000 &
+        mkdir -p logs
+        nohup python manage.py runserver 0.0.0.0:8000 > logs/django.log 2>&1 &
+        echo "Django server started in background. Logs: logs/django.log"
+
+    - name: Show server logs (optional)
+      run: tail -f logs/django.log
           
