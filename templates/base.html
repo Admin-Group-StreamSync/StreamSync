@@ -22,12 +22,6 @@
    </style>
 </head>
 <body>
-
-
-
-
-
-
    <main class="main-container">
        <div class="card p-4 shadow border-0" style="width: 100%; max-width: 350px;">
            <div class="text-center mb-4">
@@ -35,8 +29,8 @@
                <small class="text-muted">(Representació d'imatge)</small>
            </div>
 
-
-           <form>
+           <form method="post">
+               {% csrf_token %}
                <div class="mb-3">
                    <input type="text" class="form-control" placeholder="USUARI">
                </div>
@@ -45,10 +39,10 @@
                </div>
 
                <div class="text-center mb-3">
-        <a href="nova_compta.html" class="text-decoration-none small fw-bold text-primary">
-            CREAR COMPTA
-        </a>
-    </div>
+                   <a href="{% url 'crear_cuenta' %}" class="text-decoration-none small fw-bold text-primary">
+                       CREAR COMPTA
+                   </a>
+               </div>
                <button type="submit" class="btn btn-primary w-100 fw-bold">LOG IN</button>
            </form>
        </div>
