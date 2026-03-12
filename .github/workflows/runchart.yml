@@ -38,7 +38,7 @@ jobs:
         run: python -m pip install --upgrade pip && pip install matplotlib>=3.7.3
   
       - name: Run script
-        working-directory: ./scripts
+        working-directory: ./IshikawaTools
         
         run: git pull && python ./runchart_prova.py
 
