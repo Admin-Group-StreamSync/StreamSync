@@ -1,8 +1,10 @@
 name: Run Chart Action
 
 on:  
-  schedule:
-    - cron: '0 0 * * 2'
+#  schedule:
+#    - cron: '0 0 * * 2'
+  push:
+    branches: master
 
 jobs:
   build:
@@ -19,7 +21,13 @@ jobs:
           ref: ${{ github.head_ref }}
           # Value already defaults to true, but `persist-credentials` is required to push new commits to the repository.
           persist-credentials: true
-  
+
+      - name: Fetch all issues and their creation dates
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh issue list --state all --limit 10000 --json createdAt > scripts/issues.json
+
       - name: Setup python
         uses: actions/setup-python@v5
         with:
@@ -30,7 +38,7 @@ jobs:
   
       - name: Run script
         working-directory: ./scripts
-        run: python ./runchart.py
+        run: python ./runchart_prova.py
 
       - name: Commit and Push changes
         uses: stefanzweifel/git-auto-commit-action@v7
