@@ -2,18 +2,24 @@ on:
   workflow_dispatch:
 
 jobs:
-  issues:
+  build:
     runs-on: ubuntu-latest
-
+  
     steps:
-      - name: Get issues
-        run: |
-          curl -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
-          https://api.github.com/repos/${{ github.repository }}/issues \
-          > issues.json
-
-      - name: Upload issues
-        uses: actions/upload-artifact@v4
+      - name: Cechout repo
+        uses: action/checkout@v5
+  
+      - name: Setup python
+        uses: actions/setup-python@v5
         with:
-          name: issues
-          path: issues.json
+          python-version: "3.12"
+  
+      - name: Run script
+        run: python ./scripts/runchart.py
+
+      - name: Commit and Push changes
+        uses: stefanzweifel/git-auto-commit-action@v7
+        with:
+          commit_message: "chore(run-chart): Update generated chart image"
+          commit_user_name: DenisLazarian [Github Actions]
+  
