@@ -9,6 +9,7 @@ urlpatterns = [
 
 
     path('nova_compta/', views.vista_nueva_cuenta, name='crear_cuenta'),
+    path('sign_in2/', views.sign_in2, name='sign_in2'),
     path('pagina_perfil1/', views.pagina_perfil1, name='pagina_perfil1'),
     path('pagina_perfil1', views.pagina_perfil1),
     path('pagina_perfil1.html', views.pagina_perfil1),
