@@ -20,12 +20,12 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          issue list --state all --limit 10000 --json createdAt > scripts/issues.json
+          gh issue list --state all --limit 10000 --json createdAt > scripts/issues.json
 
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: '3.12'
           cache: 'pip'
 
       - name: Install dependencies
@@ -40,7 +40,7 @@ jobs:
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
           
-          # 🚨 CAMBIO AQUÍ: Añadimos la imagen que ahora se generará dentro de scripts/
+          # CAMBIO AQUÍ: Añadimos la imagen que ahora se generará dentro de scripts/
           git add scripts/issue_runchart.png
           
           if ! git diff --staged --quiet; then
