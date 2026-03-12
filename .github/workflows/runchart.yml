@@ -7,10 +7,18 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      # Give the default GITHUB_TOKEN write permission to commit and push the
+      # added or changed files to the repository.
+      contents: write
   
     steps:
       - name: Cechout repo
-        uses: action/checkout@v5
+        uses: actions/checkout@v5
+        with:
+          ref: ${{ github.head_ref }}
+          # Value already defaults to true, but `persist-credentials` is required to push new commits to the repository.
+          persist-credentials: true
   
       - name: Setup python
         uses: actions/setup-python@v5
