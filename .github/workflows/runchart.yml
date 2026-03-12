@@ -39,7 +39,8 @@ jobs:
   
       - name: Run script
         working-directory: ./scripts
-        run: python ./runchart_prova.py
+        
+        run: git pull && python ./runchart_prova.py
 
       - name: Commit and Push changes
         uses: stefanzweifel/git-auto-commit-action@v7
