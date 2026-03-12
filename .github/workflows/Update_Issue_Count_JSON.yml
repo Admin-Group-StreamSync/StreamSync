@@ -20,7 +20,7 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          issue list --state all --limit 10000 --json createdAt > scripts/issues.json
+          gh issue list --state all --limit 10000 --json createdAt > scripts/issues.json
 
       - name: Set up Python
         uses: actions/setup-python@v5
