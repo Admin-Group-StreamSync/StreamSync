@@ -31,7 +31,8 @@ jobs:
           pip install -r requirements.txt
   
       - name: Run script
-        run: python ./scripts/runchart.py
+        working-directory: ./scripts
+        run: python ./runchart.py
 
       - name: Commit and Push changes
         uses: stefanzweifel/git-auto-commit-action@v7
