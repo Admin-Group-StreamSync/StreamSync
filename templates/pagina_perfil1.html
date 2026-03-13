@@ -21,19 +21,29 @@
             background-color: #dee2e6;
             font-weight: bold;
         }
+        .password-square {
+            -webkit-text-security: square;
+            text-security: square;
+        }
     </style>
 </head>
 <body>
 
     <nav class="navbar navbar-expand bg-body-tertiary">
         <div class="container-fluid">
-            <a class="navbar-brand" href="#">Inicio</a>
+            <a class="navbar-brand" href="#" aria-label="Inicio" title="Inicio">
+                <i class="bi bi-house"></i>
+            </a>
             <div class="navbar-collapse">
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item"><a class="nav-link" href="#">Llistes</a></li>
                     <li class="nav-item"><a class="nav-link" href="#">Series</a></li>
                     <li class="nav-item"><a class="nav-link" href="#">Pelicules</a></li>
-                    <li class="nav-item"><a class="nav-link active" href="#">Perfil</a></li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#" aria-label="Perfil" title="Perfil">
+                            <i class="bi bi-person-circle"></i>
+                        </a>
+                    </li>
                 </ul>
             </div>
         </div>
@@ -73,17 +83,17 @@
                 <form>
                     <div class="mb-3">
                         <label class="form-label fw-bold">Nom</label>
-                        <input type="text" class="form-control" value="El teu nom aquí" readonly>
+                        <input type="text" class="form-control" value="El teu nom aquí">
                     </div>
 
                     <div class="mb-3">
                         <label class="form-label fw-bold">Mail</label>
-                        <input type="email" class="form-control" value="usuari@exemple.com" readonly>
+                        <input type="email" class="form-control" value="usuari@exemple.com">
                     </div>
 
                     <div class="mb-3">
                         <label class="form-label fw-bold">Contrasenya</label>
-                        <input type="password" class="form-control" value="********" readonly>
+                        <input type="password" class="form-control password-square" value="********">
                     </div>
 
                     <div class="d-flex justify-content-between align-items-center mt-4">
