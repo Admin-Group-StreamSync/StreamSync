@@ -9,24 +9,24 @@
     <style>
         body {
             background-color: #f8f9fa;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
         }
-        .main-content {
-            flex: 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 40px 0;
+        /* Estilos del Sidebar */
+        .sidebar-link {
+            text-decoration: none;
+            color: black;
+            display: block;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .sidebar-link:hover {
+            background-color: #e9ecef;
+        }
+        .sidebar-link.active {
+            background-color: #dee2e6;
+            font-weight: bold;
         }
         .card-gustos {
-            width: 100%;
-            max-width: 850px;
-        }
-
-        .form-check {
-            margin-bottom: 10px;
+            border-radius: 15px;
         }
     </style>
 </head>
@@ -43,7 +43,7 @@
                     <li class="nav-item"><a class="nav-link" href="#">Series</a></li>
                     <li class="nav-item"><a class="nav-link" href="#">Pelicules</a></li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'pagina_perfil1' %}" aria-label="Perfil" title="Perfil">
+                        <a class="nav-link active" href="{% url 'pagina_perfil1' %}" aria-label="Perfil" title="Perfil">
                             <i class="bi bi-person-circle"></i>
                         </a>
                     </li>
@@ -52,59 +52,247 @@
         </div>
     </nav>
 
-    <main class="main-content">
-        <div class="card card-gustos p-4 shadow border-0">
-            <h2 class="text-center fw-bold mb-4">CREAR COMPTA</h2>
+    <div class="container mt-4">
+        <h2 class="fw-bold">PERFIL</h2>
+        <hr class="border-2 opacity-75">
 
-            <form method="post">
-                {% csrf_token %}
+        <div class="row mt-4">
+            <div class="col-md-3 border-end">
+                <div class="mb-4">
+                    <a href="{% url 'pagina_perfil1' %}" class="btn btn-outline-secondary btn-sm">
+                        <i class="bi bi-arrow-left"></i> Enrere
+                    </a>
+                </div>
 
-                <p class="fw-bold mb-3">PLATAFORMES:</p>
-                <div class="row row-cols-4 g-3 mb-4">
-                    <script>
-                        for (let i = 1; i <= 16; i++) {
-                            document.write(`
-                                <div class="col">
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" value="plat${i}" id="plat${i}">
-                                        <label class="form-check-label" for="plat${i}">
-                                            Plataforma ${i}
-                                        </label>
-                                    </div>
+                <nav>
+                    <a href="{% url 'pagina_perfil1' %}" class="sidebar-link mb-2">
+                        <i class="bi bi-person-fill"></i> Informació de perfil
+                    </a>
+                    <a href="#" class="sidebar-link active">
+                        <i class="bi bi-gear-fill"></i> Preferències de contingut
+                    </a>
+                </nav>
+            </div>
+
+            <div class="col-md-9 ps-md-5">
+                <div class="card card-gustos p-4 shadow border-0">
+                    <h2 class="text-center fw-bold mb-4">Preferències de contingut</h2>
+
+                    <form method="post">
+
+
+                        <p class="fw-bold mb-3">PLATAFORMES:</p>
+                        <div class="row row-cols-4 g-3 mb-4">
+                            <div class="col">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="plat1" id="plat1">
+                                    <label class="form-check-label" for="plat1">Plataforma 1</label>
                                 </div>
-                            `);
-                        }
-                    </script>
-                </div>
-
-                <hr class="my-4">
-
-                <p class="fw-bold mb-3">GENERES:</p>
-                <div class="row row-cols-4 g-3 mb-4">
-                    <script>
-                        for (let i = 1; i <= 16; i++) {
-                            document.write(`
-                                <div class="col">
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" value="gen${i}" id="gen${i}">
-                                        <label class="form-check-label" for="gen${i}">
-                                            Genere ${i}
-                                        </label>
-                                    </div>
+                            </div>
+                            <div class="col">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="plat2" id="plat2">
+                                    <label class="form-check-label" for="plat2">Plataforma 2</label>
                                 </div>
-                            `);
-                        }
-                    </script>
-                </div>
+                            </div>
+                            <div class="col">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="plat3" id="plat3">
+                                    <label class="form-check-label" for="plat3">Plataforma 3</label>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="plat4" id="plat4">
+                                    <label class="form-check-label" for="plat4">Plataforma 4</label>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="plat5" id="plat5">
+                                    <label class="form-check-label" for="plat5">Plataforma 5</label>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="plat6" id="plat6">
+                                    <label class="form-check-label" for="plat6">Plataforma 6</label>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="plat7" id="plat7">
+                                    <label class="form-check-label" for="plat7">Plataforma 7</label>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="plat8" id="plat8">
+                                    <label class="form-check-label" for="plat8">Plataforma 8</label>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="plat9" id="plat9">
+                                    <label class="form-check-label" for="plat9">Plataforma 9</label>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="plat10" id="plat10">
+                                    <label class="form-check-label" for="plat10">Plataforma 10</label>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="plat11" id="plat11">
+                                    <label class="form-check-label" for="plat11">Plataforma 11</label>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="plat12" id="plat12">
+                                    <label class="form-check-label" for="plat12">Plataforma 12</label>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="plat13" id="plat13">
+                                    <label class="form-check-label" for="plat13">Plataforma 13</label>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="plat14" id="plat14">
+                                    <label class="form-check-label" for="plat14">Plataforma 14</label>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="plat15" id="plat15">
+                                    <label class="form-check-label" for="plat15">Plataforma 15</label>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="plat16" id="plat16">
+                                    <label class="form-check-label" for="plat16">Plataforma 16</label>
+                                </div>
+                            </div>
+                        </div>
 
-                <div class="text-center mt-4">
-                    <button type="submit" class="btn btn-primary btn-lg px-5 fw-bold">
-                        SEGÜENT
-                    </button>
+                        <hr class="my-4">
+
+                        <p class="fw-bold mb-3">GENERES:</p>
+                        <div class="row row-cols-4 g-3 mb-4">
+                            <div class="col">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="gen1" id="gen1">
+                                    <label class="form-check-label" for="gen1">Genere 1</label>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="gen2" id="gen2">
+                                    <label class="form-check-label" for="gen2">Genere 2</label>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="gen3" id="gen3">
+                                    <label class="form-check-label" for="gen3">Genere 3</label>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="gen4" id="gen4">
+                                    <label class="form-check-label" for="gen4">Genere 4</label>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="gen5" id="gen5">
+                                    <label class="form-check-label" for="gen5">Genere 5</label>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="gen6" id="gen6">
+                                    <label class="form-check-label" for="gen6">Genere 6</label>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="gen7" id="gen7">
+                                    <label class="form-check-label" for="gen7">Genere 7</label>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="gen8" id="gen8">
+                                    <label class="form-check-label" for="gen8">Genere 8</label>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="gen9" id="gen9">
+                                    <label class="form-check-label" for="gen9">Genere 9</label>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="gen10" id="gen10">
+                                    <label class="form-check-label" for="gen10">Genere 10</label>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="gen11" id="gen11">
+                                    <label class="form-check-label" for="gen11">Genere 11</label>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="gen12" id="gen12">
+                                    <label class="form-check-label" for="gen12">Genere 12</label>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="gen13" id="gen13">
+                                    <label class="form-check-label" for="gen13">Genere 13</label>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="gen14" id="gen14">
+                                    <label class="form-check-label" for="gen14">Genere 14</label>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="gen15" id="gen15">
+                                    <label class="form-check-label" for="gen15">Genere 15</label>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="gen16" id="gen16">
+                                    <label class="form-check-label" for="gen16">Genere 16</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="text-center mt-4">
+                            <button type="submit" class="btn btn-primary btn-lg px-5 fw-bold">
+                                SEGÜENT
+                            </button>
+                        </div>
+                    </form>
                 </div>
-            </form>
+            </div>
         </div>
-    </main>
+    </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
