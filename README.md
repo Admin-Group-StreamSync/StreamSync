@@ -36,3 +36,6 @@ python manage.py migrate
 
 ## Run server
 python manage.py runserver
+
+## Contributing providers
+See [CONTRIBUTING_PROVIDERS.md](CONTRIBUTING_PROVIDERS.md) for instructions on adding new streaming services.
