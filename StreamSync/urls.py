@@ -16,4 +16,7 @@ urlpatterns = [
     path('pagina_principal/', views.pagina_principal, name='pagina_principal'),
     path('pagina_principal', views.pagina_principal),
     path('pagina_principal.html', views.pagina_principal),
+    path('profile2/', views.profile2, name='profile2'),
+    path('profile2', views.profile2),
+    path('profile2.html', views.profile2),
 ]

@@ -10,3 +10,5 @@ def sign_in2(request):
     return render(request, 'sign_in2.html')
 def pagina_principal(request):
     return render(request, 'pagina_principal.html')
+def profile2(request):
+    return render(request, 'profile2.html')
