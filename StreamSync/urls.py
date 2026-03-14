@@ -13,6 +13,7 @@ urlpatterns = [
     path('pagina_perfil1/', views.pagina_perfil1, name='pagina_perfil1'),
     path('pagina_perfil1', views.pagina_perfil1),
     path('pagina_perfil1.html', views.pagina_perfil1),
+    path('perfil_principal/', views.perfil_principal, name='perfil_principal'),
     path('pagina_principal/', views.pagina_principal, name='pagina_principal'),
     path('pagina_principal', views.pagina_principal),
     path('pagina_principal.html', views.pagina_principal),

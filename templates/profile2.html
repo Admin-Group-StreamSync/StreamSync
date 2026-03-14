@@ -1,101 +1,127 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-   <meta charset="UTF-8">
-   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-   <title>Mi Web</title>
-   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Preferències - StreamSync</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <style>
+        .sidebar-link {
+            text-decoration: none;
+            color: black;
+            display: block;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .sidebar-link:hover {
+            background-color: #e9ecef;
+        }
+        .sidebar-link.active {
+            background-color: #dee2e6;
+            font-weight: bold;
+        }
+        /* Ajuste para que el contenido principal no se pegue al sidebar */
+        .card-gustos {
+            border-radius: 15px;
+        }
+    </style>
 </head>
 <body>
 
-
-   <nav class="navbar navbar-expand bg-body-tertiary">
-       <div class="container-fluid">
-           <a class="navbar-brand" href="#" aria-label="Inicio" title="Inicio">
-               <i class="bi bi-house"></i>
-           </a>
-
-
-           <div class="navbar-collapse">
-               <ul class="navbar-nav ms-auto">
-                   <li class="nav-item">
-                       <a class="nav-link" href="#">Llistes</a>
-                   </li>
-                   <li class="nav-item">
-                       <a class="nav-link" href="#">Series</a>
-                   </li>
-                   <li class="nav-item">
-                       <a class="nav-link" href="#">Pelicules</a>
-                   </li>
-                   <li class="nav-item">
-                       <a class="nav-link" href="#" aria-label="Perfil" title="Perfil">
-                           <i class="bi bi-person-circle"></i>
-                       </a>
-                   </li>
-               </ul>
-           </div>
-       </div>
-   </nav>
-
-
-   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
-
-</html>
-
-    <main class="main-content">
-        <div class="card card-gustos p-4 shadow border-0">
-            <h2 class="text-center fw-bold mb-4">Preferències de contingut</h2>
-
-            <form method="post">
-                {% csrf_token %}
-
-                <p class="fw-bold mb-3">PLATAFORMES:</p>
-                <div class="row row-cols-4 g-3 mb-4">
-                    <script>
-                        for (let i = 1; i <= 16; i++) {
-                            document.write(`
-                                <div class="col">
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" value="plat${i}" id="plat${i}">
-                                        <label class="form-check-label" for="plat${i}">
-                                            Plataforma ${i}
-                                        </label>
-                                    </div>
-                                </div>
-                            `);
-                        }
-                    </script>
-                </div>
-
-                <hr class="my-4">
-
-                <p class="fw-bold mb-3">GENERES:</p>
-                <div class="row row-cols-4 g-3 mb-4">
-                    <script>
-                        for (let i = 1; i <= 16; i++) {
-                            document.write(`
-                                <div class="col">
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" value="gen${i}" id="gen${i}">
-                                        <label class="form-check-label" for="gen${i}">
-                                            Genere ${i}
-                                        </label>
-                                    </div>
-                                </div>
-                            `);
-                        }
-                    </script>
-                </div>
-
-                <div class="text-center mt-4">
-
-                </div>
-            </form>
+    <nav class="navbar navbar-expand bg-body-tertiary">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="{% url 'pagina_principal' %}" aria-label="Inicio" title="Inicio">
+                <i class="bi bi-house"></i>
+            </a>
+            <div class="navbar-collapse">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="#">Llistes</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">Series</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">Pelicules</a></li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#" aria-label="Perfil" title="Perfil">
+                            <i class="bi bi-person-circle"></i>
+                        </a>
+                    </li>
+                </ul>
+            </div>
         </div>
-    </main>
+    </nav>
+
+    <div class="container mt-4">
+        <h2 class="fw-bold">PERFIL</h2>
+        <hr class="border-2 opacity-75">
+
+        <div class="row mt-4">
+            <div class="col-md-3 border-end">
+                <div class="mb-4">
+                    <a href="javascript:history.back()" class="btn btn-outline-secondary btn-sm">
+                        <i class="bi bi-arrow-left"></i> Enrere
+                    </a>
+                </div>
+
+                <nav>
+                    <a href="{% url 'perfil_principal' %}" class="sidebar-link mb-2">
+                        <i class="bi bi-person-fill"></i> Informació de perfil
+                    </a>
+                    <a href="#" class="sidebar-link active">
+                        <i class="bi bi-gear-fill"></i> Preferències de contingut
+                    </a>
+                </nav>
+            </div>
+
+            <div class="col-md-9 ps-md-5">
+                <div class="card card-gustos p-4 shadow-sm border-0 bg-light">
+                    <h3 class="fw-bold mb-4">Preferències de contingut</h3>
+
+                    <form method="post">
+                        {% csrf_token %}
+
+                        <p class="fw-bold mb-3 text-uppercase small text-muted">Plataformes:</p>
+                        <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-4 g-3 mb-4">
+                            <script>
+                                for (let i = 1; i <= 12; i++) {
+                                    document.write(`
+                                        <div class="col">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" value="plat${i}" id="plat${i}">
+                                                <label class="form-check-label" for="plat${i}">
+                                                    Plataforma ${i}
+                                                </label>
+                                            </div>
+                                        </div>
+                                    `);
+                                }
+                            </script>
+                        </div>
+
+                        <hr class="my-4">
+
+                        <p class="fw-bold mb-3 text-uppercase small text-muted">Gèneres:</p>
+                        <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-4 g-3 mb-4">
+                            <script>
+                                for (let i = 1; i <= 12; i++) {
+                                    document.write(`
+                                        <div class="col">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" value="gen${i}" id="gen${i}">
+                                                <label class="form-check-label" for="gen${i}">
+                                                    Gènere ${i}
+                                                </label>
+                                            </div>
+                                        </div>
+                                    `);
+                                }
+                            </script>
+                        </div>
+
+                        
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
