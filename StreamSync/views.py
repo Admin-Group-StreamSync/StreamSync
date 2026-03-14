@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 
 def home(request):
     return render(request, "pages/home.html")
@@ -14,3 +14,7 @@ def pagina_principal(request):
     return render(request, 'pagina_principal.html')
 def profile2(request):
     return render(request, 'profile2.html')
+def login(request):
+    if request.method == "POST":
+        return redirect('pagina_principal')
+    return render(request, 'base.html')

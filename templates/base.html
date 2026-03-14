@@ -30,7 +30,7 @@
                <div class="visually-hidden">Imatge de perfil</div>
            </div>
 
-           <form method="post">
+           <form method="post" action="{% url 'login' %}">
                {% csrf_token %}
                <div class="mb-3">
                    <input type="text" class="form-control" placeholder="USUARI">
