@@ -14,6 +14,8 @@ def pagina_principal(request):
     return render(request, 'pagina_principal.html')
 def profile2(request):
     return render(request, 'profile2.html')
+def llistes(request):
+    return render(request, 'llistes.html')
 def login(request):
     if request.method == "POST":
         return redirect('pagina_principal')

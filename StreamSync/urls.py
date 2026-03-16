@@ -21,4 +21,7 @@ urlpatterns = [
     path('profile2/', views.profile2, name='profile2'),
     path('profile2', views.profile2),
     path('profile2.html', views.profile2),
+    path('llistes/', views.llistes, name='llistes'),
+    path('llistes', views.llistes),
+    path('llistes.html', views.llistes),
 ]
