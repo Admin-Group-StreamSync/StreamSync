@@ -1,50 +1,150 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-   <meta charset="UTF-8">
-   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-   <title>Mi Web</title>
-   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StreamSync - Inici</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <style>
+        body { background-color: #f8f9fa; }
+
+        /* Sección del Hero / Buscador Central */
+        .hero-search {
+            padding: 100px 0;
+            background: linear-gradient(180deg, #ffffff 0%, #f8f9fa 100%);
+            text-align: center;
+        }
+
+        .main-search-bar {
+            max-width: 700px;
+            margin: 0 auto;
+            border-radius: 50px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+
+        .main-search-bar .form-control {
+            border: none;
+            padding: 1.2rem 1.5rem;
+            font-size: 1.2rem;
+        }
+
+        .main-search-bar .btn {
+            padding: 0 25px;
+            font-size: 1.5rem;
+            border: none;
+        }
+
+        /* Sección Tendencias */
+        .trending-section {
+            padding: 40px 0;
+        }
+
+        .trending-title {
+            display: inline-block;
+            background-color: #e9ecef;
+            padding: 8px 20px;
+            border-radius: 5px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 30px;
+        }
+
+        .portada-trending {
+            background-color: #dee2e6;
+            aspect-ratio: 2/3;
+            border-radius: 10px;
+            transition: transform 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            border: 1px solid #ddd;
+        }
+
+        .portada-trending:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+    </style>
 </head>
 <body>
 
+    <nav class="navbar navbar-expand bg-body-tertiary shadow-sm">
+        <div class="container-fluid">
+            <a class="navbar-brand fw-bold" href="{% url 'pagina_principal' %}" aria-label="Inicio" title="Inicio">
+                <i class="bi bi-house-fill"></i>
+            </a>
+            <div class="navbar-collapse">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="{% url 'llistes' %}">Llistes</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">Series</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">Pelicules</a></li>
+                    <li class="nav-item">
+                        <a class="nav-link text-primary" href="{% url 'pagina_perfil1' %}" aria-label="Perfil" title="Perfil">
+                            <i class="bi bi-person-circle fs-5"></i>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
 
-   <nav class="navbar navbar-expand bg-body-tertiary">
-       <div class="container-fluid">
-           <a class="navbar-brand" href="{% url 'pagina_principal' %}" aria-label="Inicio" title="Inicio">
-               <i class="bi bi-house"></i>
-           </a>
+    <section class="hero-search">
+        <div class="container">
+            <h1 class="display-4 fw-bold mb-4">StreamSync</h1>
+            <form action="#" method="GET">
+                <div class="input-group main-search-bar">
+                    <input type="text" class="form-control" placeholder="Busca pel·lícules, sèries, directors..." aria-label="Busqueda">
+                    <button class="btn btn-primary" type="submit">
+                        <i class="bi bi-search"></i>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </section>
 
-           <div class="input-group mx-3 mb-0 w-20">
-               <input type="text" class="form-control" placeholder="Buscar contenido..." aria-label="Buscar" aria-describedby="button-addon2">
-               <button class="btn btn-primary" type="button" id="button-addon2">
-                   <i class="bi bi-search"></i> Buscar
-               </button>
-           </div>
+    <section class="container trending-section">
+        <div class="trending-title">
+            <i class="bi bi-fire me-2"></i> En tendència
+        </div>
 
-           <div class="navbar-collapse">
-               <ul class="navbar-nav ms-auto">
-                   <li class="nav-item">
-                       <a class="nav-link" href="{% url 'llistes' %}">Llistes</a>
-                   </li>
-                   <li class="nav-item">
-                       <a class="nav-link" href="#">Series</a>
-                   </li>
-                   <li class="nav-item">
-                       <a class="nav-link" href="#">Pelicules</a>
-                   </li>
-                   <li class="nav-item">
-                       <a class="nav-link" href="{% url 'pagina_perfil1' %}" aria-label="Perfil" title="Perfil">
-                           <i class="bi bi-person-circle"></i>
-                       </a>
-                   </li>
-               </ul>
-           </div>
-       </div>
-   </nav>
+        <div class="row row-cols-2 row-cols-md-4 row-cols-lg-4 g-4">
+            <div class="col">
+                <div class="portada-trending shadow-sm">
+                    <i class="bi bi-play-circle fs-1 text-white opacity-50"></i>
+                </div>
+                <p class="mt-2 fw-bold text-center">Títol Tendència 1</p>
+            </div>
+            <div class="col">
+                <div class="portada-trending shadow-sm">
+                    <i class="bi bi-play-circle fs-1 text-white opacity-50"></i>
+                </div>
+                <p class="mt-2 fw-bold text-center">Títol Tendència 2</p>
+            </div>
+            <div class="col">
+                <div class="portada-trending shadow-sm">
+                    <i class="bi bi-play-circle fs-1 text-white opacity-50"></i>
+                </div>
+                <p class="mt-2 fw-bold text-center">Títol Tendència 3</p>
+            </div>
+            <div class="col">
+                <div class="portada-trending shadow-sm">
+                    <i class="bi bi-play-circle fs-1 text-white opacity-50"></i>
+                </div>
+                <p class="mt-2 fw-bold text-center">Títol Tendència 4</p>
+            </div>
+        </div>
+    </section>
 
+    <footer class="py-4 mt-5 border-top bg-white">
+        <div class="container text-center text-muted">
+            <small>&copy; 2026 StreamSync - Tots els drets reservats</small>
+        </div>
+    </footer>
 
-   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
