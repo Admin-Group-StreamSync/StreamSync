@@ -7,7 +7,13 @@ from .forms import RegistroUsuarioForm, UserUpdateForm
 from .models import Profile
 
 
-
+OPCIONS_PREFERENCIES = {
+    'plataformes': ["Netflix","MAX", "Prime Video", "Disney+"],
+    'generes': ["Action", "Comedy", "Drama", "Sci-Fi", "Crime", "Animation", "Thriller"],
+    'idiomes': ["English", "Spanish", "French", "Japanese", "Korean"],
+    'edats': ["G", "PG", "PG-13", "R"],
+    'paisos': ["USA", "UK", "Spain", "Japan", "South Korea"]
+}
 def pagina_principal(request):
     tendencies = sorted(DADES_CONTINGUT, key=lambda x: float(x['rating']), reverse=True)[:4]
     return render(request, 'pages/pagina_principal.html', {'tendencies': tendencies})
@@ -37,20 +43,42 @@ def preferencias_registro(request):
         return redirect('crear_cuenta')
 
     if request.method == 'POST':
+        if request.POST.get('accio') == 'enrere':
+            request.session['datos_registro_paso2'] = {
+                'plataformas': request.POST.getlist('plataformas'),
+                'generos': request.POST.getlist('generos'),
+                'idiomas': request.POST.getlist('idiomas'),
+                'paisos': request.POST.getlist('paisos'),
+                'edats': request.POST.getlist('edats'),
+            }
+            return redirect('crear_cuenta')
+
         datos_paso1 = request.session['datos_registro_paso1']
         form = RegistroUsuarioForm(datos_paso1)
-
         if form.is_valid():
             user = form.save()
-            plats = request.POST.getlist('plataformas')
-            gens = request.POST.getlist('generos')
-            Profile.objects.create(user=user, plataformes=plats, generes=gens)
-
+            Profile.objects.create(
+                user=user,
+                plataformes=request.POST.getlist('plataformas'),
+                generes=request.POST.getlist('generos'),
+                idiomes=request.POST.getlist('idiomas'),
+                paisos=request.POST.getlist('paisos'),
+                edats=request.POST.getlist('edats')
+            )
             del request.session['datos_registro_paso1']
+            if 'datos_registro_paso2' in request.session:
+                del request.session['datos_registro_paso2']
+
             login(request, user)
             return redirect('pagina_principal')
 
-    return render(request, 'registration/sign_in2.html')
+    datos_paso2 = request.session.get('datos_registro_paso2', {})
+
+    return render(request, 'registration/sign_in2.html', {
+        'datos_paso2': datos_paso2,
+        'opcions': OPCIONS_PREFERENCIES
+    })
+
 
 @login_required
 def pagina_perfil1(request):
@@ -71,13 +99,18 @@ def pagina_perfil1(request):
 def profile2(request):
     perfil = request.user.profile
     if request.method == 'POST':
+        # Guardem el que l'usuari ha seleccionat
         perfil.plataformes = request.POST.getlist('plataformas')
         perfil.generes = request.POST.getlist('generos')
+        perfil.idiomes = request.POST.getlist('idiomas')
+        perfil.edats = request.POST.getlist('edats')
+        perfil.paisos = request.POST.getlist('paisos')
         perfil.save()
-        messages.success(request, "Preferències guardades!")
+        messages.success(request, "Preferències actualitzades!")
         return redirect('profile2')
 
-    return render(request, 'profile2.html')
+
+    return render(request, 'profile2.html', {'opcions': OPCIONS_PREFERENCIES})
 
 
 @login_required
@@ -152,17 +185,20 @@ DADES_CONTINGUT = [
 
 
 def catalogo(request):
-    # 1. Capturar els filtres de la URL
+    # (El teu codi de capturar filtres existents)
     query = request.GET.get('q', '')
     genere_filtre = request.GET.get('genere', 'Tots')
     edat_filtre = request.GET.get('edat', 'Tots')
     any_filtre = request.GET.get('any', 'Tots')
     ordre = request.GET.get('ordre', 'populars')
-    tipus_filtre = request.GET.get('tipus', '')  # <-- NOU FILTRE
+    tipus_filtre = request.GET.get('tipus', '')
+
+    # NOU FILTRE: Idioma
+    idioma_filtre = request.GET.get('idioma', 'Tots')
 
     resultats = DADES_CONTINGUT
 
-    # Filtre per TIPUS (Sèries o Pel·lícules) i Títol Dinàmic
+    # Títol Dinàmic
     if tipus_filtre == 'series':
         resultats = [i for i in resultats if i.get('tipus') == 'series']
         titol_pagina = "Catàleg de Sèries"
@@ -172,37 +208,24 @@ def catalogo(request):
     else:
         titol_pagina = "Catàleg de Contingut"
 
-    # Filtre per nom
-    if query:
-        resultats = [i for i in resultats if query.lower() in i['titol'].lower()]
+    if query: resultats = [i for i in resultats if query.lower() in i['titol'].lower()]
+    if genere_filtre != 'Tots': resultats = [i for i in resultats if i['genere'] == genere_filtre]
+    if edat_filtre != 'Tots': resultats = [i for i in resultats if i['edat'] == edat_filtre]
+    if any_filtre != 'Tots': resultats = [i for i in resultats if str(i.get('any')) == any_filtre]
 
-    # Filtre per Gènere
-    if genere_filtre != 'Tots':
-        resultats = [i for i in resultats if i['genere'] == genere_filtre]
+    # APLICAR FILTRE IDIOMA
+    if idioma_filtre != 'Tots': resultats = [i for i in resultats if i.get('idioma') == idioma_filtre]
 
-    # Filtre per Edat
-    if edat_filtre != 'Tots':
-        resultats = [i for i in resultats if i['edat'] == edat_filtre]
-
-    # Filtre per Any
-    if any_filtre != 'Tots':
-        resultats = [i for i in resultats if str(i.get('any')) == any_filtre]
-
-    # Ordenació
     if ordre == 'valorats':
         resultats = sorted(resultats, key=lambda x: float(x.get('rating', 0)), reverse=True)
     elif ordre == 'recents':
         resultats = sorted(resultats, key=lambda x: int(x.get('any', 0)), reverse=True)
 
     context = {
-        'contenidos': resultats,
-        'query': query,
-        'genere_sel': genere_filtre,
-        'edat_sel': edat_filtre,
-        'any_sel': any_filtre,
-        'ordre_sel': ordre,
-        'tipus_sel': tipus_filtre,  # Enviem el tipus al HTML
-        'titol_pagina': titol_pagina  # Enviem el títol al HTML
+        'contenidos': resultats, 'query': query, 'genere_sel': genere_filtre,
+        'edat_sel': edat_filtre, 'any_sel': any_filtre, 'ordre_sel': ordre,
+        'idioma_sel': idioma_filtre,  # <-- Afegit per l'HTML
+        'tipus_sel': tipus_filtre, 'titol_pagina': titol_pagina
     }
     return render(request, 'cataleg.html', context)
 
@@ -215,3 +238,35 @@ def detall_contingut(request, content_id):
         return redirect('catalogo')
 
     return render(request, 'pagina_contingut.html', {'item': contingut})
+
+
+# En tu archivo views.py
+
+def sign_in2(request):
+    if request.method == 'POST':
+        # 1. Capturar todas las selecciones usando getlist() (porque son múltiples checkboxes)
+        plataformas_seleccionadas = request.POST.getlist('plataformas')
+        generos_seleccionados = request.POST.getlist('generos')
+        idiomas_seleccionados = request.POST.getlist('idiomas')
+        edats_seleccionadas = request.POST.getlist('edats')
+        paisos_seleccionados = request.POST.getlist('paisos')
+
+        # 2. Aquí asumo que obtienes al usuario recién creado, por ejemplo:
+        # usuario = request.user  (si ya está logueado)
+        # o lo creas en este mismo paso.
+
+        # 3. Guardar las listas en el perfil del usuario
+        perfil = usuario.profile  # Asegúrate de usar el nombre correcto de tu relación
+        perfil.plataformes = plataformas_seleccionadas
+        perfil.generes = generos_seleccionados
+        perfil.idiomes = idiomas_seleccionados
+        perfil.edats = edats_seleccionadas
+        perfil.paisos = paisos_seleccionados
+
+        perfil.save()  # Guardamos en la base de datos
+
+        # 4. Redirigir a la página principal o al perfil
+        return redirect('pagina_principal')
+
+    # Si es un GET, simplemente renderizas la página con las opciones
+    return render(request, 'sign_in2.html')

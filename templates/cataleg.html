@@ -68,34 +68,56 @@
 {% block content %}
 <div class="container mt-4 mb-5">
     
-    <form method="GET" action="{% url 'catalogo' %}" class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
-        <h2 class="fw-bold mb-0"><i class="bi bi-grid-3x3-gap-fill text-primary me-2"></i>{{ titol_pagina|default:"Catàleg de Contingut" }}</h2>
-        
-        <div class="input-group shadow-sm" style="max-width: 400px; border-radius: 25px; overflow: hidden;">
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
+        <h2 class="fw-bold mb-0">
+            <a href="{% url 'catalogo' %}{% if tipus_sel %}?tipus={{ tipus_sel }}{% endif %}" class="text-decoration-none text-dark" title="Netejar tots els filtres">
+                {% if tipus_sel == 'series' %}
+                    <i class="bi bi-tv text-primary me-2"></i>
+                {% elif tipus_sel == 'movie' %}
+                    <i class="bi bi-film text-primary me-2"></i>
+                {% else %}
+                    <i class="bi bi-grid-3x3-gap-fill text-primary me-2"></i>
+                {% endif %}
+                {{ titol_pagina|default:"Catàleg de Contingut" }}
+            </a>
+        </h2>
+
+        <form method="GET" action="{% url 'catalogo' %}" class="input-group shadow-sm" style="max-width: 400px; border-radius: 25px; overflow: hidden;">
             {% if tipus_sel %}<input type="hidden" name="tipus" value="{{ tipus_sel }}">{% endif %}
-            
+
             <span class="input-group-text bg-white border-0"><i class="bi bi-search text-muted"></i></span>
             <input type="text" name="q" class="form-control border-0 shadow-none" placeholder="Cerca títols, directors..." value="{{ query }}">
             <button class="btn btn-primary px-3 border-0" type="submit">Cerca</button>
-        </div>
-    </form>
+        </form>
+    </div>
 
     <div class="card filter-card shadow-sm p-3 mb-5">
         <form method="GET" action="{% url 'catalogo' %}" id="filterForm" class="row g-3">
             <input type="hidden" name="q" value="{{ query }}">
-            
+
             {% if tipus_sel %}<input type="hidden" name="tipus" value="{{ tipus_sel }}">{% endif %}
 
-            <div class="col-6 col-md-3">
+            <div class="col-6 col-md-2">
                 <label class="form-label small fw-bold text-muted">GÈNERE</label>
                 <select name="genere" class="form-select border-light bg-light shadow-none" onchange="this.form.submit()">
-                    <option value="Tots">Tots els gèneres</option>
+                    <option value="Tots">Tots</option>
                     <option value="Action" {% if genere_sel == 'Action' %}selected{% endif %}>Acció</option>
                     <option value="Animation" {% if genere_sel == 'Animation' %}selected{% endif %}>Animació</option>
                     <option value="Crime" {% if genere_sel == 'Crime' %}selected{% endif %}>Crim</option>
                     <option value="Drama" {% if genere_sel == 'Drama' %}selected{% endif %}>Drama</option>
                     <option value="Sci-Fi" {% if genere_sel == 'Sci-Fi' %}selected{% endif %}>Ciència Ficció</option>
                     <option value="Thriller" {% if genere_sel == 'Thriller' %}selected{% endif %}>Suspens</option>
+                </select>
+            </div>
+
+            <div class="col-6 col-md-2">
+                <label class="form-label small fw-bold text-muted">IDIOMA</label>
+                <select name="idioma" class="form-select border-light bg-light shadow-none" onchange="this.form.submit()">
+                    <option value="Tots">Tots</option>
+                    <option value="English" {% if idioma_sel == 'English' %}selected{% endif %}>Anglès</option>
+                    <option value="Spanish" {% if idioma_sel == 'Spanish' %}selected{% endif %}>Castellà</option>
+                    <option value="Japanese" {% if idioma_sel == 'Japanese' %}selected{% endif %}>Japonès</option>
+                    <option value="Korean" {% if idioma_sel == 'Korean' %}selected{% endif %}>Coreà</option>
                 </select>
             </div>
 
@@ -110,7 +132,7 @@
                 </select>
             </div>
 
-            <div class="col-6 col-md-3">
+            <div class="col-6 col-md-2">
                 <label class="form-label small fw-bold text-muted">ANY</label>
                 <select name="any" class="form-select border-light bg-light shadow-none" onchange="this.form.submit()">
                     <option value="Tots">Qualsevol any</option>
@@ -122,7 +144,7 @@
                 </select>
             </div>
 
-            <div class="col-6 col-md-3">
+            <div class="col-12 col-md-3">
                 <label class="form-label small fw-bold text-muted">ORDENA PER</label>
                 <select name="ordre" class="form-select border-light bg-light shadow-none" onchange="this.form.submit()">
                     <option value="populars" {% if ordre_sel == 'populars' %}selected{% endif %}>Més populars</option>
@@ -137,23 +159,25 @@
         {% for item in contenidos %}
         <div class="col">
             <div class="card h-100 border-0 shadow-sm content-card position-relative">
-                
+
                 <div class="img-placeholder">
                     {% if item.tipus == 'series' %}
                         <i class="bi bi-tv fs-1 text-muted opacity-25"></i>
                     {% else %}
                         <i class="bi bi-film fs-1 text-muted opacity-25"></i>
                     {% endif %}
-                    
+
                     <span class="badge-rating"><i class="bi bi-star-fill"></i> {{ item.rating }}</span>
-                    
+
                     <button class="btn btn-primary btn-add-float shadow" title="Afegir a la meva llista">
                         <i class="bi bi-plus-lg"></i>
                     </button>
                 </div>
 
                 <div class="card-body p-3 text-center">
-                    <p class="text-primary small fw-bold mb-1 text-uppercase" style="font-size: 0.7rem;">{{ item.genere }}</p>
+                    <p class="text-primary small fw-bold mb-1 text-uppercase" style="font-size: 0.7rem;">
+                        {{ item.genere }} <span class="text-muted fw-normal ms-1">| {{ item.idioma }}</span>
+                    </p>
                     <h6 class="card-title fw-bold text-dark mb-0 text-truncate">{{ item.titol }}</h6>
                     <small class="text-muted">{{ item.any }}</small>
                 </div>
@@ -161,13 +185,13 @@
                 <a href="{% url 'detall_contingut' item.id %}" class="stretched-link"></a>
             </div>
         </div>
-        
+
         {% empty %}
         <div class="col-12 text-center py-5">
             <i class="bi bi-search fs-1 text-muted opacity-50"></i>
             <h4 class="mt-3 text-muted fw-bold">Cap resultat trobat</h4>
             <p class="text-muted">No hem trobat contingut que coincideixi amb els teus filtres.</p>
-            
+
             <a href="{% url 'catalogo' %}{% if tipus_sel %}?tipus={{ tipus_sel }}{% endif %}" class="btn btn-outline-primary mt-2 rounded-pill fw-bold">
                 Netejar filtres
             </a>

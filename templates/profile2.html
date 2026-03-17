@@ -16,17 +16,13 @@
             </div>
 
             <nav class="d-flex flex-column gap-2">
-                
                 <a href="{% url 'pagina_perfil1' %}" class="btn btn-outline-secondary border-0 text-start text-dark w-100">
                     <i class="bi bi-person-fill me-2"></i> Informació de perfil
                 </a>
-                
                 <a href="{% url 'profile2' %}" class="btn text-start fw-bold text-dark w-100 shadow-sm" style="background-color: #dee2e6;">
                     <i class="bi bi-gear-fill me-2"></i> Preferències de contingut
                 </a>
-                
                 <hr class="opacity-25 my-2">
-                
                 <form method="post" action="{% url 'logout' %}">
                     {% csrf_token %}
                     <button type="submit" class="btn btn-outline-danger border-0 text-start fw-bold w-100">
@@ -48,105 +44,93 @@
             <form method="post" action="{% url 'profile2' %}">
                 {% csrf_token %}
 
-                <div class="p-4 bg-light rounded-3 border">
-                    <p class="fw-bold mb-3 text-primary">PLATAFORMES:</p>
-                    <div class="row row-cols-2 row-cols-md-3 g-3 mb-4">
-                        <div class="col">
-                            <div class="form-check">
-                                <input class="form-check-input border-secondary" type="checkbox" name="plataformas" value="Netflix" id="plat_netflix">
-                                <label class="form-check-label" for="plat_netflix">Netflix</label>
+                <div class="bg-white p-4 p-md-5 rounded-3 border shadow-sm w-100">
+
+                    <div class="mb-4">
+                        <label class="form-label fw-bold text-dark text-uppercase small mb-2" style="letter-spacing: 1px;">Plataformes</label>
+                        <div class="row row-cols-1 row-cols-md-3 g-2 mt-1">
+                            {% for plat in opcions.plataformes %}
+                            <div class="col">
+                                <div class="form-check mb-0">
+                                    <input class="form-check-input" type="checkbox" name="plataformas" value="{{ plat }}" id="p_{{ plat }}" {% if plat in user.profile.plataformes %}checked{% endif %}>
+                                    <label class="form-check-label small" for="p_{{ plat }}">{{ plat }}</label>
+                                </div>
                             </div>
-                        </div>
-                        <div class="col">
-                            <div class="form-check">
-                                <input class="form-check-input border-secondary" type="checkbox" name="plataformas" value="Max" id="plat_max">
-                                <label class="form-check-label" for="plat_max">Max</label>
-                            </div>
-                        </div>
-                        <div class="col">
-                            <div class="form-check">
-                                <input class="form-check-input border-secondary" type="checkbox" name="plataformas" value="Disney+" id="plat_disney">
-                                <label class="form-check-label" for="plat_disney">Disney+</label>
-                            </div>
-                        </div>
-                        <div class="col">
-                            <div class="form-check">
-                                <input class="form-check-input border-secondary" type="checkbox" name="plataformas" value="Prime Video" id="plat_prime">
-                                <label class="form-check-label" for="plat_prime">Prime Video</label>
-                            </div>
+                            {% endfor %}
                         </div>
                     </div>
 
-                    <hr class="my-4 opacity-25">
+                    <hr class="opacity-25 my-4">
 
-                    <p class="fw-bold mb-3 text-primary">GÈNERES:</p>
-                    <div class="row row-cols-2 row-cols-md-3 g-3 mb-2">
-                        <div class="col">
-                            <div class="form-check">
-                                <input class="form-check-input border-secondary" type="checkbox" name="generos" value="Acció" id="gen_accio">
-                                <label class="form-check-label" for="gen_accio">Acció</label>
+                    <div class="mb-4">
+                        <label class="form-label fw-bold text-dark text-uppercase small mb-2" style="letter-spacing: 1px;">Gèneres</label>
+                        <div class="row row-cols-1 row-cols-md-3 g-2 mt-1">
+                            {% for gen in opcions.generes %}
+                            <div class="col">
+                                <div class="form-check mb-0">
+                                    <input class="form-check-input" type="checkbox" name="generos" value="{{ gen }}" id="g_{{ gen }}" {% if gen in user.profile.generes %}checked{% endif %}>
+                                    <label class="form-check-label small" for="g_{{ gen }}">{{ gen }}</label>
+                                </div>
                             </div>
+                            {% endfor %}
                         </div>
-                        <div class="col">
-                            <div class="form-check">
-                                <input class="form-check-input border-secondary" type="checkbox" name="generos" value="Comèdia" id="gen_comedia">
-                                <label class="form-check-label" for="gen_comedia">Comèdia</label>
+                    </div>
+
+                    <hr class="opacity-25 my-4">
+
+                    <div class="mb-4">
+                        <label class="form-label fw-bold text-dark text-uppercase small mb-2" style="letter-spacing: 1px;">Idiomes</label>
+                        <div class="row row-cols-1 row-cols-md-3 g-2 mt-1">
+                            {% for idi in opcions.idiomes %}
+                            <div class="col">
+                                <div class="form-check mb-0">
+                                    <input class="form-check-input" type="checkbox" name="idiomas" value="{{ idi }}" id="i_{{ idi }}" {% if idi in user.profile.idiomes %}checked{% endif %}>
+                                    <label class="form-check-label small" for="i_{{ idi }}">{{ idi }}</label>
+                                </div>
                             </div>
+                            {% endfor %}
                         </div>
-                        <div class="col">
-                            <div class="form-check">
-                                <input class="form-check-input border-secondary" type="checkbox" name="generos" value="Drama" id="gen_drama">
-                                <label class="form-check-label" for="gen_drama">Drama</label>
+                    </div>
+
+                    <hr class="opacity-25 my-4">
+
+                    <div class="mb-4">
+                        <label class="form-label fw-bold text-dark text-uppercase small mb-2" style="letter-spacing: 1px;">Edats (Ratings)</label>
+                        <div class="row row-cols-1 row-cols-md-3 g-2 mt-1">
+                            {% for ed in opcions.edats %}
+                            <div class="col">
+                                <div class="form-check mb-0">
+                                    <input class="form-check-input" type="checkbox" name="edats" value="{{ ed }}" id="e_{{ ed }}" {% if ed in user.profile.edats %}checked{% endif %}>
+                                    <label class="form-check-label small" for="e_{{ ed }}">{{ ed }}</label>
+                                </div>
                             </div>
+                            {% endfor %}
                         </div>
-                        <div class="col">
-                            <div class="form-check">
-                                <input class="form-check-input border-secondary" type="checkbox" name="generos" value="Ciència Ficció" id="gen_scifi">
-                                <label class="form-check-label" for="gen_scifi">Ciència Ficció</label>
+                    </div>
+
+                    <hr class="opacity-25 my-4">
+
+                    <div class="mb-2">
+                        <label class="form-label fw-bold text-dark text-uppercase small mb-2" style="letter-spacing: 1px;">Països origen</label>
+                        <div class="row row-cols-1 row-cols-md-3 g-2 mt-1">
+                            {% for pa in opcions.paisos %}
+                            <div class="col">
+                                <div class="form-check mb-0">
+                                    <input class="form-check-input" type="checkbox" name="paisos" value="{{ pa }}" id="pa_{{ pa }}" {% if pa in user.profile.paisos %}checked{% endif %}>
+                                    <label class="form-check-label small" for="pa_{{ pa }}">{{ pa }}</label>
+                                </div>
                             </div>
+                            {% endfor %}
                         </div>
                     </div>
                 </div>
 
-                <div class="d-flex justify-content-between align-items-center mt-4">
-                    <button type="submit" class="btn btn-primary fw-bold px-4">
-                        Guardar Canvis
-                    </button>
-
-                    <button type="button" class="btn btn-link text-danger text-decoration-none fw-bold" data-bs-toggle="modal" data-bs-target="#deleteAccountModal">
-                        <i class="bi bi-trash"></i> Borrar compte
+                <div class="mt-4">
+                    <button type="submit" class="btn btn-success fw-bold px-4 shadow-sm">
+                        <i class="bi bi-check-lg"></i> Guardar Canvis
                     </button>
                 </div>
             </form>
-        </div>
-    </div>
-</div>
-
-<div class="modal fade" id="deleteAccountModal" tabindex="-1" aria-labelledby="deleteAccountModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content border-0 shadow">
-            <div class="modal-header bg-danger text-white border-0">
-                <h5 class="modal-title fw-bold" id="deleteAccountModalLabel">
-                    <i class="bi bi-exclamation-triangle-fill me-2"></i> Estàs completament segur?
-                </h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body py-4">
-                <p class="mb-0">
-                    Si elimines el teu compte, <strong>es perdran per sempre</strong> totes les teves dades personals, les teves llistes guardades i les teves preferències de contingut.
-                </p>
-                <p class="mt-3 text-danger fw-bold mb-0">Aquesta acció NO es pot desfer.</p>
-            </div>
-            <div class="modal-footer border-0 bg-light">
-                <button type="button" class="btn btn-secondary fw-bold" data-bs-dismiss="modal">Cancel·lar</button>
-                
-                <form method="post" action="{% url 'esborrar_compte' %}">
-                    {% csrf_token %}
-                    <button type="submit" class="btn btn-danger fw-bold">
-                        Sí, vull esborrar el compte
-                    </button>
-                </form>
-            </div>
         </div>
     </div>
 </div>
