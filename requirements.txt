@@ -1,8 +1,9 @@
 pip~=23.2.1
 attrs~=23.2.0
 distro~=1.9.0
-wheel~=0.42.0
 cryptography~=41.0.7
+setuptools>=70.0.0
+wheel>=0.40.0
 pillow>=10.0.0
 Jinja2~=3.1.2
 Django~=6.0.2
