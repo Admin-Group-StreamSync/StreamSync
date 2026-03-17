@@ -11,5 +11,5 @@ urlpatterns = [
     path('esborrar-compte/', views.esborrar_compte, name='esborrar_compte'),
     path('perfil/password/', views.cambiar_password, name='cambiar_password'),
     path('cataleg/', views.catalogo, name='catalogo'),
-    path('contingut/<int:content_id>/', views.detall_contingut, name='detall_contingut'),
+    path('contingut/<str:content_id>/', views.detall_contingut, name='detall_contingut'),
 ]

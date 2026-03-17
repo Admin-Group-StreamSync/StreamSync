@@ -103,102 +103,108 @@ def esborrar_compte(request):
     return redirect('pagina_perfil1')
 
 
-
+#simulació
 DADES_CONTINGUT = [
-    {'id': 1, 'titol': 'Inception', 'genere': 'Ciència Ficció', 'rating': '4.8', 'director': 'Christopher Nolan',
-     'edat': '+13',
-     'sinopsi': 'Un lladre que roba secrets corporatius a través de l\'ús de la tecnologia de compartició de somnis.'},
-    {'id': 2, 'titol': 'The Dark Knight', 'genere': 'Acció', 'rating': '4.9', 'director': 'Christopher Nolan',
-     'edat': '+13',
-     'sinopsi': 'Quan l\'amenaça coneguda com el Joker emergeix del seu passat, causa el caos a la gent de Gotham.'},
-    {'id': 3, 'titol': 'Interstellar', 'genere': 'Aventura', 'rating': '4.7', 'director': 'Christopher Nolan',
-     'edat': '+7',
-     'sinopsi': 'Un equip d\'exploradors viatja a través d\'un forat de cuc a l\'espai en un intent de garantir la supervivència de la humanitat.'},{
-        'id': 4,
-        'titol': 'Breaking Bad',
-        'genere': 'Drama',
-        'rating': '5.0',
-        'director': 'Vince Gilligan',
-        'edat': '+18',
-        'sinopsi': 'Un professor de química de l\'institut amb un càncer de pulmó inoperable es dedica a fabricar i vendre metamfetamina per assegurar el futur financer de la seva família.'
-    },
-    {
-        'id': 5,
-        'titol': 'Toy Story',
-        'genere': 'Animació',
-        'rating': '4.5',
-        'director': 'John Lasseter',
-        'edat': 'Tots els públics',
-        'sinopsi': 'Un ninot de vaquer se sent amenaçat i gelós quan una nova figura d\'acció d\'un astronauta el substitueix com el joguet preferit a l\'habitació d\'un nen.'
-    },
-    {
-        'id': 6,
-        'titol': 'The Shining',
-        'genere': 'Terror',
-        'rating': '4.4',
-        'director': 'Stanley Kubrick',
-        'edat': '+18',
-        'sinopsi': 'Una família es queda a passar l\'hivern en un hotel aïllat on una presència espiritual influeix en el pare cap a la violència, mentre que el seu fill té visions horroroses.'
-    },
-    {
-        'id': 7,
-        'titol': 'Parasite',
-        'genere': 'Drama',
-        'rating': '4.6',
-        'director': 'Bong Joon-ho',
-        'edat': '+16',
-        'sinopsi': 'La cobdícia i la discriminació de classe amenacen la nova relació formada entre la riquesa de la família Park i la pobresa del clan Kim.'
-    },
-    {
-        'id': 8,
-        'titol': 'Stranger Things',
-        'genere': 'Ciència Ficció',
-        'rating': '4.7',
-        'director': 'The Duffer Brothers',
-        'edat': '+13',
-        'sinopsi': 'Quan un nen desapareix, la seva mare, un cap de policia i els seus amics han d\'enfrontar-se a forces aterridores per tal de recuperar-lo.'
-    },
-    {
-        'id': 9,
-        'titol': 'The Office',
-        'genere': 'Comèdia',
-        'rating': '4.9',
-        'director': 'Greg Daniels',
-        'edat': '+13',
-        'sinopsi': 'Un fals documental sobre la vida quotidiana dels empleats d\'una oficina en una empresa paperera a Scranton, Pennsilvània.'
-    },
-    {
-        'id': 10,
-        'titol': 'Dune',
-        'genere': 'Ciència Ficció',
-        'rating': '4.3',
-        'director': 'Denis Villeneuve',
-        'edat': '+13',
-        'sinopsi': 'Adaptació cinematogràfica de la novel·la de ciència-ficció de Frank Herbert sobre el fill d\'una família noble que tracta de protegir l\'actiu més valuós de la galàxia.'
-    },
-    {
-        'id': 11,
-        'titol': 'Spirited Away',
-        'genere': 'Animació',
-        'rating': '4.8',
-        'director': 'Hayao Miyazaki',
-        'edat': 'Tots els públics',
-        'sinopsi': 'Durant el trasllat de la seva família al camp, una nena de 10 anys entra en un món governat per déus, bruixes i esperits, on els humans es transformen en bèsties.'
-    },
-    {
-        'id': 12,
-        'titol': 'Gladiator',
-        'genere': 'Acció',
-        'rating': '4.7',
-        'director': 'Ridley Scott',
-        'edat': '+16',
-        'sinopsi': 'Un general romà és traït i la seva família assassinada pel fill corrupte d\'un emperador. Torna a Roma com a gladiador per buscar venjança.'
-    },
+    # --- PEL·LÍCULES ---
+    {'id': 'm1', 'tipus': 'movie', 'titol': 'Inception',
+     'synopsis': 'Un lladre que roba secrets corporatius a través de l\'ús de la tecnologia de compartició de somnis.',
+     'any': 2010, 'rating': 8.8, 'genere': 'Sci-Fi', 'director': 'Christopher Nolan', 'edat': 'PG-13',
+     'idioma': 'English', 'pais': 'USA'},
+    {'id': 'm2', 'tipus': 'movie', 'titol': 'Pulp Fiction',
+     'synopsis': 'Vides creuades de mafiosos, boxejadors i lladres.', 'any': 1994, 'rating': 8.9, 'genere': 'Crime',
+     'director': 'Quentin Tarantino', 'edat': 'R', 'idioma': 'English', 'pais': 'USA'},
+    {'id': 'm3', 'tipus': 'movie', 'titol': 'Parasite',
+     'synopsis': 'La cobdícia i la discriminació de classe amenacen la relació entre la família Park i el clan Kim.',
+     'any': 2019, 'rating': 8.6, 'genere': 'Thriller', 'director': 'Bong Joon-ho', 'edat': 'R', 'idioma': 'Korean',
+     'pais': 'South Korea'},
+    {'id': 'm4', 'tipus': 'movie', 'titol': 'Spirited Away',
+     'synopsis': 'Durant un trasllat, una nena entra en un món governat per déus, bruixes i esperits.', 'any': 2001,
+     'rating': 8.6, 'genere': 'Animation', 'director': 'Hayao Miyazaki', 'edat': 'G', 'idioma': 'Japanese',
+     'pais': 'Japan'},
+    {'id': 'm5', 'tipus': 'movie', 'titol': 'Dune',
+     'synopsis': 'Un jove hereu ha de viatjar a un perillós planeta desèrtic.', 'any': 2021, 'rating': 8.1,
+     'genere': 'Sci-Fi', 'director': 'Denis Villeneuve', 'edat': 'PG-13', 'idioma': 'English', 'pais': 'Canada'},
+    {'id': 'm6', 'tipus': 'movie', 'titol': 'Volver', 'synopsis': 'Dues germanes tornen al seu poble natal a La Manxa.',
+     'any': 2006, 'rating': 7.6, 'genere': 'Drama', 'director': 'Pedro Almodóvar', 'edat': 'PG-13', 'idioma': 'Spanish',
+     'pais': 'Spain'},
+
+    # --- SÈRIES ---
+    {'id': 's1', 'tipus': 'series', 'titol': 'Stranger Things',
+     'synopsis': 'Un grup de nens descobreixen misteris sobrenaturals a Hawkins.', 'any': 2016, 'rating': 8.7,
+     'genere': 'Sci-Fi', 'director': 'Danny Boyle', 'edat': 'PG-13', 'idioma': 'English', 'pais': 'UK'},
+    {'id': 's2', 'tipus': 'series', 'titol': 'Breaking Bad',
+     'synopsis': 'Un professor de química es dedica a fabricar metamfetamina després d\'un diagnòstic terminal.',
+     'any': 2008, 'rating': 9.5, 'genere': 'Drama', 'director': 'Danny Boyle', 'edat': 'R', 'idioma': 'English',
+     'pais': 'UK'},
+    {'id': 's3', 'tipus': 'series', 'titol': 'The Queen\'s Gambit',
+     'synopsis': 'Una jove òrfena es converteix en un prodigi dels escacs.', 'any': 2020, 'rating': 8.6,
+     'genere': 'Drama', 'director': 'Fernando Trueba', 'edat': 'PG-13', 'idioma': 'Spanish', 'pais': 'Spain'},
+    {'id': 's4', 'tipus': 'series', 'titol': 'Arcane',
+     'synopsis': 'Explica les històries d\'origen dels personatges de League of Legends.', 'any': 2021, 'rating': 9.1,
+     'genere': 'Animation', 'director': 'Hayao Miyazaki', 'edat': 'PG', 'idioma': 'Japanese', 'pais': 'Japan'},
+    {'id': 's5', 'tipus': 'series', 'titol': 'La Casa de Papel: Berlin',
+     'synopsis': 'Spin-off centrat en Berlín, el cervell darrere dels atracaments.', 'any': 2023, 'rating': 7.8,
+     'genere': 'Crime', 'director': 'Álex de la Iglesia', 'edat': 'R', 'idioma': 'Spanish', 'pais': 'Spain'},
+    {'id': 's6', 'tipus': 'series', 'titol': 'Doctor Who',
+     'synopsis': 'Un alienígena viatger del temps salva civilitzacions.', 'any': 2005, 'rating': 8.6,
+     'genere': 'Sci-Fi', 'director': 'Danny Boyle', 'edat': 'PG', 'idioma': 'English', 'pais': 'UK'},
 ]
 
 
 def catalogo(request):
-    return render(request, 'cataleg.html', {'contenidos': DADES_CONTINGUT})
+    # 1. Capturar els filtres de la URL
+    query = request.GET.get('q', '')
+    genere_filtre = request.GET.get('genere', 'Tots')
+    edat_filtre = request.GET.get('edat', 'Tots')
+    any_filtre = request.GET.get('any', 'Tots')
+    ordre = request.GET.get('ordre', 'populars')
+    tipus_filtre = request.GET.get('tipus', '')  # <-- NOU FILTRE
+
+    resultats = DADES_CONTINGUT
+
+    # Filtre per TIPUS (Sèries o Pel·lícules) i Títol Dinàmic
+    if tipus_filtre == 'series':
+        resultats = [i for i in resultats if i.get('tipus') == 'series']
+        titol_pagina = "Catàleg de Sèries"
+    elif tipus_filtre == 'movie':
+        resultats = [i for i in resultats if i.get('tipus') == 'movie']
+        titol_pagina = "Catàleg de Pel·lícules"
+    else:
+        titol_pagina = "Catàleg de Contingut"
+
+    # Filtre per nom
+    if query:
+        resultats = [i for i in resultats if query.lower() in i['titol'].lower()]
+
+    # Filtre per Gènere
+    if genere_filtre != 'Tots':
+        resultats = [i for i in resultats if i['genere'] == genere_filtre]
+
+    # Filtre per Edat
+    if edat_filtre != 'Tots':
+        resultats = [i for i in resultats if i['edat'] == edat_filtre]
+
+    # Filtre per Any
+    if any_filtre != 'Tots':
+        resultats = [i for i in resultats if str(i.get('any')) == any_filtre]
+
+    # Ordenació
+    if ordre == 'valorats':
+        resultats = sorted(resultats, key=lambda x: float(x.get('rating', 0)), reverse=True)
+    elif ordre == 'recents':
+        resultats = sorted(resultats, key=lambda x: int(x.get('any', 0)), reverse=True)
+
+    context = {
+        'contenidos': resultats,
+        'query': query,
+        'genere_sel': genere_filtre,
+        'edat_sel': edat_filtre,
+        'any_sel': any_filtre,
+        'ordre_sel': ordre,
+        'tipus_sel': tipus_filtre,  # Enviem el tipus al HTML
+        'titol_pagina': titol_pagina  # Enviem el títol al HTML
+    }
+    return render(request, 'cataleg.html', context)
 
 
 def detall_contingut(request, content_id):
