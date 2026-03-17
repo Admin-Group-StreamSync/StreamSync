@@ -52,11 +52,5 @@ jobs:
       - name: Commit and Push changes
         uses: stefanzweifel/git-auto-commit-action@v7
         with:
-<<<<<<< HEAD
-          name: issues-per-week-graph
-
-          path: issues_per_week.png
-=======
           commit_message: "chore(run-chart): Update generated chart image"
           commit_user_name: DenisLazarian [Github Actions]
->>>>>>> 1ea66c9 (chore: updating workflow)
