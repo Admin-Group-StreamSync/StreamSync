@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+
+{% block title %}Perfil - StreamSync{% endblock %}
+
+{% block content %}
+<div class="container mt-4 mb-5">
+    <h2 class="fw-bold">PERFIL</h2>
+    <hr class="border-2 opacity-75">
+
+    <div class="row mt-4">
+        <div class="col-md-3 border-end">
+            <div class="mb-4">
+                <a href="{% url 'pagina_principal' %}" class="btn btn-outline-secondary btn-sm rounded-pill shadow-sm">
+                    <i class="bi bi-arrow-left"></i> Enrere
+                </a>
+            </div>
+
+            <nav class="d-flex flex-column gap-2">
+                <a href="{% url 'pagina_perfil1' %}" class="btn text-start fw-bold text-dark w-100 shadow-sm" style="background-color: #dee2e6;">
+                    <i class="bi bi-person-fill me-2"></i> Informació de perfil
+                </a>
+                <a href="{% url 'profile2' %}" class="btn btn-outline-secondary border-0 text-start text-dark w-100">
+                    <i class="bi bi-gear-fill me-2"></i> Preferències de contingut
+                </a>
+                <hr class="opacity-25 my-2">
+                <form method="post" action="{% url 'logout' %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-outline-danger border-0 text-start fw-bold w-100">
+                        <i class="bi bi-box-arrow-left me-2"></i> Tancar sessió
+                    </button>
+                </form>
+            </nav>
+        </div>
+
+        <div class="col-md-9 ps-md-5">
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-success alert-dismissible fade show border-0 shadow-sm" role="alert">
+                        <i class="bi bi-check-circle-fill me-2"></i> {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+            <div class="d-flex align-items-center mb-4">
+                <i class="bi bi-person-circle fs-1 me-3 text-primary"></i>
+                <div>
+                    <h3 class="mb-0">Hola, {{ user.username }}!</h3>
+                    <p class="text-muted mb-0">Gestiona la teva informació personal</p>
+                </div>
+            </div>
+
+            <form method="post">
+                {% csrf_token %}
+
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Nom d'usuari</label>
+                    <input type="text" name="username" class="form-control" value="{{ user.username }}" required>
+                    <div class="form-text small">Aquest és el nom que veuran els altres.</div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Nom complet</label>
+                    <input type="text" name="first_name" class="form-control" value="{{ user.first_name }}" required>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-bold text-muted">Correu electrònic (No es pot canviar)</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-light border-end-0"><i class="bi bi-lock-fill text-muted"></i></span>
+                        <input type="email" class="form-control bg-light border-start-0 text-muted" value="{{ user.email }}" readonly tabindex="-1">
+                    </div>
+                </div>
+
+                <div class="d-flex flex-wrap gap-3 justify-content-between align-items-center mt-5">
+                    <div>
+                        <button type="submit" class="btn btn-success fw-bold px-4 shadow-sm">
+                            <i class="bi bi-check-lg"></i> Guardar Canvis
+                        </button>
+                        <a href="{% url 'cambiar_password' %}" class="btn btn-primary fw-bold px-4 shadow-sm ms-2">
+                            Canviar Contrasenya
+                        </a>
+                    </div>
+
+                    <button type="button" class="btn btn-link text-danger text-decoration-none fw-bold" data-bs-toggle="modal" data-bs-target="#deleteAccountModal">
+                        <i class="bi bi-trash"></i> Borrar compte
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="deleteAccountModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header bg-danger text-white border-0">
+                <h5 class="modal-title fw-bold"><i class="bi bi-exclamation-triangle-fill me-2"></i> Estàs segur?</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body py-4">
+                <p>Si elimines el teu compte, es perdran totes les teves dades per sempre. Aquesta acció no es pot desfer.</p>
+            </div>
+            <div class="modal-footer border-0 bg-light">
+                <button type="button" class="btn btn-secondary fw-bold" data-bs-dismiss="modal">Cancel·lar</button>
+                <form method="post" action="{% url 'esborrar_compte' %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger fw-bold">Sí, vull esborrar el compte</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+
+{% block title %}StreamSync - Inici{% endblock %}
+
+{% block extra_css %}
+<style>
+    .hero-search {
+        padding: 100px 0;
+        background: linear-gradient(180deg, #ffffff 0%, #f8f9fa 100%);
+        text-align: center;
+    }
+    .main-search-bar {
+        max-width: 700px;
+        margin: 0 auto;
+        border-radius: 50px;
+        overflow: hidden;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    }
+    .main-search-bar .form-control { border: none; padding: 1.2rem 1.5rem; font-size: 1.2rem; }
+    .main-search-bar .btn { padding: 0 25px; font-size: 1.5rem; border: none; }
+
+    .trending-section { padding: 40px 0; }
+    .trending-title {
+        display: inline-block;
+        background-color: #e9ecef;
+        padding: 8px 20px;
+        border-radius: 5px;
+        font-weight: bold;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 30px;
+    }
+
+    .portada-trending {
+        background-color: #dee2e6;
+        aspect-ratio: 2/3;
+        border-radius: 12px;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        border: 1px solid #ddd;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .portada-trending:hover {
+        transform: scale(1.05);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    }
+
+    .rating-badge-home {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background: rgba(255, 255, 255, 0.9);
+        color: #ffc107;
+        font-weight: bold;
+        padding: 2px 8px;
+        border-radius: 6px;
+        font-size: 0.85rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="hero-search">
+    <div class="container">
+        <h1 class="display-4 fw-bold mb-4 text-primary">StreamSync</h1>
+        <form action="{% url 'catalogo' %}" method="GET">
+            <div class="input-group main-search-bar">
+                <input type="text" class="form-control" placeholder="Busca pel·lícules, sèries, directors..." aria-label="Cerca">
+                <button class="btn btn-primary" type="submit">
+                    <i class="bi bi-search"></i>
+                </button>
+            </div>
+        </form>
+    </div>
+</section>
+
+<section class="container trending-section mb-5">
+    <div class="trending-title">
+        <i class="bi bi-fire me-2 text-danger"></i> Més valorats ara
+    </div>
+
+    <div class="row row-cols-2 row-cols-md-4 g-4">
+        {% for item in tendencies %}
+        <div class="col">
+            <a href="{% url 'detall_contingut' item.id %}" class="text-decoration-none text-dark">
+                <div class="portada-trending shadow-sm">
+                    <span class="rating-badge-home shadow-sm">★ {{ item.rating }}</span>
+                    <i class="bi bi-play-circle fs-1 text-white opacity-50"></i>
+                </div>
+                <div class="mt-3 text-center">
+                    <p class="mb-0 fw-bold">{{ item.titol }}</p>
+                    <small class="text-muted text-uppercase">{{ item.genere }}</small>
+                </div>
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+{% endblock %}
