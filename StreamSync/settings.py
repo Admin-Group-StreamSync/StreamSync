@@ -116,3 +116,12 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = 'static/'
+
+# Si algú no està loguejat, que el enviï a '/login/'
+LOGIN_URL = 'login'
+
+# On va l'usuari just després de posar bé la seva contrasenya
+LOGIN_REDIRECT_URL = 'pagina_principal'
+
+# On va l'usuari en tancar la sessió
+LOGOUT_REDIRECT_URL = 'pagina_principal'

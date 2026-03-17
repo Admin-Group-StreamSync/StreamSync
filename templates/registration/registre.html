@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block title %}Registre - StreamSync{% endblock %}
+
+{% block navbar %}{% endblock %}
+
+{% block main_class %}d-flex flex-column align-items-center justify-content-center{% endblock %}
+
+{% block content %}
+<div class="container d-flex justify-content-center mb-3" style="max-width: 450px; padding: 0;">
+    <div class="w-100 text-start">
+        <a href="{% url 'pagina_principal' %}" class="btn btn-outline-secondary btn-sm rounded-pill shadow-sm">
+            <i class="bi bi-arrow-left"></i> Pàgina Principal
+        </a>
+    </div>
+</div>
+
+<div class="card p-4 shadow border-0" style="width: 100%; max-width: 450px; border-radius: 15px;">
+    <h2 class="text-center fw-bold mb-4">CREAR COMPTA</h2>
+
+    <form method="post" action="{% url 'crear_cuenta' %}">
+        {% csrf_token %}
+
+        {% if form.errors %}
+            <div class="alert alert-danger small p-2 text-center">Revisa les dades introduïdes.</div>
+        {% endif %}
+
+        {% for field in form %}
+            <div class="mb-3">
+                <label class="form-label small fw-bold text-muted text-uppercase">{{ field.label }}</label>
+                <input type="{{ field.field.widget.input_type }}"
+                       name="{{ field.name }}"
+                       value="{{ field.value|default_if_none:'' }}"
+                       class="form-control bg-light border-0 py-2 {% if field.errors %}is-invalid{% endif %}"
+                       placeholder="Introdueix {{ field.label|lower }}"
+                       required>
+
+                {% if field.errors %}
+                    <div class="invalid-feedback">
+                        {{ field.errors|striptags }}
+                    </div>
+                {% endif %}
+            </div>
+        {% endfor %}
+
+        <button type="submit" class="btn btn-primary w-100 fw-bold btn-lg mt-3 shadow-sm">
+            SEGÜENT
+        </button>
+
+        <div class="text-center mt-3">
+            <span class="text-muted small">Ja tens compte? </span>
+            <a href="{% url 'login' %}" class="text-decoration-none small fw-bold text-primary">
+                Inicia sessió
+            </a>
+        </div>
+    </form>
+</div>
+{% endblock %}

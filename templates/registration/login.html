@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block title %}Log In - StreamSync{% endblock %}
+
+{% block navbar %}{% endblock %}
+
+{% block main_class %}d-flex flex-column align-items-center justify-content-center{% endblock %}
+
+{% block content %}
+<div class="container d-flex justify-content-center mb-3" style="max-width: 350px; padding: 0;">
+    <div class="w-100 text-start">
+        <a href="{% url 'pagina_principal' %}" class="btn btn-outline-secondary btn-sm rounded-pill shadow-sm">
+            <i class="bi bi-arrow-left"></i> Pàgina Principal
+        </a>
+    </div>
+</div>
+
+<div class="card p-4 shadow border-0" style="width: 100%; max-width: 350px; border-radius: 15px;">
+    <div class="text-center mb-4">
+        <i class="bi bi-person-circle text-primary" style="font-size: 4rem;"></i>
+    </div>
+
+    {% if form.errors %}
+        <div class="alert alert-danger p-2 small text-center">Usuari o contrasenya incorrectes.</div>
+    {% endif %}
+
+    <form method="post" action="{% url 'login' %}">
+        {% csrf_token %}
+
+        <div class="mb-3">
+            <label class="form-label small fw-bold text-muted">USUARI</label>
+            <input type="text" name="username" class="form-control bg-light border-0 py-2" placeholder="El teu usuari" required>
+        </div>
+
+        <div class="mb-4">
+            <label class="form-label small fw-bold text-muted">CONTRASENYA</label>
+            <input type="password" name="password" class="form-control bg-light border-0 py-2" placeholder="********" required>
+        </div>
+
+        <button type="submit" class="btn btn-primary w-100 fw-bold py-2 shadow-sm">
+            LOG IN
+        </button>
+
+        <div class="text-center mt-4">
+            <span class="text-muted small">Si no tens compte, </span>
+            <a href="{% url 'crear_cuenta' %}" class="text-decoration-none small fw-bold text-primary">
+                registra't aquí
+            </a>
+        </div>
+    </form>
+</div>
+{% endblock %}

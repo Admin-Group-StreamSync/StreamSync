@@ -1,292 +1,153 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Preferències - StreamSync</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <style>
-        .sidebar-link {
-            text-decoration: none;
-            color: black;
-            display: block;
-            padding: 10px;
-            border-radius: 5px;
-        }
-        .sidebar-link:hover {
-            background-color: #e9ecef;
-        }
-        .sidebar-link.active {
-            background-color: #dee2e6;
-            font-weight: bold;
-        }
-        /* Ajuste para que el contenido principal no se pegue al sidebar */
-        .card-gustos {
-            border-radius: 15px;
-        }
-    </style>
-</head>
-<body>
+{% extends "base.html" %}
 
-    <nav class="navbar navbar-expand bg-body-tertiary">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="{% url 'pagina_principal' %}" aria-label="Inicio" title="Inicio">
-                <i class="bi bi-house"></i>
-            </a>
-            <div class="navbar-collapse">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item"><a class="nav-link" href="{% url 'llistes' %}">Llistes</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#">Series</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#">Pelicules</a></li>
-                    <li class="nav-item">
-                        <a class="nav-link active" href="{% url 'pagina_perfil1' %}" aria-label="Perfil" title="Perfil">
-                            <i class="bi bi-person-circle"></i>
-                        </a>
-                    </li>
-                </ul>
+{% block title %}Preferències - StreamSync{% endblock %}
+
+{% block content %}
+<div class="container mt-4 mb-5">
+    <h2 class="fw-bold">PERFIL</h2>
+    <hr class="border-2 opacity-75">
+
+    <div class="row mt-4">
+        <div class="col-md-3 border-end">
+            <div class="mb-4">
+                <a href="{% url 'pagina_principal' %}" class="btn btn-outline-secondary btn-sm rounded-pill shadow-sm">
+                    <i class="bi bi-arrow-left"></i> Enrere
+                </a>
             </div>
+
+            <nav class="d-flex flex-column gap-2">
+                
+                <a href="{% url 'pagina_perfil1' %}" class="btn btn-outline-secondary border-0 text-start text-dark w-100">
+                    <i class="bi bi-person-fill me-2"></i> Informació de perfil
+                </a>
+                
+                <a href="{% url 'profile2' %}" class="btn text-start fw-bold text-dark w-100 shadow-sm" style="background-color: #dee2e6;">
+                    <i class="bi bi-gear-fill me-2"></i> Preferències de contingut
+                </a>
+                
+                <hr class="opacity-25 my-2">
+                
+                <form method="post" action="{% url 'logout' %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-outline-danger border-0 text-start fw-bold w-100">
+                        <i class="bi bi-box-arrow-left me-2"></i> Tancar sessió
+                    </button>
+                </form>
+            </nav>
         </div>
-    </nav>
 
-    <div class="container mt-4">
-        <h2 class="fw-bold">PERFIL</h2>
-        <hr class="border-2 opacity-75">
-
-        <div class="row mt-4">
-            <div class="col-md-3 border-end">
-                <div class="mb-4">
-                    <a href="javascript:history.back()" class="btn btn-outline-secondary btn-sm">
-                        <i class="bi bi-arrow-left"></i> Enrere
-                    </a>
+        <div class="col-md-9 ps-md-5">
+            <div class="d-flex align-items-center mb-4">
+                <i class="bi bi-gear-wide-connected fs-1 me-3 text-primary"></i>
+                <div>
+                    <h3 class="mb-0">Preferències de contingut</h3>
+                    <p class="text-muted mb-0">Gestiona les plataformes i gèneres que t'agraden</p>
                 </div>
-
-                <nav>
-                    <a href="{% url 'pagina_perfil1' %}" class="sidebar-link mb-2">
-                        <i class="bi bi-person-fill"></i> Informació de perfil
-                    </a>
-                    <a href="#" class="sidebar-link active">
-                        <i class="bi bi-gear-fill"></i> Preferències de contingut
-                    </a>
-                </nav>
             </div>
 
-            <div class="col-md-9 ps-md-5">
-                <div class="card card-gustos p-4 shadow-sm border-0 bg-light">
-                    <h3 class="fw-bold mb-4">Preferències de contingut</h3>
+            <form method="post" action="{% url 'profile2' %}">
+                {% csrf_token %}
 
-                    <form method="post">
-                        {% csrf_token %}
-
-                        <p class="fw-bold mb-3 text-uppercase small text-muted">Plataformes:</p>
-                        <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-4 g-3 mb-4">
-                            <div class="col">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" value="plat1" id="plat1">
-                                    <label class="form-check-label" for="plat1">
-                                        Plataforma 1
-                                    </label>
-                                </div>
-                            </div>
-                            <div class="col">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" value="plat2" id="plat2">
-                                    <label class="form-check-label" for="plat2">
-                                        Plataforma 2
-                                    </label>
-                                </div>
-                            </div>
-                            <div class="col">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" value="plat3" id="plat3">
-                                    <label class="form-check-label" for="plat3">
-                                        Plataforma 3
-                                    </label>
-                                </div>
-                            </div>
-                            <div class="col">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" value="plat4" id="plat4">
-                                    <label class="form-check-label" for="plat4">
-                                        Plataforma 4
-                                    </label>
-                                </div>
-                            </div>
-                            <div class="col">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" value="plat5" id="plat5">
-                                    <label class="form-check-label" for="plat5">
-                                        Plataforma 5
-                                    </label>
-                                </div>
-                            </div>
-                            <div class="col">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" value="plat6" id="plat6">
-                                    <label class="form-check-label" for="plat6">
-                                        Plataforma 6
-                                    </label>
-                                </div>
-                            </div>
-                            <div class="col">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" value="plat7" id="plat7">
-                                    <label class="form-check-label" for="plat7">
-                                        Plataforma 7
-                                    </label>
-                                </div>
-                            </div>
-                            <div class="col">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" value="plat8" id="plat8">
-                                    <label class="form-check-label" for="plat8">
-                                        Plataforma 8
-                                    </label>
-                                </div>
-                            </div>
-                            <div class="col">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" value="plat9" id="plat9">
-                                    <label class="form-check-label" for="plat9">
-                                        Plataforma 9
-                                    </label>
-                                </div>
-                            </div>
-                            <div class="col">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" value="plat10" id="plat10">
-                                    <label class="form-check-label" for="plat10">
-                                        Plataforma 10
-                                    </label>
-                                </div>
-                            </div>
-                            <div class="col">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" value="plat11" id="plat11">
-                                    <label class="form-check-label" for="plat11">
-                                        Plataforma 11
-                                    </label>
-                                </div>
-                            </div>
-                            <div class="col">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" value="plat12" id="plat12">
-                                    <label class="form-check-label" for="plat12">
-                                        Plataforma 12
-                                    </label>
-                                </div>
+                <div class="p-4 bg-light rounded-3 border">
+                    <p class="fw-bold mb-3 text-primary">PLATAFORMES:</p>
+                    <div class="row row-cols-2 row-cols-md-3 g-3 mb-4">
+                        <div class="col">
+                            <div class="form-check">
+                                <input class="form-check-input border-secondary" type="checkbox" name="plataformas" value="Netflix" id="plat_netflix">
+                                <label class="form-check-label" for="plat_netflix">Netflix</label>
                             </div>
                         </div>
-
-                        <hr class="my-4">
-
-                        <p class="fw-bold mb-3 text-uppercase small text-muted">Gèneres:</p>
-                        <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-4 g-3 mb-4">
-                            <div class="col">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" value="gen1" id="gen1">
-                                    <label class="form-check-label" for="gen1">
-                                        Gènere 1
-                                    </label>
-                                </div>
-                            </div>
-                            <div class="col">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" value="gen2" id="gen2">
-                                    <label class="form-check-label" for="gen2">
-                                        Gènere 2
-                                    </label>
-                                </div>
-                            </div>
-                            <div class="col">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" value="gen3" id="gen3">
-                                    <label class="form-check-label" for="gen3">
-                                        Gènere 3
-                                    </label>
-                                </div>
-                            </div>
-                            <div class="col">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" value="gen4" id="gen4">
-                                    <label class="form-check-label" for="gen4">
-                                        Gènere 4
-                                    </label>
-                                </div>
-                            </div>
-                            <div class="col">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" value="gen5" id="gen5">
-                                    <label class="form-check-label" for="gen5">
-                                        Gènere 5
-                                    </label>
-                                </div>
-                            </div>
-                            <div class="col">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" value="gen6" id="gen6">
-                                    <label class="form-check-label" for="gen6">
-                                        Gènere 6
-                                    </label>
-                                </div>
-                            </div>
-                            <div class="col">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" value="gen7" id="gen7">
-                                    <label class="form-check-label" for="gen7">
-                                        Gènere 7
-                                    </label>
-                                </div>
-                            </div>
-                            <div class="col">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" value="gen8" id="gen8">
-                                    <label class="form-check-label" for="gen8">
-                                        Gènere 8
-                                    </label>
-                                </div>
-                            </div>
-                            <div class="col">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" value="gen9" id="gen9">
-                                    <label class="form-check-label" for="gen9">
-                                        Gènere 9
-                                    </label>
-                                </div>
-                            </div>
-                            <div class="col">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" value="gen10" id="gen10">
-                                    <label class="form-check-label" for="gen10">
-                                        Gènere 10
-                                    </label>
-                                </div>
-                            </div>
-                            <div class="col">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" value="gen11" id="gen11">
-                                    <label class="form-check-label" for="gen11">
-                                        Gènere 11
-                                    </label>
-                                </div>
-                            </div>
-                            <div class="col">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" value="gen12" id="gen12">
-                                    <label class="form-check-label" for="gen12">
-                                        Gènere 12
-                                    </label>
-                                </div>
+                        <div class="col">
+                            <div class="form-check">
+                                <input class="form-check-input border-secondary" type="checkbox" name="plataformas" value="Max" id="plat_max">
+                                <label class="form-check-label" for="plat_max">Max</label>
                             </div>
                         </div>
+                        <div class="col">
+                            <div class="form-check">
+                                <input class="form-check-input border-secondary" type="checkbox" name="plataformas" value="Disney+" id="plat_disney">
+                                <label class="form-check-label" for="plat_disney">Disney+</label>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="form-check">
+                                <input class="form-check-input border-secondary" type="checkbox" name="plataformas" value="Prime Video" id="plat_prime">
+                                <label class="form-check-label" for="plat_prime">Prime Video</label>
+                            </div>
+                        </div>
+                    </div>
 
-                        
-                    </form>
+                    <hr class="my-4 opacity-25">
+
+                    <p class="fw-bold mb-3 text-primary">GÈNERES:</p>
+                    <div class="row row-cols-2 row-cols-md-3 g-3 mb-2">
+                        <div class="col">
+                            <div class="form-check">
+                                <input class="form-check-input border-secondary" type="checkbox" name="generos" value="Acció" id="gen_accio">
+                                <label class="form-check-label" for="gen_accio">Acció</label>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="form-check">
+                                <input class="form-check-input border-secondary" type="checkbox" name="generos" value="Comèdia" id="gen_comedia">
+                                <label class="form-check-label" for="gen_comedia">Comèdia</label>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="form-check">
+                                <input class="form-check-input border-secondary" type="checkbox" name="generos" value="Drama" id="gen_drama">
+                                <label class="form-check-label" for="gen_drama">Drama</label>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="form-check">
+                                <input class="form-check-input border-secondary" type="checkbox" name="generos" value="Ciència Ficció" id="gen_scifi">
+                                <label class="form-check-label" for="gen_scifi">Ciència Ficció</label>
+                            </div>
+                        </div>
+                    </div>
                 </div>
+
+                <div class="d-flex justify-content-between align-items-center mt-4">
+                    <button type="submit" class="btn btn-primary fw-bold px-4">
+                        Guardar Canvis
+                    </button>
+
+                    <button type="button" class="btn btn-link text-danger text-decoration-none fw-bold" data-bs-toggle="modal" data-bs-target="#deleteAccountModal">
+                        <i class="bi bi-trash"></i> Borrar compte
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="deleteAccountModal" tabindex="-1" aria-labelledby="deleteAccountModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header bg-danger text-white border-0">
+                <h5 class="modal-title fw-bold" id="deleteAccountModalLabel">
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i> Estàs completament segur?
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body py-4">
+                <p class="mb-0">
+                    Si elimines el teu compte, <strong>es perdran per sempre</strong> totes les teves dades personals, les teves llistes guardades i les teves preferències de contingut.
+                </p>
+                <p class="mt-3 text-danger fw-bold mb-0">Aquesta acció NO es pot desfer.</p>
+            </div>
+            <div class="modal-footer border-0 bg-light">
+                <button type="button" class="btn btn-secondary fw-bold" data-bs-dismiss="modal">Cancel·lar</button>
+                
+                <form method="post" action="{% url 'esborrar_compte' %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger fw-bold">
+                        Sí, vull esborrar el compte
+                    </button>
+                </form>
             </div>
         </div>
     </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
+</div>
+{% endblock %}

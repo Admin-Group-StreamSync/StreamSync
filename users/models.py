@@ -1,11 +1,10 @@
-from django.contrib.auth.models import User
 from django.db import models
+from django.contrib.auth.models import User
 
-# Create your models here.
+class Profile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    plataformes = models.JSONField(default=list, blank=True)
+    generes = models.JSONField(default=list, blank=True)
 
-class Users(models.Model):
-    objects = None
-    first_name = models.CharField(max_length=100)
-    last_name = models.CharField(max_length=100)
-
-
+    def __str__(self):
+        return f"Perfil de {self.user.username}"
