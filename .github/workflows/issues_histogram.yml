@@ -2,7 +2,7 @@ name: Issues Histogram
 
 on:
   schedule:
-    - cron: "0 3 * * 1"   # Cada lunes a las 3:00 AM
+    - cron: "50 9 * * *"   # Cada lunes a las 3:00 AM
   workflow_dispatch:      # Permite ejecución manual
 
 jobs:
