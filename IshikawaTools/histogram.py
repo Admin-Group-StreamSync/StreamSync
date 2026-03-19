@@ -76,6 +76,8 @@ def count_open_per_week(
 
 # ── Main ───────────────────────────────────────────────────────────────────────
 def main():
+    SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+    img_path = os.path.join(SCRIPT_DIR, 'issues_per_week.png')
     print("Obteniendo issues de GitHub…")
     issues      = fetch_all_issues(OWNER, REPO_NAME)
     issue_dates = parse_dates(issues)
@@ -126,8 +128,8 @@ def main():
     ax.spines[["top", "right"]].set_visible(False)
 
     plt.tight_layout()
-    plt.savefig("issues_per_week.png", dpi=150)
-    print("Gráfica guardada como issues_per_week.png")
+    plt.savefig(img_path)
+    print(f"Gráfico generado exitosamente en: {img_path}")
 
 if __name__ == "__main__":
     main()
