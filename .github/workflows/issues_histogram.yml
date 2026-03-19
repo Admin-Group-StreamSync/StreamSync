@@ -2,20 +2,24 @@ name: Issues Histogram
 
 on:
   schedule:
-    - cron: "0 3 * * 1"   # Every Monday at 3:00 AM
-  workflow_dispatch:      # Allows you to run it manually for testing
+    - cron: "50 9 * * *"   # Cada lunes a las 3:00 AM
+  workflow_dispatch:      # Permite ejecución manual
 
 jobs:
   generate-graph:
     runs-on: ubuntu-latest
 
+    # IMPORTANTE: Necesitamos permiso de escritura para subir el archivo al repo
     permissions:
+      contents: write
       issues: read
-      contents: read
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
+        with:
+          # Esto es necesario para que el push funcione correctamente
+          fetch-depth: 0
 
       - name: Setup Python
         uses: actions/setup-python@v6
@@ -31,10 +35,19 @@ jobs:
         working-directory: ./IshikawaTools
         env:
           HISTOGRAM_TOKEN: ${{ secrets.HISTOGRAM_TOKEN }}
-        run: git pull && python ./histogram.py
+        run: python ./histogram.py
 
-      - name: Upload histogram artifact
-        uses: actions/upload-artifact@v6
-        with:
-          name: issues-per-week-graph
-          path: IshikawaTools/issues_per_week.png
+      - name: Commit and Push changes
+        run: |
+          # Configurar el usuario de Git (puedes usar el bot de GitHub)
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          
+          # Añadir el archivo generado
+          git add IshikawaTools/issues_per_week.png
+          
+          # Hacer el commit solo si hay cambios
+          git commit -m "Update issues histogram graph [skip ci]" || echo "No changes to commit"
+          
+          # Subir los cambios al repositorio
+          git push
