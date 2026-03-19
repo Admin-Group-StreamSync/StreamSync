@@ -28,9 +28,10 @@ jobs:
           pip install requests matplotlib
 
       - name: Run issues histogram script
+        working-directory: ./IshikawaTools
         env:
           HISTOGRAM_TOKEN: ${{ secrets.HISTOGRAM_TOKEN }}
-        run: python histogram.py
+        run: python ./histogram.py
 
       - name: Upload histogram artifact
         uses: actions/upload-artifact@v4
