@@ -40,11 +40,11 @@ jobs:
         env:
           HISTOGRAM_TOKEN: ${{ secrets.HISTOGRAM_TOKEN }}
 
-#      - name: Upload histogram artifact
-#        uses: actions/upload-artifact@v4
-#        with:
-#          name: issues-per-week-graph
-#          path: issues_per_week.png
+      - name: Upload histogram artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: issues-per-week-graph
+          path: issues_per_week.png
 
 
         run: git pull && python ./histogram.py
