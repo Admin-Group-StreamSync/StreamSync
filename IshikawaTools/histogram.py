@@ -126,8 +126,8 @@ def main():
     ax.spines[["top", "right"]].set_visible(False)
 
     plt.tight_layout()
-    plt.savefig("issues_histogram.png", dpi=150)
-    print("Gráfica guardada como issues_histogram.png")
+    plt.savefig("issues_per_week.png", dpi=150)
+    print("Gráfica guardada como issues_per_week.png")
 
 if __name__ == "__main__":
     main()
