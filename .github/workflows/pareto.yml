@@ -1,5 +1,7 @@
 name: Pareto Diagram
 on:
+  schedule:
+    - cron: '0 1 * * *'
   workflow_dispatch:
 
 permissions: 
@@ -23,7 +25,7 @@ jobs:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN}}
       run: |
 
-        gh issue list --state open --json title,body,labels > issues_data.json
+        gh issue list --state open --json title,body,labels > IshikawaTools/issues_data.json
     
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v3
