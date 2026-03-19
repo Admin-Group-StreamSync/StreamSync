@@ -4,7 +4,7 @@ import requests
 from datetime import datetime
 import matplotlib.pyplot as plt
 from matplotlib.ticker import MaxNLocator
-
+import os
 # ── Configuración ──────────────────────────────────────────────────────────────
 REPO   = "Admin-Group-StreamSync/StreamSync"
 TOKEN  = config("HISTOGRAM_TOKEN")
