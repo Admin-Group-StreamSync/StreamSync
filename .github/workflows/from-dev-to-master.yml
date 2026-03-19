@@ -14,7 +14,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-
+          with:
+            fetch-depth: 0
       - name: Merge develop into master
         run: |
           git config --global user.name "github-actions"
@@ -24,4 +25,3 @@ jobs:
           git checkout master
           git merge origin/develop
           git push origin master
-  
