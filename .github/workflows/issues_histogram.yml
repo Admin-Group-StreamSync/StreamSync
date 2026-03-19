@@ -1,9 +1,6 @@
 name: Issues Histogram
 
 on:
-  push:
-    branches: [develop]
-
   schedule:
     - cron: "0 3 * * 1"   # every monday at 3:00
   workflow_dispatch:
@@ -13,44 +10,30 @@ jobs:
     runs-on: ubuntu-latest
 
     permissions:
-      contents: write
+      issues: read
+      contents: read
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-        with:
-          ref: ${{ github.head_ref }}
-          # Value already defaults to true, but `persist-credentials` is required to push new commits to the repository.
-          persist-credentials: true
 
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.12"
+          python-version: "3.11"
 
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install requests matplotlib
-          pip install matplotlib requests python-decouple
 
       - name: Run issues histogram script
-        working-directory: ./IshikawaTools
-
         env:
           HISTOGRAM_TOKEN: ${{ secrets.HISTOGRAM_TOKEN }}
+        run: python histogram.py
 
       - name: Upload histogram artifact
         uses: actions/upload-artifact@v4
         with:
           name: issues-per-week-graph
           path: issues_per_week.png
-
-
-        run: git pull && python ./histogram.py
-
-      - name: Commit and Push changes
-        uses: stefanzweifel/git-auto-commit-action@v7
-        with:
-          commit_message: "chore(run-chart): Update generated chart image"
-          commit_user_name: DenisLazarian [Github Actions]
