@@ -4,4 +4,4 @@ def home(request):
     return render(request, "pages/home.html")
 
 def prove(request):
-    print("Hello")
+    print("Hello") # comment
