@@ -37,9 +37,9 @@ jobs:
         pip install pandas matplotlib
     - name: get graphics
       run: |
-        python chart.py
+        python IshikawaTools/chart.py
     - name: Upload chart
       uses: actions/upload-artifact@v4
       with:
         name: pareto-chart
-        path: pareto_report.png
+        path: IshikawaTools/pareto_report.png
