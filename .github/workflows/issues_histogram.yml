@@ -28,11 +28,13 @@ jobs:
           pip install requests matplotlib python-decouple
 
       - name: Run issues histogram script
-        working-directory: ./IshikawaTools
         env:
           HISTOGRAM_TOKEN: ${{ secrets.HISTOGRAM_TOKEN }}
-        run: git pull && python ./histogram.py
-
+        run: |
+          cd IshikawaTools
+          python histogram.py
+      - name: Check if file exists
+        run: ls -R IshikawaTools/
       - name: Upload histogram artifact
         uses: actions/upload-artifact@v6
         with:
