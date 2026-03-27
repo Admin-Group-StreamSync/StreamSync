@@ -1,8 +1,10 @@
 name: Run Chart Action
 
 on:  
-  schedule:
-    - cron: '0 0 * * 2'
+  # schedule:
+  #   - cron: '0 0 * * 2'
+  push:
+    branches: master
   workflow_dispatch: 
   #push:
   #  branches: master
@@ -43,9 +45,15 @@ jobs:
         
         run: git pull && python ./runchart_prova.py
 
-      - name: Commit and Push changes
-        uses: stefanzweifel/git-auto-commit-action@v7
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
         with:
-          commit_message: "chore(run-chart): Update generated chart image"
-          commit_user_name: DenisLazarian [Github Actions]
+          name: ishikawa-chart
+          path: IshikawaTools/*.png
+          
+      # - name: Commit and Push changes
+      #   uses: stefanzweifel/git-auto-commit-action@v7
+      #   with:
+      #     commit_message: "chore(run-chart): Update generated chart image"
+      #     commit_user_name: DenisLazarian [Github Actions]
   
