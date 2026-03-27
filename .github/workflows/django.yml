@@ -5,7 +5,7 @@ on:
    # branches: [ "master" ]
   #pull_request:
     #branches: [ "master" ]
-    branches: features/27032026-integrate-docker-configs
+    branches: ["features/27032026-integrate-docker-configs"]
 
 jobs:
   build:
