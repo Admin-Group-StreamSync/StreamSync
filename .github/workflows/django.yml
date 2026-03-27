@@ -2,7 +2,7 @@ name: Django CI
 
 on:
   push:
-    branches: ["features/27032026-integrate-docker-configs"]
+    branches: ["master", "dev", "features/27032026-integrate-docker-configs"]
     #branches: ["master"]
   workflow_dispatch:
 
@@ -34,7 +34,7 @@ jobs:
     - name: Docker build
       run: |
          docker build -t streamsync:latest .
-         docker save myapp:latest -o myapp.tar
+         docker save streamsync:latest -o StreamSync.tar
 
     - name: Upload Docker image as an artifact
       uses: actions/upload-artifact@v4
