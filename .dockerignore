@@ -1,0 +1,10 @@
+# Files that Docker should ignore when building the image
+# (keeps the image small and avoids copying unnecessary files)
+
+.venv/
+.git/
+__pycache__/
+*.pyc
+db.sqlite3
+.DS_Store
+.idea/
