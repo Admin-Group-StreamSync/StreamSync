@@ -1,10 +1,8 @@
 name: Run Chart Action
 
 on:  
-  # schedule:
-  #   - cron: '0 0 * * 2'
-  push:
-    branches: master
+  schedule:
+    - cron: '0 0 * * 2'
   workflow_dispatch: 
   #push:
   #  branches: master
@@ -19,7 +17,7 @@ jobs:
       issues: read
   
     steps:
-      - name: Cechout repo
+      - name: Ceckhout repo
         uses: actions/checkout@v5
         with:
           ref: ${{ github.head_ref }}
@@ -49,7 +47,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: ishikawa-chart
-          path: IshikawaTools/*.png
+          path: IshikawaTools/issue_runchart.png
           
       # - name: Commit and Push changes
       #   uses: stefanzweifel/git-auto-commit-action@v7
