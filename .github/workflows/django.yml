@@ -33,7 +33,7 @@ jobs:
 
     - name: Docker build
       run: |
-         docker build -t StreamSync:latest .
+         docker build -t streamsync:latest .
          docker save myapp:latest -o myapp.tar
          
     - name: Upload Docker image as an artifact
