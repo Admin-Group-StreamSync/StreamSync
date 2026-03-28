@@ -30,12 +30,28 @@ jobs:
       run: |
         python3 -m pip install --upgrade pip
         pip install -r requirements.txt
+        
 
-    - name: Docker build
+    - name: Log in to Docker Hub
+      uses: docker/login-action@v3
+      with:
+        username: ${{ vars.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_TOKEN }}
+
+
+    - name: Docker build and push
       run: |
-         docker build -t streamsync:latest .
-         docker save streamsync:latest -o StreamSync.tar
+         docker build -t ${{ secrets.DOCKER_USERNAME }}/streamsync-group-c:latest .
+         docker save ${{ secrets.DOCKER_USERNAME }}/streamsync-group-c:latest -o StreamSync.tar
+         
+         docker push ${{ secrets.DOCKER_USERNAME }}/streamsync-group-c:latest 
+        
 
+      # Para Usar la imagen:
+      #   - Extraer del artifact.
+      #   - Usar los siguiente comando:
+#              docker load -i StreamSync.tar # Para cargar la imagen en local
+             # docker run -p 8000:8000 StreamSync:latest
     - name: Upload Docker image as an artifact
       uses: actions/upload-artifact@v4
       with:
