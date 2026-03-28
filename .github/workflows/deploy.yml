@@ -2,32 +2,36 @@ name: Django CD
 
 on:
   push:
-    branches: ["master"]
+    branches: ["master", "dev", "features/28032026-auto-deploy-configs"]
 
 jobs:
-  run-django:
-    runs-on: self-hosted
-
+  deploy:
+    runs-on: ubuntu-latest
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
+      - name: Checkout Code
+        uses: actions/checkout@v4 # Fase de Code
 
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.12'  # your Python version
+      # 1. FASE DE RELEASE: Construir y subir el artefacto al repositorio
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ vars.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_TOKEN }}
 
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install -r requirements.txt
+      - name: Build and Push Docker image
+        run: |
+          # Se genera una imagen reusable para optimizar el rendimiento
+          docker build -t ${{ vars.DOCKER_USERNAME }}/mi-app:latest .
+          docker push ${{ vars.DOCKER_USERNAME }}/mi-app:latest
 
-    - name: Run Django server in background
-      run: |
-        mkdir -p logs
-        nohup python manage.py runserver 0.0.0.0:8000 > logs/django.log 2>&1 &
-        echo "Django server started in background. Logs: logs/django.log"
 
-    - name: Show server logs (optional)
-      run: tail -f logs/django.log
+      # Requiere la verison PRO de render para esto: Hay que deplegar manualmente.
+
+      # 2. FASE DE DEPLOY: Hacer el software disponible en producción
+      # Se utiliza un webhook para disparar el despliegue automático en Render
+#      - name: Trigger Render Deployment
+#        run: |
+#          echo "Notificando a Render para iniciar el despliegue..."
+#          curl -f ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
+
           
