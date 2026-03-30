@@ -1,11 +1,16 @@
 name: Django CD
 
 on:
-  push:
-    branches: ["master", "dev", "features/28032026-auto-deploy-configs"]
+  workflow_run:
+    workflows: [ "Build" ]
+    types:
+      - completed
+#  push:
+#    branches: ["master", "dev", "features/28032026-auto-deploy-configs"]
 
 jobs:
   deploy:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
