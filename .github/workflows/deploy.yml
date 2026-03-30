@@ -3,8 +3,7 @@ name: Django CD
 on:
   workflow_run:
     workflows: [ "Django CI" ]
-    types:
-      - completed
+    types: [completed]
 #  push:
 #    branches: ["master", "dev", "features/28032026-auto-deploy-configs"]
 
