@@ -27,7 +27,7 @@ services:
     image: ${IMAGE_TAG}           # imatge construida por el CD y penjada a ghcr.io
     restart: always
     env_file:
-      - .env.prod                 # mai comitejar aquest fitcher
+      - .env.prod
     environment:
       DATABASE_URL: postgresql://${DB_USER}:${DB_PASSWORD}@db:5432/${DB_NAME}
       DJANGO_SETTINGS_MODULE: streamsync.settings_production
