@@ -34,22 +34,22 @@ jobs:
       - name: black — formato de código
         # Falla si hi ha algun fitxer que black reformatejaria
         run: black --check --diff .
-      - name: isort — orden de imports
+      - name: isort — ordre de imports
         run: isort --check-only --diff .
 
-      - name: flake8 — errores de sintaxis y estilo
+      - name: flake8 — errors de sintaxis y estil
         run: |
           flake8 . \
             --max-line-length=119 \
             --exclude=migrations,__pycache__,.venv \
             --statistics
 
-      - name: mypy — comprobación de tipos
+      - name: mypy — comprobacio de tipos
         env:
           DJANGO_SETTINGS_MODULE: streamsync.settings_test
           SECRET_KEY: ci-lint-dummy-key
         run: |
-          pip install -r requirements.txt   # mypy necesita los stubs del proyecto
+          pip install -r requirements.txt   
           mypy . \
             --ignore-missing-imports \
             --exclude migrations \
@@ -68,20 +68,45 @@ jobs:
           python-version: ${{ env.PYTHON_VERSION }}
           cache: pip
 
-      - name: Instalar herramientas de seguridad
+      - name: Instalar eines de seguretat
         run: pip install safety bandit pip-audit
 
-      - name: safety — vulnerabilidades en dependencias
+      - name: safety — vulnerabilitats en dependencies
         # comproba requirements.txt contra la base de dades de CVEs de Safety
         run: safety check -r requirements.txt --full-report
 
-      - name: pip-audit — auditoría de paquetes instalados
+      - name: pip-audit — auditoría de paquets instalats
         run: pip-audit -r requirements.txt
 
-      - name: bandit — análisis estático de seguridad en el código
+      - name: bandit — análisis estatic de seguretat en el códig
         run: |
           bandit -r . \
             --exclude .venv,migrations,tests \
             --severity-level medium \
             --confidence-level medium \
             -f txt
+  # Build Docker (verifica que l'imatge es construeix correctament en aquesta rama)
+  docker-build:
+    name: Docker build (validación)
+    runs-on: ubuntu-latest
+    # Pot corre en paralel amb lint i security
+    needs: []
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configurar Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build imagen (sin push)
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          target: runtime
+          push: false               # CI solo valida, no publica
+          tags: streamsync:ci-validate
+          # Caché de capes entre execucions del CI (accelera builds)
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          build-args: |
+            SECRET_KEY=ci-build-dummy-key
