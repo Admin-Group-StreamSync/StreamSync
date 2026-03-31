@@ -185,7 +185,17 @@ jobs:
                       --env="DJANGO_SETTINGS_MODULE=streamsync.settings_production" \
                       --command -- python manage.py migrate --check
                     kubectl delete pod django-check --namespace=staging
-
+  #Aprobació manual
+  approval-gate:
+    name: Manual approval gate
+    runs-on: ubuntu-latest
+    needs: deploy-staging
+    # Requiere configurar un reviewer en:
+    # GitHub → Settings → Environments → production-gate
+    environment: production-gate
+    steps:
+      - name: Aprobación recibida
+        run: echo " Aprobat — iniciant deploy a prod."
   #CD Denis
   #run-django:
   #  runs-on: self-hosted
