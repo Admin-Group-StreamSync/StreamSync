@@ -27,7 +27,7 @@ tests/
 .gitignore
 
 docker-compose*.yml
-Dockerfile*
+api/Dockerfile
 .dockerignore
 
 .idea/

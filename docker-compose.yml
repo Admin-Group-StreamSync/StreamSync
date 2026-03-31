@@ -1,0 +1,46 @@
+version: '3.9'
+
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: movies_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-moviesdb}
+      POSTGRES_USER: ${POSTGRES_USER:-moviesuser}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-moviespassword}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./db/init:/docker-entrypoint-initdb.d:ro
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-moviesuser} -d ${POSTGRES_DB:-moviesdb}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  api:
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    container_name: movies_api
+    restart: unless-stopped
+    environment:
+      NODE_ENV: ${NODE_ENV:-production}
+      PORT: 8080
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_NAME: ${POSTGRES_DB:-moviesdb}
+      DB_USER: ${POSTGRES_USER:-moviesuser}
+      DB_PASSWORD: ${POSTGRES_PASSWORD:-moviespassword}
+      JWT_SECRET: ${JWT_SECRET:-changeme_supersecret_jwt}
+      ADMIN_API_KEY: ${ADMIN_API_KEY:-admin-default-key}
+    ports:
+      - "8080:8080"
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  postgres_data:

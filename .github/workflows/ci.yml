@@ -1,36 +1,87 @@
-name: CI
+name: CI – Validate
 
 on:
   push:
-    branches: [main]
+    branches: ["**"]
   pull_request:
-    branches: [main]
+    branches: [main, develop]
 
 jobs:
-  ci:
+  #  Lint
+  lint:
+    name: Lint
     runs-on: ubuntu-latest
-
+    defaults:
+      run:
+        working-directory: api
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      # Ajusta la versión de Python según vuestro proyecto
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
-          python-version: "3.11"
+          node-version: "20"
+          cache: "npm"
+          cache-dependency-path: api/package-lock.json
 
       - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
+        run: npm ci
 
-      - name: Lint (flake8)
-        run: |
-          pip install flake8
-          flake8 . --max-line-length=120
+      - name: Run ESLint
+        run: npm run lint
 
-      - name: Run tests (pytest)
-        run: |
-          pip install pytest
-          pytest
+  # Unit & integration tests
+  test:
+    name: Test (Node ${{ matrix.node }})
+    runs-on: ubuntu-latest
+    needs: lint
+    strategy:
+      matrix:
+        node: ["18", "20"]
+    defaults:
+      run:
+        working-directory: api
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js ${{ matrix.node }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+          cache: "npm"
+          cache-dependency-path: api/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run tests with coverage
+        run: npm test
+        env:
+          NODE_ENV: test
+          JWT_SECRET: ci-test-secret
+
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v4
+        if: matrix.node == '20'
+        with:
+          name: coverage-report
+          path: api/coverage/
+
+  # Docker build check (no push)
+  docker-build:
+    name: Docker build check
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build API image (no push)
+        uses: docker/build-push-action@v5
+        with:
+          context: ./api
+          file: ./api/Dockerfile
+          push: false
+          tags: movies-api:ci-${{ github.sha }}
