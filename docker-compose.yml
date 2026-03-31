@@ -1,0 +1,63 @@
+# docker-compose.yml — Entorn de desarrollament local
+# Us: docker compose up --build
+
+services:
+
+  # Base de dades
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: streamsync
+      POSTGRES_PASSWORD: streamsync
+      POSTGRES_DB: streamsync_dev
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"                   # acces directe desde el host (ej: DBeaver)
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U streamsync"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Aplicacio Django
+  web:
+    build:
+      context: .
+      target: runtime                 # fa servir l'etapa runtime del Dockerfile multistage
+    restart: unless-stopped
+    env_file:
+      - .env.dev                      # variables d'entorn de desarrollament
+    environment:
+      DATABASE_URL: postgresql://streamsync:streamsync@db:5432/streamsync_dev
+      DJANGO_SETTINGS_MODULE: streamsync.settings_dev
+    volumes:
+      - .:/app                        # els cambis en códig es reflecteixen a l'instant
+      - static_volume:/app/staticfiles
+      - media_volume:/app/mediafiles
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+    command: >
+      sh -c "python manage.py runserver 0.0.0.0:8000"
+
+  # Nginx (serverix estàtics a dev, igual que a prod)
+  nginx:
+    image: nginx:1.25-alpine
+    restart: unless-stopped
+    volumes:
+      - ./docker/nginx/dev.conf:/etc/nginx/conf.d/default.conf:ro
+      - static_volume:/app/staticfiles:ro
+      - media_volume:/app/mediafiles:ro
+    ports:
+      - "80:80"
+    depends_on:
+      - web
+
+volumes:
+  postgres_data:
+  static_volume:
+  media_volume:
