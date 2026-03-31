@@ -28,7 +28,7 @@ services:
       target: runtime                 # fa servir l'etapa runtime del Dockerfile multistage
     restart: unless-stopped
     env_file:
-      - .env.dev                      # variables d'entorn de desarrollament
+      - .env.dev.dev                      # variables d'entorn de desarrollament
     environment:
       DATABASE_URL: postgresql://streamsync:streamsync@db:5432/streamsync_dev
       DJANGO_SETTINGS_MODULE: streamsync.settings_dev

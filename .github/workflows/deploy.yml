@@ -133,7 +133,7 @@ jobs:
           build-args: |
             SECRET_KEY=build-time-dummy-key
 
-  # Deploy i Staging
+  # Deploy → Staging
   deploy-staging:
     name: Deploy → staging
     runs-on: ubuntu-latest
@@ -141,53 +141,60 @@ jobs:
     environment: staging
 
     steps:
-      - uses: actions/checkout@v4
-      - name: Configurar kubectl (staging)
-        uses: azure/k8s-set-context@v4
+      - name: Deploy a staging via SSH
+        uses: appleboy/ssh-action@v1.0.3
         with:
-          method: 'kubeconfig'
-          kubeconfig: ${{ secrets.KUBE_CONFIG_STAGING }}
+          host: ${{ secrets.SSH_HOST_STAGING }}
+          username: ${{ secrets.SSH_USER_STAGING }}
+          key: ${{ secrets.SSH_PRIVATE_KEY_STAGING }}
+          script: |
+            set -e
+            cd /app/streamsync
 
-      #Corre manage.py migrate fent servir la nova imatge, avans del deploy
-      - name: Migrations django a staging
+          # Escriu el fitxer .env.prod amb els valors d'staging
+            cat > .env.prod <<EOF
+            SECRET_KEY=${{ secrets.SECRET_KEY_STAGING }}
+            DATABASE_URL=postgresql://${{ secrets.DB_USER_STAGING }}:${{ secrets.DB_PASSWORD_STAGING }}@db:5432/${{ secrets.DB_NAME_STAGING }}
+            DJANGO_SETTINGS_MODULE=streamsync.settings_production
+            ALLOWED_HOSTS=staging.streamsync.internal,localhost
+            DEBUG=False
+            EOF
+ 
+          # Variables d'entorn per docker-compose.prod.yml
+            export IMAGE_TAG=${{ needs.docker-build-push.outputs.image_tag }}
+            export DB_USER=${{ secrets.DB_USER_STAGING }}
+            export DB_PASSWORD=${{ secrets.DB_PASSWORD_STAGING }}
+            export DB_NAME=${{ secrets.DB_NAME_STAGING }}
+ 
+          # Login en ghcr.io desde el servidor
+            echo "${{ secrets.GHCR_TOKEN }}" | docker login ghcr.io \
+              -u ${{ github.actor }} --password-stdin
+ 
+          # Descarga la nova imatge 
+            docker compose -f docker-compose.prod.yml pull web
+ 
+          # Aplica migracions abans de redirigir el trafic
+            docker compose -f docker-compose.prod.yml run --rm web \
+              python manage.py migrate --noinput
+ 
+          # Verifica que no quedin migracions pendents
+            docker compose -f docker-compose.prod.yml run --rm web \
+              python manage.py migrate --check
+ 
+          # Aixeca / actualiza els contenedors sense downtime
+            docker compose -f docker-compose.prod.yml up -d --remove-orphans
+ 
+          # Elimina imatges antigues per no plenar el disc
+            docker image prune -f
+      - name: Smoke tests (staging)
         run: |
-          kubectl run django-migrate \
-                      --image=${{ needs.docker-build-push.outputs.image_tag }} \
-                      --restart=Never \
-                      --namespace=staging \
-                      --env="DATABASE_URL=${{ secrets.DATABASE_URL_STAGING }}" \
-                      --env="SECRET_KEY=${{ secrets.SECRET_KEY_STAGING }}" \
-                      --env="DJANGO_SETTINGS_MODULE=streamsync.settings_production" \
-                      --command -- python manage.py migrate --noinput
-                    kubectl wait pod/django-migrate \
-                      --for=condition=Ready \
-                      --namespace=staging \
-                      --timeout=120s
-                    kubectl logs pod/django-migrate --namespace=staging
-                    kubectl delete pod django-migrate --namespace=staging
-      - name: Rolling deploy a staging
-        run: |
-          kubectl set image deployment/streamsync-api \
-            api=${{ needs.docker-build-push.outputs.image_tag }} \
-            --namespace=staging
-          kubectl rollout status deployment/streamsync-api \
-            --namespace=staging \
-          --timeout=180s
-      - name: Smoke test
-        run: |
-          sleep 10
-          curl --fail https://staging.streamsync.internal/health/
-                    curl --fail "https://staging.streamsync.internal/api/v1/movies/?limit=1"
-                    # Verifica que no quedan migraciones pendientes en staging
-                    kubectl run django-check \
-                      --image=${{ needs.docker-build-push.outputs.image_tag }} \
-                      --restart=Never \
-                      --namespace=staging \
-                      --env="DATABASE_URL=${{ secrets.DATABASE_URL_STAGING }}" \
-                      --env="SECRET_KEY=${{ secrets.SECRET_KEY_STAGING }}" \
-                      --env="DJANGO_SETTINGS_MODULE=streamsync.settings_production" \
-                      --command -- python manage.py migrate --check
-                    kubectl delete pod django-check --namespace=staging
+          sleep 15
+          curl --fail --retry 3 --retry-delay 5 \
+            https://staging.streamsync.internal/health/
+          curl --fail \
+            "https://staging.streamsync.internal/api/v1/movies/?limit=1" \
+            -H "X-API-KEY: ${{ secrets.API_KEY_STAGING }}"
+
   #Aprobació manual
   approval-gate:
     name: Manual approval gate
@@ -199,58 +206,81 @@ jobs:
     steps:
       - name: Aprobación recibida
         run: echo " Aprobat — iniciant deploy a prod."
-  #Deploy a Production
+  #Deploy → Production
   deploy-production:
     name: Deploy → production
     runs-on: ubuntu-latest
-    needs: [ approval-gate, docker-build-push ]
+    needs: [approval-gate, docker-build-push]
     environment: production
 
     steps:
-      - uses: actions/checkout@v4
-
-      - name: Configurar kubectl (prod)
-        uses: azure/k8s-set-context@v4
+      - name: Deploy a producción via SSH
+        uses: appleboy/ssh-action@v1.0.3
         with:
-          method: 'kubeconfig'
-          kubeconfig: ${{ secrets.KUBE_CONFIG_PROD }}
+          host: ${{ secrets.SSH_HOST_PROD }}
+          username: ${{ secrets.SSH_USER_PROD }}
+          key: ${{ secrets.SSH_PRIVATE_KEY_PROD }}
+          script: |
+            set -e
+            cd /app/streamsync
 
-      - name: Migracions a Django prod
-        run: |
-          kubectl run django-migrate \
-            --image=${{ needs.docker-build-push.outputs.image_tag }} \
-            --restart=Never \
-            --namespace=production \
-            --env="DATABASE_URL=${{ secrets.DATABASE_URL_PROD }}" \
-            --env="SECRET_KEY=${{ secrets.SECRET_KEY_PROD }}" \
-            --env="DJANGO_SETTINGS_MODULE=streamsync.settings_production" \
-            --command -- python manage.py migrate --noinput
-          kubectl wait pod/django-migrate \
-            --for=condition=Ready \
-            --namespace=production \
-            --timeout=180s
-          kubectl logs pod/django-migrate --namespace=production
-          kubectl delete pod django-migrate --namespace=production
+          # Guarda el tag actual per poder fer rollback si algo falla
+            PREVIOUS_TAG=$(docker compose -f docker-compose.prod.yml \
+              ps -q web 2>/dev/null \
+              | xargs docker inspect --format='{{.Config.Image}}' 2>/dev/null \
+              | head -1 || echo "")
+ 
+          # Escriu el fitxer .env.prod amb els valors de prod
+            cat > .env.prod <<EOF
+            SECRET_KEY=${{ secrets.SECRET_KEY_PROD }}
+            DATABASE_URL=postgresql://${{ secrets.DB_USER_PROD }}:${{ secrets.DB_PASSWORD_PROD }}@db:5432/${{ secrets.DB_NAME_PROD }}
+            DJANGO_SETTINGS_MODULE=streamsync.settings_production
+            ALLOWED_HOSTS=streamsync.com,www.streamsync.com
+            DEBUG=False
+            EOF
+ 
+            # Variables d'entorn per docker-compose.prod.yml
+            export IMAGE_TAG=${{ needs.docker-build-push.outputs.image_tag }}
+            export DB_USER=${{ secrets.DB_USER_PROD }}
+            export DB_PASSWORD=${{ secrets.DB_PASSWORD_PROD }}
+            export DB_NAME=${{ secrets.DB_NAME_PROD }}
+ 
+            # Login en ghcr.io desde el servidor
+            echo "${{ secrets.GHCR_TOKEN }}" | docker login ghcr.io \
+              -u ${{ github.actor }} --password-stdin
+ 
+            # Descarga la nova imatge
+            docker compose -f docker-compose.prod.yml pull web
+ 
+            # Aplica migracions avans de redirigir el trafic
+            docker compose -f docker-compose.prod.yml run --rm web \
+              python manage.py migrate --noinput
+ 
+            # Aixeca la nova versió
+            docker compose -f docker-compose.prod.yml up -d --remove-orphans
+ 
+            # Django check intern post-deploy
+            sleep 10
+            docker compose -f docker-compose.prod.yml exec -T web \
+              python manage.py check --deploy || {
+                echo " Django check fallido — fent rollback a $PREVIOUS_TAG ..."
+                export IMAGE_TAG=$PREVIOUS_TAG
+                docker compose -f docker-compose.prod.yml up -d
+                exit 1
+              }
+ 
+            # Neteja imatges antigues
+            docker image prune -f
 
-      - name: Rolling deploy a prod
-        run: |
-          kubectl set image deployment/streamsync-api \
-            api=${{ needs.docker-build-push.outputs.image_tag }} \
-            --namespace=production
-          kubectl rollout status deployment/streamsync-api \
-            --namespace=production \
-            --timeout=300s
-      - name: Health checks
+      - name: Health checks externs (prod)
         run: |
           sleep 15
-          curl --fail https://streamsync.com/health/
-          curl --fail "https://streamsync.com/api/v1/movies/?limit=1"
+          curl --fail --retry 3 --retry-delay 5 \
+            https://streamsync.com/health/
+          curl --fail \
+            "https://streamsync.com/api/v1/movies/?limit=1" \
+            -H "X-API-KEY: ${{ secrets.API_KEY_PROD }}"
 
-      - name: Rollback automatic si fallada
-        if: failure()
-        run: |
-          kubectl rollout undo deployment/streamsync-api --namespace=production
-          echo "::error::Deploy a prod fallat — revertint a la versio anterior."
   #Notificació post-deploy
   notify-deploy:
     name: Notificació post-deploy

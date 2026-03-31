@@ -4,6 +4,7 @@ version = "0.1.0"
 description = "Add your description here"
 requires-python = ">=3.14"
 dependencies = [
+    "django-environ>=0.13.0",
     "matplotlib>=3.10.8",
     "pandas>=3.0.1",
 ]
