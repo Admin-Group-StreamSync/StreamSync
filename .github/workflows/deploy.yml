@@ -11,30 +11,50 @@ env:
     PYTHON_VERSION: "3.11"
 
 jobs:
+  # Lint & tipos
+  lint-and-types:
+      name: Lint & types
+      runs-on: ubuntu-latest
 
-  run-django:
-    runs-on: self-hosted
+      steps:
+        - uses: actions/checkout@v4
 
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
+        - name: Set up Python ${{ env.PYTHON_VERSION }}
+          uses: actions/setup-python@v5
+          with:
+            python-version: ${{ env.PYTHON_VERSION }}
+            cache: pip
+        - name: Install dependencies
+          run: pip install -r requirements.txt
+        - name: flake8 — estilo y errores de sintaxis
+          run: flake8 . --max-line-length=119 --exclude=migrations,__pycache__
+        - name: mypy — comprobación de tipos
+          env:
+            DJANGO_SETTINGS_MODULE: streamsync.settings_test
+          run: mypy . --ignore-missing-imports --exclude migrations
+  #CD Denis
+  #run-django:
+  #  runs-on: self-hosted
+  #
+  # steps:
+  #  - name: Checkout code
+  #   uses: actions/checkout@v3
 
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.12'  # your Python version
+  #  - name: Set up Python
+  #    uses: actions/setup-python@v4
+  #    with:
+  #      python-version: '3.12'  # your Python version
 
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install -r requirements.txt
+  #  - name: Install dependencies
+  #    run: |
+  #      python -m pip install --upgrade pip
+  #      pip install -r requirements.txt
 
-    - name: Run Django server in background
-      run: |
-        mkdir -p logs
-        nohup python manage.py runserver 0.0.0.0:8000 > logs/django.log 2>&1 &
-        echo "Django server started in background. Logs: logs/django.log"
+  #  - name: Run Django server in background
+  #    run: |
+  #      mkdir -p logs
+  #      nohup python manage.py runserver 0.0.0.0:8000 > logs/django.log 2>&1 &
+  #      echo "Django server started in background. Logs: logs/django.log"
 
-    - name: Show server logs (optional)
-      run: tail -f logs/django.log
-          
+  #  - name: Show server logs (optional)
+  #    run: tail -f logs/django.log
