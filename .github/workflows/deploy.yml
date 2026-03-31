@@ -63,8 +63,24 @@ jobs:
               --cov-omit="*/migrations/*,*/settings*,manage.py" \
               --cov-report=term-missing \
               --cov-fail-under=80
-          
+  #Tests d'integració
+  integration-tests:
+    name: Integration tests
+    runs-on: ubuntu-latest
+    needs: unit-tests
 
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Aixecar l'stack de CI amb Docker Compose
+        run: |
+          docker compose -f docker-compose.django.yml up \
+            --build \
+            --abort-on-container-exit \
+            --exit-code-from web
+      - name: Netejar contenidors de CI
+        if: always()
+        run: docker compose -f docker-compose.django.yml down -v
   #CD Denis
   #run-django:
   #  runs-on: self-hosted
