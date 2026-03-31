@@ -15,7 +15,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  #Lint i format
+  #Lint i format (falla is hi han errors d'estil o de tipologia)
   lint:
     name: Lint & format
     runs-on: ubuntu-latest
@@ -54,3 +54,34 @@ jobs:
             --ignore-missing-imports \
             --exclude migrations \
             --show-error-codes
+  #seguretat (Detecta dependencies vulnerables i males practiques en el codig)
+  security:
+    name: Seguridad
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python ${{ env.PYTHON_VERSION }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+
+      - name: Instalar herramientas de seguridad
+        run: pip install safety bandit pip-audit
+
+      - name: safety — vulnerabilidades en dependencias
+        # comproba requirements.txt contra la base de dades de CVEs de Safety
+        run: safety check -r requirements.txt --full-report
+
+      - name: pip-audit — auditoría de paquetes instalados
+        run: pip-audit -r requirements.txt
+
+      - name: bandit — análisis estático de seguridad en el código
+        run: |
+          bandit -r . \
+            --exclude .venv,migrations,tests \
+            --severity-level medium \
+            --confidence-level medium \
+            -f txt
