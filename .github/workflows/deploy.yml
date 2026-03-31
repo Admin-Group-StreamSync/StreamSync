@@ -86,50 +86,53 @@ jobs:
     name: Docker build & push
     runs-on: ubuntu-latest
     needs: integration-tests
-    # sol fa push a push a main
-    if: github.event_name == 'push' && github.ref == 'refs/head/main'
+    # Sol fa push en push a main, no en PRs
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     permissions:
       contents: read
       packages: write
     outputs:
-      image_tag: ${{ steps.meta.outputs.tag }}
-      image_digst: ${{ steps.push.outputs.digest }}
+      image_tag: ${{ steps.meta.outputs.tags }}
+      image_digest: ${{ steps.push.outputs.digest }}
+
     steps:
       - uses: actions/checkout@v4
 
-      #habilita buildkit per builds multietapes + eficients
-      - name: Configurar Docker Buildx
+      # Habilita BuildKit pel builds multistage mes eficients
+      - name: Configura Docker Buildx
         uses: docker/setup-buildx-action@v3
 
       - name: Log in al registry (ghcr.io)
-          uses: docker/login-action@v3
-          with:
-            registry: ${{ env.REGISTRY }}
-            username: ${{ github.actor }}
-            password: ${{ secrets.GITHUB_TOKEN }}
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Extreure metadata (tag = git SHA)
-          id: meta
-          uses: docker/metadata-action@v5
-          with:
-            images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-            tags: |
-              type=sha,format=long
-              type=raw,value=latest,enable=true
-      - name: Build y push imagen Docker
-          id: push
-          uses: docker/build-push-action@v5
-          with:
-            context: .
-            target: runtime
-            push: true
-            tags: ${{ steps.meta.outputs.tags }}
-            labels: ${{ steps.meta.outputs.labels }}
-            # Caché de capas entre builds (acelera builds sucesivos)
-            cache-from: type=gha
-            cache-to: type=gha,mode=max
-            build-args: |
-              SECRET_KEY=build-time-dummy-key
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=sha,format=long
+            type=raw,value=latest,enable=true
+
+      - name: Build y push imatge Docker
+        id: push
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          target: runtime
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          # Caché de capes entre builds (accelera builds successius)
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          build-args: |
+            SECRET_KEY=build-time-dummy-key
+
   # Deploy i Staging
   deploy-staging:
     name: Deploy → staging

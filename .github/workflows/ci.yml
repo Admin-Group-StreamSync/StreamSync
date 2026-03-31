@@ -257,3 +257,43 @@ jobs:
           SECRET_KEY: ci-secret-key-not-for-production
         # Comproba que no hi han migracions aplicades a mesures o conflictes
         run: python manage.py migrate --check
+
+  # Resum del CI (agregue tots els jobs anteriors)
+  ci-ok:
+    name: CI OK — listo para merge
+    runs-on: ubuntu-latest
+    # S'executa sempre, tant si els jobs anteriors van passar como si fallessen
+    if: always()
+    needs:
+      - lint
+      - security
+      - docker-build
+      - unit-tests
+      - integration-tests
+      - migration-check
+
+    steps:
+      - name: Evaluar resultat global del CI
+        run: |
+          echo "Resultados:"
+          echo "  lint:               ${{ needs.lint.result }}"
+          echo "  security:           ${{ needs.security.result }}"
+          echo "  docker-build:       ${{ needs.docker-build.result }}"
+          echo "  unit-tests:         ${{ needs.unit-tests.result }}"
+          echo "  integration-tests:  ${{ needs.integration-tests.result }}"
+          echo "  migration-check:    ${{ needs.migration-check.result }}"
+
+        # Falla si qualsevol job precedent no es 'success'
+          if [[ \
+            "${{ needs.lint.result }}"              != "success" || \
+            "${{ needs.security.result }}"          != "success" || \
+            "${{ needs.docker-build.result }}"      != "success" || \
+            "${{ needs.unit-tests.result }}"        != "success" || \
+            "${{ needs.integration-tests.result }}" != "success" || \
+            "${{ needs.migration-check.result }}"   != "success" \
+          ]]; then
+            echo "::error::El CI ha fallat. Revisa els jobs anteriors abans de mergear."
+            exit 1
+          fi
+ 
+          echo " tots els checks han pasat. El PR está llest per review."
