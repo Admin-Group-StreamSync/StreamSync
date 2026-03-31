@@ -2,9 +2,16 @@ name: Django CD
 
 on:
   push:
-    branches: ["master"]
+    branches: [main]
+  pull_request: 
+    branches: [main]
+env:
+    REGISTRY: ghcr.io
+    IMAGE_NAME: ${{ github.repository }}
+    PYTHON_VERSION: "3.11"
 
 jobs:
+
   run-django:
     runs-on: self-hosted
 
