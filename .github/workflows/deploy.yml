@@ -130,6 +130,61 @@ jobs:
             cache-to: type=gha,mode=max
             build-args: |
               SECRET_KEY=build-time-dummy-key
+  # Deploy i Staging
+  deploy-staging:
+    name: Deploy → staging
+    runs-on: ubuntu-latest
+    needs: docker-build-push
+    environment: staging
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Configurar kubectl (staging)
+        uses: azure/k8s-set-context@v4
+        with:
+          method: 'kubeconfig'
+          kubeconfig: ${{ secrets.KUBE_CONFIG_STAGING }}
+
+      #Corre manage.py migrate fent servir la nova imatge, avans del deploy
+      - name: Migrations django a staging
+        run: |
+          kubectl run django-migrate \
+                      --image=${{ needs.docker-build-push.outputs.image_tag }} \
+                      --restart=Never \
+                      --namespace=staging \
+                      --env="DATABASE_URL=${{ secrets.DATABASE_URL_STAGING }}" \
+                      --env="SECRET_KEY=${{ secrets.SECRET_KEY_STAGING }}" \
+                      --env="DJANGO_SETTINGS_MODULE=streamsync.settings_production" \
+                      --command -- python manage.py migrate --noinput
+                    kubectl wait pod/django-migrate \
+                      --for=condition=Ready \
+                      --namespace=staging \
+                      --timeout=120s
+                    kubectl logs pod/django-migrate --namespace=staging
+                    kubectl delete pod django-migrate --namespace=staging
+      - name: Rolling deploy a staging
+        run: |
+          kubectl set image deployment/streamsync-api \
+            api=${{ needs.docker-build-push.outputs.image_tag }} \
+            --namespace=staging
+          kubectl rollout status deployment/streamsync-api \
+            --namespace=staging \
+          --timeout=180s
+      - name: Smoke test
+        run: |
+          sleep 10
+          curl --fail https://staging.streamsync.internal/health/
+                    curl --fail "https://staging.streamsync.internal/api/v1/movies/?limit=1"
+                    # Verifica que no quedan migraciones pendientes en staging
+                    kubectl run django-check \
+                      --image=${{ needs.docker-build-push.outputs.image_tag }} \
+                      --restart=Never \
+                      --namespace=staging \
+                      --env="DATABASE_URL=${{ secrets.DATABASE_URL_STAGING }}" \
+                      --env="SECRET_KEY=${{ secrets.SECRET_KEY_STAGING }}" \
+                      --env="DJANGO_SETTINGS_MODULE=streamsync.settings_production" \
+                      --command -- python manage.py migrate --check
+                    kubectl delete pod django-check --namespace=staging
 
   #CD Denis
   #run-django:
