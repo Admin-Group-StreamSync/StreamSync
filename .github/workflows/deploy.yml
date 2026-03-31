@@ -248,7 +248,29 @@ jobs:
         run: |
           kubectl rollout undo deployment/streamsync-api --namespace=production
           echo "::error::Deploy a prod fallat — revertint a la versio anterior."
-  
+  #Notificació post-deploy
+  notify-deploy:
+    name: Notificació post-deploy
+    runs-on: ubuntu-latest
+    needs: [deploy-production,docker-build-push]
+    if: always()
+    steps:
+      - name: Notificara Resultat
+        env:
+          STATUS: ${{ needs.deploy-production.result }}
+          IMAGE: ${{ needs.docker-build-push.outputs.image_tag }}
+        run: |
+          if [ "$STATUS" = "success" ]; then
+            echo " Deploy exitos: $IMAGE"
+            # curl -X POST ${{ secrets.SLACK_WEBHOOK }} \
+            #   -H 'Content-type: application/json' \
+            #   -d '{"text":"StreamSync desplegat correctament: '"$IMAGE"'"}'
+          else
+            echo " Deploy fallat: $IMAGE"
+            # curl -X POST ${{ secrets.SLACK_WEBHOOK }} \
+            #   -H 'Content-type: application/json' \
+            #   -d '{"text":" StreamSync deploy FALLIT: '"$IMAGE"'"}'
+          fi
 
   #CD Denis
   #run-django:
