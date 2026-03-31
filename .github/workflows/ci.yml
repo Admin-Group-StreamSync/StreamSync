@@ -201,3 +201,59 @@ jobs:
       - name: Netejar contenidors y volums
         if: always()
         run: docker compose -f docker-compose.ci.yml down -v --remove-orphans
+
+  #Validació de migracions Django (Detecta dos problemes habituals; models modificats sense makemigrations i conflictes entre migracions de diferents rames)
+  migration-check:
+    name: Validacions de migracions
+    runs-on: ubuntu-latest
+    needs: [lint, docker-build]
+
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: streamsync
+          POSTGRES_PASSWORD: streamsync
+          POSTGRES_DB: streamsync_ci
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 10
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python ${{ env.PYTHON_VERSION }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+
+      - name: Instalar dependencies
+        run: pip install -r requirements.txt
+
+      - name: Verificar que no falten migracions
+        env:
+          DJANGO_SETTINGS_MODULE: streamsync.settings_test
+          DATABASE_URL: postgresql://streamsync:streamsync@localhost:5432/streamsync_ci
+          SECRET_KEY: ci-secret-key-not-for-production
+        # makemigrations --check falla si hi han cambis en models sense migracio
+        run: python manage.py makemigrations --check --dry-run
+
+      - name: Aplicar totes les migracions
+        env:
+          DJANGO_SETTINGS_MODULE: streamsync.settings_test
+          DATABASE_URL: postgresql://streamsync:streamsync@localhost:5432/streamsync_ci
+          SECRET_KEY: ci-secret-key-not-for-production
+        run: python manage.py migrate --noinput
+
+      - name: Verificar consistencia de l'esquema
+        env:
+          DJANGO_SETTINGS_MODULE: streamsync.settings_test
+          DATABASE_URL: postgresql://streamsync:streamsync@localhost:5432/streamsync_ci
+          SECRET_KEY: ci-secret-key-not-for-production
+        # Comproba que no hi han migracions aplicades a mesures o conflictes
+        run: python manage.py migrate --check
