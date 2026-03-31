@@ -176,3 +176,28 @@ jobs:
           name: coverage-report
           path: coverage.xml
           retention-days: 7
+  # Tests d'integració (engega PostgreSQL real amb Docker Compose i corre pytest complet)
+  integration-tests:
+    name: Integration tests
+    runs-on: ubuntu-latest
+    needs: unit-tests
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Engega stack de CI (Docker Compose)
+
+        run: |
+          docker compose -f docker-compose.ci.yml up \
+            --build \
+            --abort-on-container-exit \
+            --exit-code-from web \
+            --timeout 120
+
+      - name: Recollir logs si falla
+        if: failure()
+        run: docker compose -f docker-compose.ci.yml logs
+
+      - name: Netejar contenidors y volums
+        if: always()
+        run: docker compose -f docker-compose.ci.yml down -v --remove-orphans
