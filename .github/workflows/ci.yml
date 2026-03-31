@@ -1,0 +1,56 @@
+name: CI Pipeline
+
+on:
+  push:
+    branches-ignore:
+      - main          # main el gestiona el CD; aquí cubrim la resta
+    pull_request:
+      branches:
+        - main          # valida tot PR abans de permetre el merge a main
+        - develop
+env:
+  PYTHON_VERSION: "3.11"
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  #Lint i format
+  lint:
+    name: Lint & format
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python ${{ env.PYTHON_VERSION }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+
+      - name: Instalar dependencias de lint
+        run: pip install flake8 mypy black isort django-stubs djangorestframework-stubs
+
+      - name: black — formato de código
+        # Falla si hi ha algun fitxer que black reformatejaria
+        run: black --check --diff .
+      - name: isort — orden de imports
+        run: isort --check-only --diff .
+
+      - name: flake8 — errores de sintaxis y estilo
+        run: |
+          flake8 . \
+            --max-line-length=119 \
+            --exclude=migrations,__pycache__,.venv \
+            --statistics
+
+      - name: mypy — comprobación de tipos
+        env:
+          DJANGO_SETTINGS_MODULE: streamsync.settings_test
+          SECRET_KEY: ci-lint-dummy-key
+        run: |
+          pip install -r requirements.txt   # mypy necesita los stubs del proyecto
+          mypy . \
+            --ignore-missing-imports \
+            --exclude migrations \
+            --show-error-codes
