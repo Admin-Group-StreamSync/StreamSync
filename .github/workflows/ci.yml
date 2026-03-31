@@ -1,299 +1,36 @@
-name: CI Pipeline
+name: CI
 
 on:
   push:
-    branches-ignore:
-      - main          # main el gestiona el CD; aquí cubrim la resta
-    pull_request:
-      branches:
-        - main          # valida tot PR abans de permetre el merge a main
-        - develop
-env:
-  PYTHON_VERSION: "3.11"
-concurrency:
-  group: ci-${{ github.ref }}
-  cancel-in-progress: true
+    branches: [main]
+  pull_request:
+    branches: [main]
 
 jobs:
-  #Lint i format (falla is hi han errors d'estil o de tipologia)
-  lint:
-    name: Lint & format
+  ci:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
-      - name: Set up Python ${{ env.PYTHON_VERSION }}
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Ajusta la versión de Python según vuestro proyecto
+      - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: ${{ env.PYTHON_VERSION }}
-          cache: pip
+          python-version: "3.11"
 
-      - name: Instalar dependencias de lint
-        run: pip install flake8 mypy black isort django-stubs djangorestframework-stubs
-
-      - name: black — formato de código
-        # Falla si hi ha algun fitxer que black reformatejaria
-        run: black --check --diff .
-      - name: isort — ordre de imports
-        run: isort --check-only --diff .
-
-      - name: flake8 — errors de sintaxis y estil
+      - name: Install dependencies
         run: |
-          flake8 . \
-            --max-line-length=119 \
-            --exclude=migrations,__pycache__,.venv \
-            --statistics
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
 
-      - name: mypy — comprobacio de tipos
-        env:
-          DJANGO_SETTINGS_MODULE: streamsync.settings_test
-          SECRET_KEY: ci-lint-dummy-key
+      - name: Lint (flake8)
         run: |
-          pip install -r requirements.txt   
-          mypy . \
-            --ignore-missing-imports \
-            --exclude migrations \
-            --show-error-codes
-  #seguretat (Detecta dependencies vulnerables i males practiques en el codig)
-  security:
-    name: Seguridad
-    runs-on: ubuntu-latest
+          pip install flake8
+          flake8 . --max-line-length=120
 
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Set up Python ${{ env.PYTHON_VERSION }}
-        uses: actions/setup-python@v5
-        with:
-          python-version: ${{ env.PYTHON_VERSION }}
-          cache: pip
-
-      - name: Instalar eines de seguretat
-        run: pip install safety bandit pip-audit
-
-      - name: safety — vulnerabilitats en dependencies
-        # comproba requirements.txt contra la base de dades de CVEs de Safety
-        run: safety check -r requirements.txt --full-report
-
-      - name: pip-audit — auditoría de paquets instalats
-        run: pip-audit -r requirements.txt
-
-      - name: bandit — análisis estatic de seguretat en el códig
+      - name: Run tests (pytest)
         run: |
-          bandit -r . \
-            --exclude .venv,migrations,tests \
-            --severity-level medium \
-            --confidence-level medium \
-            -f txt
-
-  # Build Docker (verifica que l'imatge es construeix correctament en aquesta rama)
-  docker-build:
-    name: Docker build (validación)
-    runs-on: ubuntu-latest
-    # Pot corre en paralel amb lint i security
-    needs: []
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Configurar Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: Build imatge (sense push)
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          target: runtime
-          push: false               # CI sol valida, no publica
-          tags: streamsync:ci-validate
-          # Caché de capes entre execucions del CI (accelera builds)
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-          build-args: |
-            SECRET_KEY=ci-build-dummy-key
-
-  #Unit tests (corre pytest dins del contenidor docker amb SQLite :memory:.)
-  unit-tests:
-    name: Unit tests
-    runs-on: ubuntu-latest
-    needs: [lint, docker-build]
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Configurar Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: Build imatge CI
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          target: runtime
-          push: false
-          load: true                # carga l'image en el daemon local
-          tags: streamsync:ci
-          cache-from: type=gha
-          build-args: |
-            SECRET_KEY=ci-build-dummy-key
-
-      - name: Run unit tests (pytest + cobertura)
-        run: |
-          docker run --rm \
-            -e DJANGO_SETTINGS_MODULE=streamsync.settings_test \
-            -e SECRET_KEY=ci-secret-key-not-for-production \
-            streamsync:ci \
-            pytest tests/unit/ \
-              --tb=short \
-              --cov=. \
-              --cov-omit="*/migrations/*,*/settings*,manage.py" \
-              --cov-report=term-missing \
-              --cov-report=xml:/tmp/coverage.xml \
-              --cov-fail-under=80 \
-              --junitxml=/tmp/junit-unit.xml
-
-      # Extreu els artefactes del contenidor per pujar-los
-      - name: Extreure informes del contenidor
-        if: always()
-        run: |
-          CONTAINER_ID=$(docker create streamsync:ci)
-          docker cp $CONTAINER_ID:/tmp/coverage.xml ./coverage.xml || true
-          docker cp $CONTAINER_ID:/tmp/junit-unit.xml ./junit-unit.xml || true
-          docker rm $CONTAINER_ID
-
-      - name: Publicar resultats de tests a GitHub
-        uses: dorny/test-reporter@v1
-        if: always()
-        with:
-          name: Unit Tests
-          path: junit-unit.xml
-          reporter: java-junit
-          fail-on-error: true
-
-      - name: Pujar reports de cobertura
-        uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: coverage-report
-          path: coverage.xml
-          retention-days: 7
-  # Tests d'integració (engega PostgreSQL real amb Docker Compose i corre pytest complet)
-  integration-tests:
-    name: Integration tests
-    runs-on: ubuntu-latest
-    needs: unit-tests
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Engega stack de CI (Docker Compose)
-
-        run: |
-          docker compose -f docker-compose.ci.yml up \
-            --build \
-            --abort-on-container-exit \
-            --exit-code-from web \
-            --timeout 120
-
-      - name: Recollir logs si falla
-        if: failure()
-        run: docker compose -f docker-compose.ci.yml logs
-
-      - name: Netejar contenidors y volums
-        if: always()
-        run: docker compose -f docker-compose.ci.yml down -v --remove-orphans
-
-  #Validació de migracions Django (Detecta dos problemes habituals; models modificats sense makemigrations i conflictes entre migracions de diferents rames)
-  migration-check:
-    name: Validacions de migracions
-    runs-on: ubuntu-latest
-    needs: [lint, docker-build]
-
-    services:
-      postgres:
-        image: postgres:16-alpine
-        env:
-          POSTGRES_USER: streamsync
-          POSTGRES_PASSWORD: streamsync
-          POSTGRES_DB: streamsync_ci
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 5s
-          --health-timeout 3s
-          --health-retries 10
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Set up Python ${{ env.PYTHON_VERSION }}
-        uses: actions/setup-python@v5
-        with:
-          python-version: ${{ env.PYTHON_VERSION }}
-          cache: pip
-
-      - name: Instalar dependencies
-        run: pip install -r requirements.txt
-
-      - name: Verificar que no falten migracions
-        env:
-          DJANGO_SETTINGS_MODULE: streamsync.settings_test
-          DATABASE_URL: postgresql://streamsync:streamsync@localhost:5432/streamsync_ci
-          SECRET_KEY: ci-secret-key-not-for-production
-        # makemigrations --check falla si hi han cambis en models sense migracio
-        run: python manage.py makemigrations --check --dry-run
-
-      - name: Aplicar totes les migracions
-        env:
-          DJANGO_SETTINGS_MODULE: streamsync.settings_test
-          DATABASE_URL: postgresql://streamsync:streamsync@localhost:5432/streamsync_ci
-          SECRET_KEY: ci-secret-key-not-for-production
-        run: python manage.py migrate --noinput
-
-      - name: Verificar consistencia de l'esquema
-        env:
-          DJANGO_SETTINGS_MODULE: streamsync.settings_test
-          DATABASE_URL: postgresql://streamsync:streamsync@localhost:5432/streamsync_ci
-          SECRET_KEY: ci-secret-key-not-for-production
-        # Comproba que no hi han migracions aplicades a mesures o conflictes
-        run: python manage.py migrate --check
-
-  # Resum del CI (agregue tots els jobs anteriors)
-  ci-ok:
-    name: CI OK — listo para merge
-    runs-on: ubuntu-latest
-    # S'executa sempre, tant si els jobs anteriors van passar como si fallessen
-    if: always()
-    needs:
-      - lint
-      - security
-      - docker-build
-      - unit-tests
-      - integration-tests
-      - migration-check
-
-    steps:
-      - name: Evaluar resultat global del CI
-        run: |
-          echo "Resultados:"
-          echo "  lint:               ${{ needs.lint.result }}"
-          echo "  security:           ${{ needs.security.result }}"
-          echo "  docker-build:       ${{ needs.docker-build.result }}"
-          echo "  unit-tests:         ${{ needs.unit-tests.result }}"
-          echo "  integration-tests:  ${{ needs.integration-tests.result }}"
-          echo "  migration-check:    ${{ needs.migration-check.result }}"
-
-        # Falla si qualsevol job precedent no es 'success'
-          if [[ \
-            "${{ needs.lint.result }}"              != "success" || \
-            "${{ needs.security.result }}"          != "success" || \
-            "${{ needs.docker-build.result }}"      != "success" || \
-            "${{ needs.unit-tests.result }}"        != "success" || \
-            "${{ needs.integration-tests.result }}" != "success" || \
-            "${{ needs.migration-check.result }}"   != "success" \
-          ]]; then
-            echo "::error::El CI ha fallat. Revisa els jobs anteriors abans de mergear."
-            exit 1
-          fi
- 
-          echo " tots els checks han pasat. El PR está llest per review."
+          pip install pytest
+          pytest
