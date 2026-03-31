@@ -196,6 +196,60 @@ jobs:
     steps:
       - name: Aprobación recibida
         run: echo " Aprobat — iniciant deploy a prod."
+  #Deploy a Production
+  deploy-production:
+    name: Deploy → production
+    runs-on: ubuntu-latest
+    needs: [ approval-gate, docker-build-push ]
+    environment: production
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configurar kubectl (prod)
+        uses: azure/k8s-set-context@v4
+        with:
+          method: 'kubeconfig'
+          kubeconfig: ${{ secrets.KUBE_CONFIG_PROD }}
+
+      - name: Migracions a Django prod
+        run: |
+          kubectl run django-migrate \
+            --image=${{ needs.docker-build-push.outputs.image_tag }} \
+            --restart=Never \
+            --namespace=production \
+            --env="DATABASE_URL=${{ secrets.DATABASE_URL_PROD }}" \
+            --env="SECRET_KEY=${{ secrets.SECRET_KEY_PROD }}" \
+            --env="DJANGO_SETTINGS_MODULE=streamsync.settings_production" \
+            --command -- python manage.py migrate --noinput
+          kubectl wait pod/django-migrate \
+            --for=condition=Ready \
+            --namespace=production \
+            --timeout=180s
+          kubectl logs pod/django-migrate --namespace=production
+          kubectl delete pod django-migrate --namespace=production
+
+      - name: Rolling deploy a prod
+        run: |
+          kubectl set image deployment/streamsync-api \
+            api=${{ needs.docker-build-push.outputs.image_tag }} \
+            --namespace=production
+          kubectl rollout status deployment/streamsync-api \
+            --namespace=production \
+            --timeout=300s
+      - name: Health checks
+        run: |
+          sleep 15
+          curl --fail https://streamsync.com/health/
+          curl --fail "https://streamsync.com/api/v1/movies/?limit=1"
+
+      - name: Rollback automatic si fallada
+        if: failure()
+        run: |
+          kubectl rollout undo deployment/streamsync-api --namespace=production
+          echo "::error::Deploy a prod fallat — revertint a la versio anterior."
+  
+
   #CD Denis
   #run-django:
   #  runs-on: self-hosted
