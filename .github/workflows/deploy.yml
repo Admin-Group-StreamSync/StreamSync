@@ -33,9 +33,9 @@ jobs:
 
       # 2. FASE DE DEPLOY: Hacer el software disponible en producción
       # Se utiliza un webhook para disparar el despliegue automático en Render
-#      - name: Trigger Render Deployment
-#        run: |
-#          echo "Notificando a Render para iniciar el despliegue..."
-#          curl -f ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
+      - name: Trigger Render Deployment
+        run: |
+          echo "Notificando a Render para iniciar el despliegue..."
+          curl -f ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
 
           
