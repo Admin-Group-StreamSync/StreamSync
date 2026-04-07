@@ -6,7 +6,7 @@ on:
     types:
       - completed
   push:
-    branches: ["master", "dev", "features/28032026-auto-deploy-configs"]
+    branches: ["features/28032026-auto-deploy-configs"]
 
 
 #  push:
@@ -14,7 +14,7 @@ on:
 
 jobs:
   deploy:
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    if: ${{ github.event.workflow_run.conclusion == 'success' && github.event_name == 'push' }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
