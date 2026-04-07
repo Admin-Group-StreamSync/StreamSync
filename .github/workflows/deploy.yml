@@ -29,5 +29,5 @@ jobs:
         echo "Django server started in background. Logs: logs/django.log"
 
     - name: Show server logs (optional)
-      run: tail -f logs/django.log
+      run: tail -f logs/django.log # Comentario
           
