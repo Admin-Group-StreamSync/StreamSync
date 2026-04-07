@@ -4,6 +4,8 @@ on:
   workflow_run:
     workflows: [ "Django CI" ]
     types: [completed]
+  workflow_call:
+
 #  push:
 #    branches: ["master", "dev", "features/28032026-auto-deploy-configs"]
 
