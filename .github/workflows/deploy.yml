@@ -6,11 +6,7 @@ on:
     types:
       - completed
   push:
-    branches: ["features/28032026-auto-deploy-configs"]
-
-
-#  push:
-#    branches: ["master", "dev", "features/28032026-auto-deploy-configs"]
+    branches: ["master"]
 
 jobs:
   deploy:

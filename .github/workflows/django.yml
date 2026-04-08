@@ -2,14 +2,13 @@ name: Django CI
 
 on:
   push:
-    branches: ["master", "dev", "features/27032026-integrate-docker-configs", "features/28032026-auto-deploy-configs"]
-    #branches: ["master"]
+    branches: ["master", "develop", "features/*"]
+  pull_request:
+    branches: ["master"]
   workflow_dispatch:
 
 
    # branches: [ "master" ]
-  #pull_request:
-    #branches: [ "master" ]
 
 jobs:
   build:
