@@ -4,9 +4,9 @@ import requests
 from datetime import datetime
 import matplotlib.pyplot as plt
 from matplotlib.ticker import MaxNLocator
-
+import os
 # ── Configuración ──────────────────────────────────────────────────────────────
-REPO   = "TralaleritosTralalas/SoftwareProject"
+REPO   = "Admin-Group-StreamSync/StreamSync"
 TOKEN  = config("HISTOGRAM_TOKEN")
 OWNER, REPO_NAME = REPO.split("/")
 
@@ -69,25 +69,40 @@ def count_open_per_week(
         open_count = sum(
             1
             for created, closed in issue_dates
-            if created <= end and (closed is None or closed >= start)
+            if start <= created <= end and (closed is None)
         )
         counts.append(open_count)
     return counts
 
 # ── Main ───────────────────────────────────────────────────────────────────────
 def main():
+    SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+    img_path = os.path.join(SCRIPT_DIR, 'issues_per_week.png')
     print("Obteniendo issues de GitHub…")
     issues      = fetch_all_issues(OWNER, REPO_NAME)
     issue_dates = parse_dates(issues)
     print(f"  → {len(issues)} issues encontradas (sin PRs)")
 
-    now    = datetime.now()
-    weeks  = build_weeks(now.year, now.month)
+    weeks = []
+    weeks.extend(build_weeks(2026, 3))
+    weeks.extend(build_weeks(2026, 4))
+    sprint_end_date = datetime(2026, 4, 24)
+
+    weeks = [
+        (label, start, end)
+        for (label, start, end) in weeks
+        if start <= sprint_end_date
+    ]
+
     counts = count_open_per_week(issue_dates, weeks)
-    labels = [w[0] for w in weeks]
+
+    labels = [
+        f"{datetime(start.year, start.month, 1).strftime('%b')} {label}"
+        for label, start, end in weeks
+    ]
 
     # ── Gráfica ────────────────────────────────────────────────────────────────
-    fig, ax = plt.subplots(figsize=(9, 5))
+    fig, ax = plt.subplots(figsize=(14, 6))
     bars = ax.bar(labels, counts, color="#4C72B0", edgecolor="white", linewidth=0.8)
 
     for bar, count in zip(bars, counts):
@@ -106,16 +121,15 @@ def main():
     ax.set_xlabel("Semanas del mes", fontsize=12)
     ax.set_ylabel("Número de issues abiertas", fontsize=12)
     ax.set_title(
-        f"Issues abiertas por semana — {now.strftime('%B %Y')}",
+        f"Issues abiertas por semana activas a día de hoy",
         fontsize=14,
         fontweight="bold",
     )
     ax.spines[["top", "right"]].set_visible(False)
 
     plt.tight_layout()
-    plt.savefig("issues_histogram.png", dpi=150)
-    plt.show()
-    print("Gráfica guardada como issues_histogram.png")
+    plt.savefig(img_path)
+    print(f"Gráfico generado exitosamente en: {img_path}")
 
 if __name__ == "__main__":
     main()

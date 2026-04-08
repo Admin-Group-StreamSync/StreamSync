@@ -1,0 +1,45 @@
+name: Pareto Diagram
+on:
+  schedule:
+    - cron: '0 1 * * *'
+  workflow_dispatch:
+
+permissions: 
+  issues: read
+  contents: read
+
+jobs:
+  build:
+  
+    runs-on: ubuntu-latest
+    strategy:
+      max-parallel: 4
+      matrix:
+        python-version: [3.12]
+
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4
+    - name: Get JSON
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN}}
+      run: |
+
+        gh issue list --state open --json title,body,labels > IshikawaTools/issues_data.json
+    
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v3
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Install Dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install pandas matplotlib
+    - name: get graphics
+      run: |
+        python IshikawaTools/chart.py
+    - name: Upload chart
+      uses: actions/upload-artifact@v4
+      with:
+        name: pareto-chart
+        path: IshikawaTools/pareto_report.png
