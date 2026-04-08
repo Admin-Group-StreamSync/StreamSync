@@ -37,5 +37,8 @@ python manage.py migrate
 ## Run server
 python manage.py runserver
 
+## Web link
+[Render link](https://streamsync-bhmx.onrender.com/)
+
 ## Contributing providers
 See [CONTRIBUTING_PROVIDERS.md](CONTRIBUTING_PROVIDERS.md) for instructions on adding new streaming services.
