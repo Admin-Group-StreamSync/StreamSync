@@ -32,6 +32,8 @@ jobs:
 
       - name: Run script
         working-directory: ./IshikawaTools
+        env:
+           HISTOGRAM_TOKEN: ${{ secrets.HISTOGRAM_TOKEN }}
 
         run: git pull && python ./histogram.py
 
