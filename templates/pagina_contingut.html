@@ -4,75 +4,209 @@
 
 {% block extra_css %}
 <style>
-    .portada-placeholder {
-        background-color: #e9ecef;
-        border-radius: 12px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: #6c757d;
-        height: 450px;
+    /* Fons dinàmic i suau per a tota la pàgina */
+    body {
+        background: linear-gradient(180deg, #f8f9fa 0%, #e9cefd 100%);
+        min-height: 100vh;
     }
-    .stars-gold { color: #ffc107; }
+
+    /* Contenidor del Poster amb efecte de vidre */
+    .poster-container {
+        position: sticky;
+        top: 20px;
+    }
+
+    .img-poster {
+        width: 100%;
+        border-radius: 20px;
+        object-fit: cover;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+        transition: transform 0.3s ease;
+    }
+
+    .img-poster:hover {
+        transform: scale(1.02);
+    }
+
+    /* Badges de dades tècniques */
+    .info-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+        margin-top: 20px;
+    }
+
+    .data-card {
+        background: rgba(255, 255, 255, 0.7);
+        backdrop-filter: blur(10px);
+        padding: 12px;
+        border-radius: 15px;
+        border: 1px solid rgba(255,255,255,0.5);
+        text-align: center;
+    }
+
+    .data-card i {
+        display: block;
+        font-size: 1.2rem;
+        color: #8a2be2;
+        margin-bottom: 5px;
+    }
+
+    .data-card span {
+        font-size: 0.75rem;
+        font-weight: 700;
+        color: #444;
+        text-transform: uppercase;
+    }
+
+    .data-card p {
+        margin: 0;
+        font-size: 0.9rem;
+        font-weight: 500;
+    }
+
+    /* Secció principal de text */
+    .content-header {
+        border-bottom: 2px solid rgba(138, 43, 226, 0.1);
+        padding-bottom: 20px;
+    }
+
+    .glass-section {
+        background: rgba(255, 255, 255, 0.6);
+        backdrop-filter: blur(15px);
+        border-radius: 25px;
+        padding: 40px;
+        border: 1px solid rgba(255,255,255,0.8);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+    }
+
+    .stars-gold {
+        color: #ffc107;
+        text-shadow: 0 0 10px rgba(255, 193, 7, 0.4);
+    }
+
+    .btn-action {
+        background: linear-gradient(45deg, #8a2be2, #4b0082);
+        color: white;
+        border: none;
+        padding: 15px;
+        font-weight: 700;
+        border-radius: 15px;
+        transition: all 0.3s ease;
+    }
+
+    .btn-action:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 20px rgba(138, 43, 226, 0.3);
+        color: white;
+    }
+
+    /* Comentaris estil xat modern */
+    .comment-bubble {
+        background: white;
+        border-radius: 18px;
+        padding: 20px;
+        border-left: 5px solid #8a2be2;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.03);
+    }
 </style>
 {% endblock %}
 
 {% block content %}
 <div class="container my-5">
-    <div class="d-flex align-items-center mb-4">
-        <a href="{% url 'catalogo' %}" class="btn btn-outline-secondary btn-sm me-3 rounded-pill shadow-sm">
-            <i class="bi bi-arrow-left"></i> Tornar al Catàleg
+    <div class="mb-4">
+        <a href="{% if item.tipus == 'movie' %}{% url 'cataleg_pelis' %}{% elif item.tipus == 'series' %}{% url 'cataleg_series' %}{% else %}{% url 'catalogo' %}{% endif %}"
+           class="btn btn-light shadow-sm rounded-pill px-4">
+            <i class="bi bi-arrow-left me-2"></i> Tornar a la llista
         </a>
-        <h1 class="display-5 fw-bold mb-0">{{ item.titol }}</h1>
     </div>
 
-    <div class="row">
-        <div class="col-md-4 text-center">
-            <div class="portada-placeholder shadow-lg border-0">
-                <div class="text-center">
-                    <i class="bi bi-film fs-1 opacity-25"></i>
-                    <p class="mt-2 fw-bold text-uppercase small opacity-50">Sense imatge</p>
+    <div class="row g-5">
+        <div class="col-lg-4">
+            <div class="poster-container">
+                <img src="{{ item.imatge }}" class="img-poster" alt="{{ item.titol }}">
+
+                <div class="info-grid">
+                    <div class="data-card">
+                        <i class="bi bi-calendar3"></i>
+                        <span>Any</span>
+                        <p>{{ item.any }}</p>
+                    </div>
+                    <div class="data-card">
+                        <i class="bi bi-clock"></i>
+                        <span>Durada</span>
+                        <p>{{ item.durada }}</p>
+                    </div>
+                    <div class="data-card">
+                        <i class="bi bi-shield-check"></i>
+                        <span>Edat</span>
+                        <p>{{ item.edat }}</p>
+                    </div>
+                    <div class="data-card">
+                        <i class="bi bi-hdd-network"></i>
+                        <span>Canal</span>
+                        <p>{{ item.plataforma }}</p>
+                    </div>
                 </div>
+
+                <button class="btn btn-action w-100 mt-4">
+                    <i class="bi bi-bookmark-plus-fill me-2"></i> AFEGIR A LA LLISTA
+                </button>
             </div>
-
-            <ul class="list-unstyled text-start mt-4 p-3 bg-white rounded shadow-sm border">
-                <li class="mb-2"><i class="bi bi-tag me-2 text-primary"></i><strong>Gènere:</strong> {{ item.genere }}</li>
-                <li class="mb-2"><i class="bi bi-person-badge me-2 text-primary"></i><strong>Director:</strong> {{ item.director }}</li>
-                <li><i class="bi bi-shield-exclamation me-2 text-primary"></i><strong>Edat:</strong> {{ item.edat }}</li>
-            </ul>
-
-            <button class="btn btn-primary w-100 fw-bold mt-2 shadow-sm">
-                <i class="bi bi-plus-lg me-2"></i> Afegir a la meva llista
-            </button>
         </div>
 
-        <div class="col-md-8 ps-md-5">
-            <div class="mb-5 bg-white p-4 rounded shadow-sm border">
-                <h3 class="fw-bold mb-3">Sinopsi</h3>
-                <p class="lead text-muted">{{ item.sinopsi }}</p>
-            </div>
-
-            <div class="mb-5 p-4 bg-white rounded shadow-sm border d-flex justify-content-between align-items-center">
-                <h4 class="fw-bold mb-0">Valoració dels usuaris</h4>
-                <div class="d-flex align-items-center">
-                    <div class="stars-gold fs-2 me-3">
-                        <i class="bi bi-star-fill"></i>
-                        <i class="bi bi-star-fill"></i>
-                        <i class="bi bi-star-fill"></i>
-                        <i class="bi bi-star-fill"></i>
-                        <i class="bi bi-star-half"></i>
-                    </div>
-                    <span class="fs-3 fw-bold">{{ item.rating }} <span class="fs-6 text-muted fw-normal">/ 10</span></span>
+        <div class="col-lg-8">
+            <div class="glass-section h-100">
+                <div class="content-header mb-4">
+                    <span class="badge bg-primary mb-2 px-3 py-2 rounded-pill text-uppercase" style="letter-spacing: 1px;">
+                        {{ item.genere }}
+                    </span>
+                    <h1 class="display-3 fw-bold text-dark mb-0">{{ item.titol }}</h1>
+                    <p class="fs-5 text-muted">Dirigit per <span class="text-dark fw-bold">{{ item.director }}</span></p>
                 </div>
-            </div>
 
-            <div>
-                <h4 class="fw-bold mb-4">Comentaris recents</h4>
-                <div class="d-flex mb-4">
-                    <i class="bi bi-person-circle fs-1 text-secondary me-3"></i>
-                    <div class="flex-grow-1 p-3 bg-white rounded border shadow-sm">
-                        <h6 class="fw-bold mb-1">Marc88</h6>
-                        <p class="mb-0 text-muted">M'ha encantat, sobretot el final. Molt recomanable!</p>
+                <div class="mb-5">
+                    <h4 class="fw-bold text-primary mb-3">Sinopsi</h4>
+                    <p class="lead text-dark" style="line-height: 1.8; text-align: justify;">
+                        {{ item.sinopsi }}
+                    </p>
+                </div>
+
+                <div class="d-flex flex-wrap align-items-center justify-content-between p-4 bg-white rounded-4 border mb-5 shadow-sm">
+                    <div class="mb-2 mb-sm-0">
+                        <h5 class="fw-bold mb-0">Puntuació StreamSync</h5>
+                        <p class="small text-muted mb-0">Basat en crítiques de la comunitat</p>
+                    </div>
+                    <div class="d-flex align-items-center">
+                        <div class="stars-gold fs-3 me-3">
+                            <i class="bi bi-star-fill"></i>
+                            <i class="bi bi-star-fill"></i>
+                            <i class="bi bi-star-fill"></i>
+                            <i class="bi bi-star-fill"></i>
+                            <i class="bi bi-star-half"></i>
+                        </div>
+                        <div class="text-end">
+                            <span class="display-5 fw-bold text-dark">{{ item.rating }}</span>
+                            <span class="text-muted">/10</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <h5 class="fw-bold mb-4 d-flex align-items-center">
+                        <i class="bi bi-chat-left-text me-2 text-primary"></i>
+                        Opinions de la comunitat
+                    </h5>
+                    <div class="comment-bubble d-flex">
+                        <div class="me-3">
+                            <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px; font-weight: bold;">
+                                M
+                            </div>
+                        </div>
+                        <div>
+                            <h6 class="fw-bold mb-1">Marc88 <small class="text-muted fw-normal ms-2">fa 2 hores</small></h6>
+                            <p class="mb-0 text-secondary">Una experiència visual increïble. El treball del director en aquesta obra és senzillament magistral. Molt recomanable per a un cap de setmana!</p>
+                        </div>
                     </div>
                 </div>
             </div>

@@ -2,135 +2,132 @@
 
 {% block title %}Preferències - StreamSync{% endblock %}
 
+{% block extra_css %}
+<style>
+    .profile-container { background: #fff; min-height: 90vh; padding: 40px 0; }
+
+    /* Sidebar */
+    .sidebar-nav { background: #fff; border-radius: 20px; padding: 30px; border: 1px solid #f2f2f2; box-shadow: 0 4px 20px rgba(0,0,0,0.03); }
+    .sidebar-title { font-weight: 800; font-size: 1.1rem; margin-bottom: 25px; color: #000; }
+
+    .nav-link-custom {
+        display: flex; align-items: center; padding: 12px 15px; border-radius: 12px;
+        text-decoration: none; color: #666; font-weight: 600; transition: 0.3s; margin-bottom: 8px;
+    }
+    .nav-link-custom:hover { background: #f8f0ff; color: #8a2be2; }
+    .nav-link-custom.active { background: #f8f0ff; color: #8a2be2; border: 1px solid #8a2be2; }
+    .nav-link-custom i { font-size: 1.2rem; margin-right: 12px; }
+
+    /* Card */
+    .content-card { background: white; border-radius: 24px; padding: 40px; border: 1px solid #f2f2f2; }
+
+    .section-label { font-weight: 800; font-size: 0.7rem; color: #999; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 15px; display: block; }
+
+    /* Grid Tags */
+    .selection-grid { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 30px; }
+    .select-item {
+        border: 1px solid #ddd; border-radius: 10px; padding: 10px 30px; cursor: pointer;
+        transition: 0.2s; font-weight: 600; font-size: 0.85rem; color: #333; min-width: 120px; text-align: center;
+    }
+    .select-item.selected { border-color: #8a2be2; background: #fcf9ff; color: #8a2be2; box-shadow: 0 0 0 1px #8a2be2; }
+    .hidden { display: none; }
+
+    .btn-save-pref {
+        padding: 12px 30px; border-radius: 10px; border: none;
+        background: linear-gradient(90deg, #8a2be2, #d40078);
+        color: white; font-weight: 700; text-transform: uppercase; font-size: 0.85rem; cursor: pointer;
+    }
+</style>
+{% endblock %}
+
 {% block content %}
-<div class="container mt-4 mb-5">
-    <h2 class="fw-bold">PERFIL</h2>
-    <hr class="border-2 opacity-75">
-
-    <div class="row mt-4">
-        <div class="col-md-3 border-end">
-            <div class="mb-4">
-                <a href="{% url 'pagina_principal' %}" class="btn btn-outline-secondary btn-sm rounded-pill shadow-sm">
-                    <i class="bi bi-arrow-left"></i> Enrere
-                </a>
-            </div>
-
-            <nav class="d-flex flex-column gap-2">
-                <a href="{% url 'pagina_perfil1' %}" class="btn btn-outline-secondary border-0 text-start text-dark w-100">
-                    <i class="bi bi-person-fill me-2"></i> Informació de perfil
-                </a>
-                <a href="{% url 'profile2' %}" class="btn text-start fw-bold text-dark w-100 shadow-sm" style="background-color: #dee2e6;">
-                    <i class="bi bi-gear-fill me-2"></i> Preferències de contingut
-                </a>
-                <hr class="opacity-25 my-2">
-                <form method="post" action="{% url 'logout' %}">
-                    {% csrf_token %}
-                    <button type="submit" class="btn btn-outline-danger border-0 text-start fw-bold w-100">
-                        <i class="bi bi-box-arrow-left me-2"></i> Tancar sessió
-                    </button>
-                </form>
-            </nav>
-        </div>
-
-        <div class="col-md-9 ps-md-5">
-            <div class="d-flex align-items-center mb-4">
-                <i class="bi bi-gear-wide-connected fs-1 me-3 text-primary"></i>
-                <div>
-                    <h3 class="mb-0">Preferències de contingut</h3>
-                    <p class="text-muted mb-0">Gestiona les plataformes i gèneres que t'agraden</p>
+<div class="profile-container">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-3 mb-4">
+                <div class="sidebar-nav">
+                    <div class="mb-4">
+                        <a href="{% url 'pagina_principal' %}" class="text-decoration-none text-muted small fw-bold">
+                            ← TORNAR A L'INICI
+                        </a>
+                    </div>
+                    <div class="sidebar-title">El meu Compte</div>
+                    <nav>
+                        <a href="{% url 'pagina_perfil1' %}" class="nav-link-custom">
+                            <i class="bi bi-person"></i> Informació personal
+                        </a>
+                        <a href="{% url 'profile2' %}" class="nav-link-custom active">
+                            <i class="bi bi-sliders"></i> Preferències
+                        </a>
+                        <a href="{% url 'llistes' %}" class="nav-link-custom">
+                            <i class="bi bi-bookmark"></i> Les meves llistes
+                        </a>
+                        <hr class="my-4 opacity-25">
+                        <form method="post" action="{% url 'logout' %}">
+                            {% csrf_token %}
+                            <button type="submit" class="nav-link-custom border-0 bg-transparent w-100 text-danger text-start">
+                                <i class="bi bi-box-arrow-left"></i> Tancar sessió
+                            </button>
+                        </form>
+                    </nav>
                 </div>
             </div>
 
-            <form method="post" action="{% url 'profile2' %}">
-                {% csrf_token %}
+            <div class="col-md-9">
+                <div class="content-card">
+                    <h2 class="fw-bold mb-1">Preferències de contingut</h2>
+                    <p class="text-muted small mb-5">Aquesta configuració ens ajuda a recomanar-te millor contingut.</p>
 
-                <div class="bg-white p-4 p-md-5 rounded-3 border shadow-sm w-100">
+                    <form method="post">
+                        {% csrf_token %}
 
-                    <div class="mb-4">
-                        <label class="form-label fw-bold text-dark text-uppercase small mb-2" style="letter-spacing: 1px;">Plataformes</label>
-                        <div class="row row-cols-1 row-cols-md-3 g-2 mt-1">
-                            {% for plat in opcions.plataformes %}
-                            <div class="col">
-                                <div class="form-check mb-0">
-                                    <input class="form-check-input" type="checkbox" name="plataformas" value="{{ plat }}" id="p_{{ plat }}" {% if plat in user.profile.plataformes %}checked{% endif %}>
-                                    <label class="form-check-label small" for="p_{{ plat }}">{{ plat }}</label>
-                                </div>
-                            </div>
+                        <label class="section-label">Les teves plataformes</label>
+                        <div class="selection-grid">
+                            {% for p in opcions.plataformes %}
+                            <label class="select-item {% if p in perfil.plataformes %}selected{% endif %}">
+                                <input type="checkbox" name="plataformas" value="{{p}}" class="hidden" onchange="this.parentElement.classList.toggle('selected')" {% if p in perfil.plataformes %}checked{% endif %}>
+                                {{p}}
+                            </label>
                             {% endfor %}
                         </div>
-                    </div>
 
-                    <hr class="opacity-25 my-4">
-
-                    <div class="mb-4">
-                        <label class="form-label fw-bold text-dark text-uppercase small mb-2" style="letter-spacing: 1px;">Gèneres</label>
-                        <div class="row row-cols-1 row-cols-md-3 g-2 mt-1">
-                            {% for gen in opcions.generes %}
-                            <div class="col">
-                                <div class="form-check mb-0">
-                                    <input class="form-check-input" type="checkbox" name="generos" value="{{ gen }}" id="g_{{ gen }}" {% if gen in user.profile.generes %}checked{% endif %}>
-                                    <label class="form-check-label small" for="g_{{ gen }}">{{ gen }}</label>
-                                </div>
-                            </div>
+                        <label class="section-label">Gèneres favorits</label>
+                        <div class="selection-grid">
+                            {% for g in opcions.generes %}
+                            <label class="select-item {% if g in perfil.generes %}selected{% endif %}">
+                                <input type="checkbox" name="generos" value="{{g}}" class="hidden" onchange="this.parentElement.classList.toggle('selected')" {% if g in perfil.generes %}checked{% endif %}>
+                                {{g}}
+                            </label>
                             {% endfor %}
                         </div>
-                    </div>
 
-                    <hr class="opacity-25 my-4">
-
-                    <div class="mb-4">
-                        <label class="form-label fw-bold text-dark text-uppercase small mb-2" style="letter-spacing: 1px;">Idiomes</label>
-                        <div class="row row-cols-1 row-cols-md-3 g-2 mt-1">
-                            {% for idi in opcions.idiomes %}
-                            <div class="col">
-                                <div class="form-check mb-0">
-                                    <input class="form-check-input" type="checkbox" name="idiomas" value="{{ idi }}" id="i_{{ idi }}" {% if idi in user.profile.idiomes %}checked{% endif %}>
-                                    <label class="form-check-label small" for="i_{{ idi }}">{{ idi }}</label>
-                                </div>
-                            </div>
+                        <label class="section-label">Idiomes de visionat</label>
+                        <div class="selection-grid">
+                            {% for i in opcions.idiomes %}
+                            <label class="select-item {% if i in perfil.idiomes %}selected{% endif %}">
+                                <input type="checkbox" name="idiomas" value="{{i}}" class="hidden" onchange="this.parentElement.classList.toggle('selected')" {% if i in perfil.idiomes %}checked{% endif %}>
+                                {{i}}
+                            </label>
                             {% endfor %}
                         </div>
-                    </div>
 
-                    <hr class="opacity-25 my-4">
-
-                    <div class="mb-4">
-                        <label class="form-label fw-bold text-dark text-uppercase small mb-2" style="letter-spacing: 1px;">Edats (Ratings)</label>
-                        <div class="row row-cols-1 row-cols-md-3 g-2 mt-1">
-                            {% for ed in opcions.edats %}
-                            <div class="col">
-                                <div class="form-check mb-0">
-                                    <input class="form-check-input" type="checkbox" name="edats" value="{{ ed }}" id="e_{{ ed }}" {% if ed in user.profile.edats %}checked{% endif %}>
-                                    <label class="form-check-label small" for="e_{{ ed }}">{{ ed }}</label>
-                                </div>
-                            </div>
+                        <label class="section-label">Restricció d'edat (Ratings)</label>
+                        <div class="selection-grid">
+                            {% for e in opcions.edats %}
+                            <label class="select-item {% if e in perfil.edats %}selected{% endif %}">
+                                <input type="checkbox" name="edats" value="{{e}}" class="hidden" onchange="this.parentElement.classList.toggle('selected')" {% if e in perfil.edats %}checked{% endif %}>
+                                {{e}}
+                            </label>
                             {% endfor %}
                         </div>
-                    </div>
 
-                    <hr class="opacity-25 my-4">
-
-                    <div class="mb-2">
-                        <label class="form-label fw-bold text-dark text-uppercase small mb-2" style="letter-spacing: 1px;">Països origen</label>
-                        <div class="row row-cols-1 row-cols-md-3 g-2 mt-1">
-                            {% for pa in opcions.paisos %}
-                            <div class="col">
-                                <div class="form-check mb-0">
-                                    <input class="form-check-input" type="checkbox" name="paisos" value="{{ pa }}" id="pa_{{ pa }}" {% if pa in user.profile.paisos %}checked{% endif %}>
-                                    <label class="form-check-label small" for="pa_{{ pa }}">{{ pa }}</label>
-                                </div>
-                            </div>
-                            {% endfor %}
+                        <div class="pt-4 border-top d-flex align-items-center">
+                            <button type="submit" class="btn-save-pref">GUARDAR PREFERÈNCIES</button>
+                            <span class="ms-3 text-muted small">Els canvis s'aplicaran immediatament</span>
                         </div>
-                    </div>
+                    </form>
                 </div>
-
-                <div class="mt-4">
-                    <button type="submit" class="btn btn-success fw-bold px-4 shadow-sm">
-                        <i class="bi bi-check-lg"></i> Guardar Canvis
-                    </button>
-                </div>
-            </form>
+            </div>
         </div>
     </div>
 </div>

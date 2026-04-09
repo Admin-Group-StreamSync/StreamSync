@@ -3,58 +3,134 @@ from django.contrib.auth import login, logout, update_session_auth_hash
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.contrib.auth.forms import PasswordChangeForm
+from django.http import Http404
 from .forms import RegistroUsuarioForm, UserUpdateForm
 from .models import Profile
 
-
+# --- CONFIGURACIÓ I CONSTANTS ---
 OPCIONS_PREFERENCIES = {
-    'plataformes': ["Netflix","MAX", "Prime Video", "Disney+"],
-    'generes': ["Action", "Comedy", "Drama", "Sci-Fi", "Crime", "Animation", "Thriller"],
-    'idiomes': ["English", "Spanish", "French", "Japanese", "Korean"],
-    'edats': ["G", "PG", "PG-13", "R"],
-    'paisos': ["USA", "UK", "Spain", "Japan", "South Korea"]
+    'plataformes': ["CinePlus", "StreamHub", "PlayMax"],
+    'generes': ["Acció", "Comèdia", "Drama", "Sci-Fi", "Crime", "Animation", "Thriller", "Terror"],
+    'idiomes': ["Català", "Castellà", "Anglès"],
+    'edats': ["TP", "7+", "13+", "16+", "18+"],
 }
+
+# --- BASE DE DADES DE CONTINGUT ---
+DADES_CONTINGUT = [
+    {
+        'id': 'm1', 'tipus': 'movie', 'titol': "Kingsman: El Servicio Secreto", 'rating': 10.0, 'any': 2014,
+        'genere': 'Acció', 'plataforma': 'CinePlus', 'director': 'Matthew Vaughn', 'edat': '16+',
+        'durada': '2h 9min', 'sinopsi': "Un noi del carrer és reclutat per una organització d'espionatge.",
+        'imatge': 'https://m.media-amazon.com/images/I/71ESaWmDv2L._AC_UF894,1000_QL80_.jpg'
+    },
+    {
+        'id': 's1', 'tipus': 'series', 'titol': "Agentes de S.H.I.E.L.D", 'rating': 10.0, 'any': 2013,
+        'genere': 'Acció', 'plataforma': 'StreamHub', 'director': 'Joss Whedon', 'edat': '13+',
+        'durada': '7 Temporades', 'sinopsi': "L'agent Phil Coulson investiga casos estranys.",
+        'imatge': 'https://m.media-amazon.com/images/M/MV5BMTkwODYyMjgzOV5BMl5BanBnXkFtZTgwODAzMTE5MjE@._V1_.jpg'
+    },
+    {
+        'id': 'm2', 'tipus': 'movie', 'titol': "Star Trek", 'rating': 9.8, 'any': 2009,
+        'genere': 'Sci-Fi', 'plataforma': 'PlayMax', 'director': 'J.J. Abrams', 'edat': '13+',
+        'durada': '2h 7min', 'sinopsi': "Kirk i Spock uneixen forces a l'USS Enterprise.",
+        'imatge': 'https://cdng.europosters.eu/pod_public/1300/263680.jpg'
+    },
+    {
+        'id': 's2', 'tipus': 'series', 'titol': "Suits: La Clave del Éxito", 'rating': 9.8, 'any': 2011,
+        'genere': 'Drama', 'plataforma': 'CinePlus', 'director': 'Aaron Korsh', 'edat': '13+',
+        'durada': '9 Temporades', 'sinopsi': "Un advocat estrella contracta un jove brillant sense títol.",
+        'imatge': 'https://www.aceprensa.com/wp-content/uploads/2014/01/37680-1-683x1024.jpg'
+    },
+    {
+        'id': 'm4', 'tipus': 'movie', 'titol': "Interstellar", 'rating': 9.4, 'any': 2014,
+        'genere': 'Sci-Fi', 'plataforma': 'PlayMax', 'director': 'Christopher Nolan', 'edat': '13+',
+        'durada': '2h 49min', 'sinopsi': "Viatge a través d'un forat de cuc per salvar la humanitat.",
+        'imatge': 'https://image.tmdb.org/t/p/w500/gEU2QniE6E77NI6lCU6MxlNBvIx.jpg'
+    },
+    {
+        'id': 'ps1', 'tipus': 'series', 'titol': "Breaking Bad", 'rating': 9.5, 'any': 2008,
+        'genere': 'Drama', 'plataforma': 'StreamHub', 'director': 'Vince Gilligan', 'edat': '18+',
+        'durada': '5 Temporades', 'sinopsi': "Un professor de química comença a fabricar droga.",
+        'imatge': 'https://cdng.europosters.eu/pod_public/1300/251700.jpg'
+    }
+]
+
+# --- VISTES PÚBLIQUES ---
+
 def pagina_principal(request):
+    """Pàgina d'inici amb tendències (Top 4)"""
     tendencies = sorted(DADES_CONTINGUT, key=lambda x: float(x['rating']), reverse=True)[:4]
     return render(request, 'pages/pagina_principal.html', {'tendencies': tendencies})
 
-@login_required
-def llistes(request):
-    return render(request, 'llistes.html')
+
+def catalogo(request, tipus=None):
+    """Catàleg unificat amb filtres dinàmics per plataforma, gènere i tipus"""
+
+    # 1. Determinem el tipus (movie/series):
+    # El traiem de la URL (paràmetre 'tipus') o del camp hidden del formulari (request.GET)
+    filtre_tipus = tipus if tipus else request.GET.get('tipus', '')
+
+    resultats = DADES_CONTINGUT
+
+    # 2. Apliquem el filtre de tipus primer per separar Pel·lícules de Sèries
+    if filtre_tipus:
+        resultats = [i for i in resultats if i.get('tipus') == filtre_tipus]
+
+    # 3. Recollim la resta de paràmetres del formulari
+    query = request.GET.get('q', '')
+    plataforma_sel = request.GET.get('plataforma', '')
+    genere_sel = request.GET.get('genere', '')
+    director_sel = request.GET.get('director', '')
+    edat_sel = request.GET.get('edat', '')
+    valoracio_sel = request.GET.get('valoracio', '0')
+
+    # 4. Filtrem segons els paràmetres seleccionats
+    if query:
+        resultats = [i for i in resultats if query.lower() in i['titol'].lower()]
+    if plataforma_sel:
+        resultats = [i for i in resultats if i.get('plataforma') == plataforma_sel]
+    if genere_sel:
+        resultats = [i for i in resultats if i.get('genere') == genere_sel]
+    if director_sel:
+        resultats = [i for i in resultats if director_sel.lower() in i.get('director', '').lower()]
+    if edat_sel:
+        resultats = [i for i in resultats if i.get('edat') == edat_sel]
+
+    # Filtre de valoració (Rating mínim)
+    try:
+        val_min = float(valoracio_sel)
+        resultats = [i for i in resultats if float(i.get('rating', 0)) >= val_min]
+    except (ValueError, TypeError):
+        valoracio_sel = "0"
+
+    context = {
+        'contenidos': resultats,
+        'opcions': OPCIONS_PREFERENCIES,
+        'tipus_actual': filtre_tipus, # Indispensable per al <input type="hidden">
+        'query': query,
+        'plataforma_sel': plataforma_sel,
+        'genere_sel': genere_sel,
+        'director_sel': director_sel,
+        'edat_sel': edat_sel,
+        'valoracio_sel': valoracio_sel,
+    }
+    return render(request, 'cataleg.html', context)
 
 
-# credencials registre
+def detall_contingut(request, content_id):
+    """Pàgina de detall d'un contingut"""
+    item = next((item for item in DADES_CONTINGUT if item['id'] == content_id), None)
+    if not item:
+        raise Http404("Contingut no trobat")
+    return render(request, 'pagina_contingut.html', {'item': item})
+
+
+# --- GESTIÓ D'USUARIS ---
+
 def crear_cuenta(request):
+    """Registre de nou usuari"""
     if request.method == 'POST':
         form = RegistroUsuarioForm(request.POST)
-        if form.is_valid():
-            request.session['datos_registro_paso1'] = request.POST.dict()
-            return redirect('sign_in2')
-    else:
-        datos_previos = request.session.get('datos_registro_paso1', None)
-        form = RegistroUsuarioForm(initial=datos_previos) if datos_previos else RegistroUsuarioForm()
-
-    return render(request, 'registration/registre.html', {'form': form})
-
-
-# registre preferencies
-def preferencias_registro(request):
-    if 'datos_registro_paso1' not in request.session:
-        return redirect('crear_cuenta')
-
-    if request.method == 'POST':
-        if request.POST.get('accio') == 'enrere':
-            request.session['datos_registro_paso2'] = {
-                'plataformas': request.POST.getlist('plataformas'),
-                'generos': request.POST.getlist('generos'),
-                'idiomas': request.POST.getlist('idiomas'),
-                'paisos': request.POST.getlist('paisos'),
-                'edats': request.POST.getlist('edats'),
-            }
-            return redirect('crear_cuenta')
-
-        datos_paso1 = request.session['datos_registro_paso1']
-        form = RegistroUsuarioForm(datos_paso1)
         if form.is_valid():
             user = form.save()
             Profile.objects.create(
@@ -62,55 +138,42 @@ def preferencias_registro(request):
                 plataformes=request.POST.getlist('plataformas'),
                 generes=request.POST.getlist('generos'),
                 idiomes=request.POST.getlist('idiomas'),
-                paisos=request.POST.getlist('paisos'),
                 edats=request.POST.getlist('edats')
             )
-            del request.session['datos_registro_paso1']
-            if 'datos_registro_paso2' in request.session:
-                del request.session['datos_registro_paso2']
-
-            login(request, user)
-            return redirect('pagina_principal')
-
-    datos_paso2 = request.session.get('datos_registro_paso2', {})
-
-    return render(request, 'registration/sign_in2.html', {
-        'datos_paso2': datos_paso2,
-        'opcions': OPCIONS_PREFERENCIES
-    })
+            messages.success(request, "Compte creat correctament! Ja pots iniciar sessió.")
+            return redirect('login')
+    else:
+        form = RegistroUsuarioForm()
+    return render(request, 'registration/registre.html', {'form': form, 'opcions': OPCIONS_PREFERENCIES})
 
 
 @login_required
 def pagina_perfil1(request):
+    perfil = request.user.profile
     if request.method == 'POST':
         form = UserUpdateForm(request.POST, instance=request.user)
         if form.is_valid():
             form.save()
-            messages.success(request, "Dades actualitzades correctament!")
+            messages.success(request, "Dades personals actualitzades!")
             return redirect('pagina_perfil1')
     else:
         form = UserUpdateForm(instance=request.user)
+    return render(request, 'registration/pagina_perfil1.html', {'form': form, 'perfil': perfil})
 
-    return render(request, 'registration/pagina_perfil1.html', {'form': form})
 
-
-# preferencies
 @login_required
 def profile2(request):
+    """Gestió de preferències de contingut"""
     perfil = request.user.profile
     if request.method == 'POST':
-        # Guardem el que l'usuari ha seleccionat
         perfil.plataformes = request.POST.getlist('plataformas')
         perfil.generes = request.POST.getlist('generos')
         perfil.idiomes = request.POST.getlist('idiomas')
         perfil.edats = request.POST.getlist('edats')
-        perfil.paisos = request.POST.getlist('paisos')
         perfil.save()
-        messages.success(request, "Preferències actualitzades!")
+        messages.success(request, "Preferències actualitzades correctament!")
         return redirect('profile2')
-
-
-    return render(request, 'profile2.html', {'opcions': OPCIONS_PREFERENCIES})
+    return render(request, 'profile2.html', {'opcions': OPCIONS_PREFERENCIES, 'perfil': perfil})
 
 
 @login_required
@@ -120,7 +183,7 @@ def cambiar_password(request):
         if form.is_valid():
             user = form.save()
             update_session_auth_hash(request, user)
-            messages.success(request, "Contrasenya canviada!")
+            messages.success(request, "Contrasenya canviada amb èxit!")
             return redirect('pagina_perfil1')
     else:
         form = PasswordChangeForm(request.user)
@@ -131,142 +194,12 @@ def cambiar_password(request):
 def esborrar_compte(request):
     if request.method == 'POST':
         request.user.delete()
-        messages.success(request, "Compte esborrat correctament.")
+        messages.success(request, "El teu compte ha estat eliminat correctament.")
         return redirect('pagina_principal')
     return redirect('pagina_perfil1')
 
 
-#simulació
-DADES_CONTINGUT = [
-    # --- PEL·LÍCULES ---
-    {'id': 'm1', 'tipus': 'movie', 'titol': 'Inception',
-     'synopsis': 'Un lladre que roba secrets corporatius a través de l\'ús de la tecnologia de compartició de somnis.',
-     'any': 2010, 'rating': 8.8, 'genere': 'Sci-Fi', 'director': 'Christopher Nolan', 'edat': 'PG-13',
-     'idioma': 'English', 'pais': 'USA'},
-    {'id': 'm2', 'tipus': 'movie', 'titol': 'Pulp Fiction',
-     'synopsis': 'Vides creuades de mafiosos, boxejadors i lladres.', 'any': 1994, 'rating': 8.9, 'genere': 'Crime',
-     'director': 'Quentin Tarantino', 'edat': 'R', 'idioma': 'English', 'pais': 'USA'},
-    {'id': 'm3', 'tipus': 'movie', 'titol': 'Parasite',
-     'synopsis': 'La cobdícia i la discriminació de classe amenacen la relació entre la família Park i el clan Kim.',
-     'any': 2019, 'rating': 8.6, 'genere': 'Thriller', 'director': 'Bong Joon-ho', 'edat': 'R', 'idioma': 'Korean',
-     'pais': 'South Korea'},
-    {'id': 'm4', 'tipus': 'movie', 'titol': 'Spirited Away',
-     'synopsis': 'Durant un trasllat, una nena entra en un món governat per déus, bruixes i esperits.', 'any': 2001,
-     'rating': 8.6, 'genere': 'Animation', 'director': 'Hayao Miyazaki', 'edat': 'G', 'idioma': 'Japanese',
-     'pais': 'Japan'},
-    {'id': 'm5', 'tipus': 'movie', 'titol': 'Dune',
-     'synopsis': 'Un jove hereu ha de viatjar a un perillós planeta desèrtic.', 'any': 2021, 'rating': 8.1,
-     'genere': 'Sci-Fi', 'director': 'Denis Villeneuve', 'edat': 'PG-13', 'idioma': 'English', 'pais': 'Canada'},
-    {'id': 'm6', 'tipus': 'movie', 'titol': 'Volver', 'synopsis': 'Dues germanes tornen al seu poble natal a La Manxa.',
-     'any': 2006, 'rating': 7.6, 'genere': 'Drama', 'director': 'Pedro Almodóvar', 'edat': 'PG-13', 'idioma': 'Spanish',
-     'pais': 'Spain'},
-
-    # --- SÈRIES ---
-    {'id': 's1', 'tipus': 'series', 'titol': 'Stranger Things',
-     'synopsis': 'Un grup de nens descobreixen misteris sobrenaturals a Hawkins.', 'any': 2016, 'rating': 8.7,
-     'genere': 'Sci-Fi', 'director': 'Danny Boyle', 'edat': 'PG-13', 'idioma': 'English', 'pais': 'UK'},
-    {'id': 's2', 'tipus': 'series', 'titol': 'Breaking Bad',
-     'synopsis': 'Un professor de química es dedica a fabricar metamfetamina després d\'un diagnòstic terminal.',
-     'any': 2008, 'rating': 9.5, 'genere': 'Drama', 'director': 'Danny Boyle', 'edat': 'R', 'idioma': 'English',
-     'pais': 'UK'},
-    {'id': 's3', 'tipus': 'series', 'titol': 'The Queen\'s Gambit',
-     'synopsis': 'Una jove òrfena es converteix en un prodigi dels escacs.', 'any': 2020, 'rating': 8.6,
-     'genere': 'Drama', 'director': 'Fernando Trueba', 'edat': 'PG-13', 'idioma': 'Spanish', 'pais': 'Spain'},
-    {'id': 's4', 'tipus': 'series', 'titol': 'Arcane',
-     'synopsis': 'Explica les històries d\'origen dels personatges de League of Legends.', 'any': 2021, 'rating': 9.1,
-     'genere': 'Animation', 'director': 'Hayao Miyazaki', 'edat': 'PG', 'idioma': 'Japanese', 'pais': 'Japan'},
-    {'id': 's5', 'tipus': 'series', 'titol': 'La Casa de Papel: Berlin',
-     'synopsis': 'Spin-off centrat en Berlín, el cervell darrere dels atracaments.', 'any': 2023, 'rating': 7.8,
-     'genere': 'Crime', 'director': 'Álex de la Iglesia', 'edat': 'R', 'idioma': 'Spanish', 'pais': 'Spain'},
-    {'id': 's6', 'tipus': 'series', 'titol': 'Doctor Who',
-     'synopsis': 'Un alienígena viatger del temps salva civilitzacions.', 'any': 2005, 'rating': 8.6,
-     'genere': 'Sci-Fi', 'director': 'Danny Boyle', 'edat': 'PG', 'idioma': 'English', 'pais': 'UK'},
-]
-
-
-def catalogo(request):
-    # (El teu codi de capturar filtres existents)
-    query = request.GET.get('q', '')
-    genere_filtre = request.GET.get('genere', 'Tots')
-    edat_filtre = request.GET.get('edat', 'Tots')
-    any_filtre = request.GET.get('any', 'Tots')
-    ordre = request.GET.get('ordre', 'populars')
-    tipus_filtre = request.GET.get('tipus', '')
-
-    # NOU FILTRE: Idioma
-    idioma_filtre = request.GET.get('idioma', 'Tots')
-
-    resultats = DADES_CONTINGUT
-
-    # Títol Dinàmic
-    if tipus_filtre == 'series':
-        resultats = [i for i in resultats if i.get('tipus') == 'series']
-        titol_pagina = "Catàleg de Sèries"
-    elif tipus_filtre == 'movie':
-        resultats = [i for i in resultats if i.get('tipus') == 'movie']
-        titol_pagina = "Catàleg de Pel·lícules"
-    else:
-        titol_pagina = "Catàleg de Contingut"
-
-    if query: resultats = [i for i in resultats if query.lower() in i['titol'].lower()]
-    if genere_filtre != 'Tots': resultats = [i for i in resultats if i['genere'] == genere_filtre]
-    if edat_filtre != 'Tots': resultats = [i for i in resultats if i['edat'] == edat_filtre]
-    if any_filtre != 'Tots': resultats = [i for i in resultats if str(i.get('any')) == any_filtre]
-
-    # APLICAR FILTRE IDIOMA
-    if idioma_filtre != 'Tots': resultats = [i for i in resultats if i.get('idioma') == idioma_filtre]
-
-    if ordre == 'valorats':
-        resultats = sorted(resultats, key=lambda x: float(x.get('rating', 0)), reverse=True)
-    elif ordre == 'recents':
-        resultats = sorted(resultats, key=lambda x: int(x.get('any', 0)), reverse=True)
-
-    context = {
-        'contenidos': resultats, 'query': query, 'genere_sel': genere_filtre,
-        'edat_sel': edat_filtre, 'any_sel': any_filtre, 'ordre_sel': ordre,
-        'idioma_sel': idioma_filtre,  # <-- Afegit per l'HTML
-        'tipus_sel': tipus_filtre, 'titol_pagina': titol_pagina
-    }
-    return render(request, 'cataleg.html', context)
-
-
-def detall_contingut(request, content_id):
-
-    contingut = next((item for item in DADES_CONTINGUT if item['id'] == content_id), None)
-
-    if contingut is None:
-        return redirect('catalogo')
-
-    return render(request, 'pagina_contingut.html', {'item': contingut})
-
-
-# En tu archivo views.py
-
-def sign_in2(request):
-    if request.method == 'POST':
-        # 1. Capturar todas las selecciones usando getlist() (porque son múltiples checkboxes)
-        plataformas_seleccionadas = request.POST.getlist('plataformas')
-        generos_seleccionados = request.POST.getlist('generos')
-        idiomas_seleccionados = request.POST.getlist('idiomas')
-        edats_seleccionadas = request.POST.getlist('edats')
-        paisos_seleccionados = request.POST.getlist('paisos')
-
-        # 2. Aquí asumo que obtienes al usuario recién creado, por ejemplo:
-        # usuario = request.user  (si ya está logueado)
-        # o lo creas en este mismo paso.
-
-        # 3. Guardar las listas en el perfil del usuario
-        perfil = usuario.profile  # Asegúrate de usar el nombre correcto de tu relación
-        perfil.plataformes = plataformas_seleccionadas
-        perfil.generes = generos_seleccionados
-        perfil.idiomes = idiomas_seleccionados
-        perfil.edats = edats_seleccionadas
-        perfil.paisos = paisos_seleccionados
-
-        perfil.save()  # Guardamos en la base de datos
-
-        # 4. Redirigir a la página principal o al perfil
-        return redirect('pagina_principal')
-
-    # Si es un GET, simplemente renderizas la página con las opciones
-    return render(request, 'sign_in2.html')
+@login_required
+def llistes(request):
+    """Secció de llistes personals"""
+    return render(request, 'llistes.html')

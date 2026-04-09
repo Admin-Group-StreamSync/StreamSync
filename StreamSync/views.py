@@ -8,8 +8,6 @@ def pagina_perfil1(request):
     return render(request, 'registration/pagina_perfil1.html')
 def perfil_principal(request):
     return render(request, 'registration/pagina_perfil1.html')
-def sign_in2(request):
-    return render(request, 'registration/sign_in2.html')
 def pagina_principal(request):
     return render(request, 'pages/pagina_principal.html')
 def profile2(request):
