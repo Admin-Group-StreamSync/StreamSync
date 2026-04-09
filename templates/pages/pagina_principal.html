@@ -4,62 +4,137 @@
 
 {% block extra_css %}
 <style>
+    /* 1. HERO SECTION (Degradado y Buscador Grande) */
     .hero-search {
-        padding: 100px 0;
-        background: linear-gradient(180deg, #ffffff 0%, #f8f9fa 100%);
+        padding: 120px 0;
+        background: linear-gradient(135deg, #8a2be2 0%, #d40078 100%);
         text-align: center;
+        color: white;
     }
-    .main-search-bar {
-        max-width: 700px;
-        margin: 0 auto;
-        border-radius: 50px;
-        overflow: hidden;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-    }
-    .main-search-bar .form-control { border: none; padding: 1.2rem 1.5rem; font-size: 1.2rem; }
-    .main-search-bar .btn { padding: 0 25px; font-size: 1.5rem; border: none; }
 
-    .trending-section { padding: 40px 0; }
-    .trending-title {
-        display: inline-block;
-        background-color: #e9ecef;
-        padding: 8px 20px;
-        border-radius: 5px;
+    .main-search-bar-container {
+        max-width: 750px;
+        margin: 40px auto 0;
+    }
+
+    .main-search-bar-white {
+        background: white;
+        border-radius: 50px;
+        padding: 8px;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+    }
+
+    .main-search-bar-white input {
+        border: none;
+        padding-left: 25px;
+        font-size: 1.1rem;
+        box-shadow: none !important;
+        border-radius: 50px 0 0 50px;
+    }
+
+    .main-search-bar-white .btn-primary {
+        border-radius: 50px;
+        padding: 12px 30px;
         font-weight: bold;
-        text-transform: uppercase;
-        letter-spacing: 1px;
+    }
+
+    /* 2. ESTILO DE LAS TARJETAS (CARD STREAMING) */
+    .section-container { padding: 60px 0; background-color: #ffffff; }
+
+    .trending-title-main {
+        font-size: 1.6rem;
+        font-weight: 800;
+        color: #1a1a1a;
         margin-bottom: 30px;
     }
 
-    .portada-trending {
-        background-color: #dee2e6;
-        aspect-ratio: 2/3;
-        border-radius: 12px;
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    .card-streaming {
+        transition: all 0.3s ease;
+        display: block;
+        text-decoration: none !important;
+    }
+
+    .card-streaming:hover {
+        transform: translateY(-8px);
+    }
+
+    /* Contenedor de la imagen (Negro) */
+    .portada-img {
+        background-color: #000;
+        aspect-ratio: 16 / 9;
+        border-radius: 15px;
+        position: relative;
         display: flex;
         align-items: center;
         justify-content: center;
-        cursor: pointer;
-        border: 1px solid #ddd;
-        position: relative;
         overflow: hidden;
+        margin-bottom: 15px;
     }
 
-    .portada-trending:hover {
-        transform: scale(1.05);
-        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    .play-icon {
+        font-size: 2.5rem;
+        color: white;
+        opacity: 0;
+        transition: opacity 0.3s ease;
     }
 
-    .rating-badge-home {
+    .card-streaming:hover .play-icon {
+        opacity: 0.8;
+    }
+
+    /* Badges sobre la imagen */
+    .platform-badge {
         position: absolute;
-        top: 10px;
-        right: 10px;
-        background: rgba(255, 255, 255, 0.9);
-        color: #ffc107;
-        font-weight: bold;
-        padding: 2px 8px;
-        border-radius: 6px;
+        top: 12px;
+        left: 12px;
+        background: #e50914; /* Netflix */
+        color: white;
+        font-size: 0.65rem;
+        font-weight: 800;
+        padding: 4px 10px;
+        border-radius: 5px;
+        text-transform: uppercase;
+    }
+
+    .type-badge {
+        position: absolute;
+        top: 12px;
+        right: 12px;
+        color: rgba(255, 255, 255, 0.6);
+        font-size: 0.65rem;
+    }
+
+    /* Info debajo de la imagen */
+    .info-area h5 {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: #1a1a1a;
+        margin-bottom: 4px;
+    }
+
+    .meta-info {
         font-size: 0.85rem;
+        color: #6c757d;
+        font-weight: 600;
+    }
+
+    .line-clamp {
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        font-size: 0.85rem;
+        color: #666;
+        margin: 8px 0;
+    }
+
+    .genre-badge {
+        background-color: #f8f9fa;
+        color: #6c757d;
+        font-size: 0.75rem;
+        padding: 4px 12px;
+        border-radius: 20px;
+        border: 1px solid #eee;
     }
 </style>
 {% endblock %}
@@ -67,38 +142,59 @@
 {% block content %}
 <section class="hero-search">
     <div class="container">
-        <h1 class="display-4 fw-bold mb-4 text-primary">StreamSync</h1>
-        <form action="{% url 'catalogo' %}" method="GET">
-            <div class="input-group main-search-bar">
-                <input type="text" class="form-control" placeholder="Busca pel·lícules, sèries, directors..." aria-label="Cerca">
-                <button class="btn btn-primary" type="submit">
-                    <i class="bi bi-search"></i>
-                </button>
-            </div>
-        </form>
-    </div>
-</section>
+        <h1 class="display-3 fw-bold mb-3">Descobreix la teva propera<br>sèrie o pel·lícula favorita</h1>
+        <p class="fs-5 mb-5 opacity-75">Milers de títols de totes les plataformes en un sol lloc</p>
 
-<section class="container trending-section mb-5">
-    <div class="trending-title">
-        <i class="bi bi-fire me-2 text-danger"></i> Més valorats ara
-    </div>
-
-    <div class="row row-cols-2 row-cols-md-4 g-4">
-        {% for item in tendencies %}
-        <div class="col">
-            <a href="{% url 'detall_contingut' item.id %}" class="text-decoration-none text-dark">
-                <div class="portada-trending shadow-sm">
-                    <span class="rating-badge-home shadow-sm">★ {{ item.rating }}</span>
-                    <i class="bi bi-play-circle fs-1 text-white opacity-50"></i>
+        <div class="main-search-bar-container">
+            <form action="{% url 'catalogo' %}" method="GET">
+                <div class="input-group main-search-bar-white">
+                    <input type="text" name="q" class="form-control" placeholder="Busca pel·lícules, sèries, directors..." aria-label="Cerca">
+                    <button class="btn btn-primary" type="submit">
+                        <i class="bi bi-search me-2"></i> Cerca
+                    </button>
                 </div>
-                <div class="mt-3 text-center">
-                    <p class="mb-0 fw-bold">{{ item.titol }}</p>
-                    <small class="text-muted text-uppercase">{{ item.genere }}</small>
-                </div>
-            </a>
+            </form>
         </div>
-        {% endfor %}
     </div>
 </section>
+
+<div class="container section-container">
+
+    <section class="mb-5">
+        <h3 class="trending-title-main"><i class="bi bi-graph-up-arrow text-danger me-2"></i> Tendències de la setmana</h3>
+        <div class="row row-cols-1 row-cols-md-3 row-cols-lg-4 g-4">
+            {% for item in tendencies %}
+                {% include "components/card_contingut.html" %}
+            {% endfor %}
+        </div>
+    </section>
+
+    <section class="mb-5">
+        <h3 class="trending-title-main"><i class="bi bi-eye text-primary me-2"></i> Més vistes</h3>
+        <div class="row row-cols-1 row-cols-md-3 row-cols-lg-4 g-4">
+            {% for item in tendencies|dictsortreversed:"rating" %}
+                {% include "components/card_contingut.html" %}
+            {% endfor %}
+        </div>
+    </section>
+
+    <section class="mb-5">
+        <h3 class="trending-title-main"><i class="bi bi-clock-history text-success me-2"></i> Afegides recentment</h3>
+        <div class="row row-cols-1 row-cols-md-3 row-cols-lg-4 g-4">
+            {% for item in tendencies|dictsortreversed:"any" %}
+                {% include "components/card_contingut.html" %}
+            {% endfor %}
+        </div>
+    </section>
+
+    <section class="mb-5">
+        <h3 class="trending-title-main"><i class="bi bi-star-fill text-warning me-2"></i> Millor valorades</h3>
+        <div class="row row-cols-1 row-cols-md-3 row-cols-lg-4 g-4">
+            {% for item in tendencies %}
+                {% include "components/card_contingut.html" %}
+            {% endfor %}
+        </div>
+    </section>
+
+</div>
 {% endblock %}

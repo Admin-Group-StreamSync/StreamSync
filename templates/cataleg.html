@@ -1,201 +1,166 @@
 {% extends "base.html" %}
 
-{% block title %}Catàleg - StreamSync{% endblock %}
+{% block title %}
+    {% if tipus_actual == 'movie' %}Pel·lícules{% elif tipus_actual == 'series' %}Sèries{% else %}Catàleg{% endif %} - StreamSync
+{% endblock %}
 
 {% block extra_css %}
 <style>
-    /* Estils de la targeta de filtres */
-    .filter-card {
-        background-color: #ffffff;
-        border-radius: 15px;
-        border: none;
+    .filter-container {
+        padding: 30px 0;
+        border-bottom: 1px solid #eee;
+        margin-bottom: 30px;
     }
-    
-    /* Estils de les targetes de contingut */
-    .content-card {
-        transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+    .filter-row {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 15px;
+        align-items: end;
+    }
+
+    .filter-select-figma {
+        appearance: none;
+        background: white;
+        border: 1px solid #ddd;
         border-radius: 12px;
-        overflow: hidden;
-        background: #fff;
+        padding: 12px 15px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: #666;
+        cursor: pointer;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%23666' viewBox='0 0 16 16'%3E%3Cpath d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 12px center;
+        background-size: 10px;
+        transition: all 0.2s;
+        height: 48px;
     }
-    .content-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important;
+
+    input.filter-select-figma {
+        background-image: none;
+        cursor: text;
     }
-    
-    .img-placeholder {
-        height: 220px;
-        background-color: #e9ecef;
+
+    .slider-wrapper {
+        background: white;
+        border: 1px solid #ddd;
+        border-radius: 12px;
+        padding: 8px 15px;
+        height: 48px;
         display: flex;
-        align-items: center;
+        flex-direction: column;
         justify-content: center;
-        position: relative;
     }
-    
-    /* Indicador de puntuació (Rating) */
-    .badge-rating {
-        position: absolute;
-        top: 10px;
-        left: 10px;
-        background: rgba(255, 255, 255, 0.9);
-        color: #ffc107;
-        font-weight: bold;
-        padding: 4px 8px;
-        border-radius: 8px;
-        font-size: 0.8rem;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        z-index: 3;
+
+    .custom-slider {
+        -webkit-appearance: none;
+        width: 100%;
+        height: 4px;
+        background: #eee;
+        border-radius: 5px;
+        outline: none;
     }
-    
-    /* Botó flotant d'afegir */
-    .btn-add-float {
-        position: absolute;
-        bottom: 10px;
-        right: 10px;
+
+    .custom-slider::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        width: 14px;
+        height: 14px;
+        background: #8a2be2;
         border-radius: 50%;
-        width: 35px;
-        height: 35px;
+        cursor: pointer;
+        border: 2px solid white;
+    }
+
+    .btn-reset {
+        height: 48px;
+        border-radius: 12px;
+        font-weight: 700;
+        font-size: 0.85rem;
         display: flex;
         align-items: center;
         justify-content: center;
-        padding: 0;
-        z-index: 3;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        gap: 8px;
+        transition: 0.3s;
     }
 </style>
 {% endblock %}
 
 {% block content %}
 <div class="container mt-4 mb-5">
-    
-    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
-        <h2 class="fw-bold mb-0">
-            <a href="{% url 'catalogo' %}{% if tipus_sel %}?tipus={{ tipus_sel }}{% endif %}" class="text-decoration-none text-dark" title="Netejar tots els filtres">
-                {% if tipus_sel == 'series' %}
-                    <i class="bi bi-tv text-primary me-2"></i>
-                {% elif tipus_sel == 'movie' %}
-                    <i class="bi bi-film text-primary me-2"></i>
-                {% else %}
-                    <i class="bi bi-grid-3x3-gap-fill text-primary me-2"></i>
-                {% endif %}
-                {{ titol_pagina|default:"Catàleg de Contingut" }}
-            </a>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold m-0">
+            {% if tipus_actual == 'movie' %} Pel·lícules
+            {% elif tipus_actual == 'series' %} Sèries
+            {% else %} Catàleg de Continguts {% endif %}
         </h2>
-
-        <form method="GET" action="{% url 'catalogo' %}" class="input-group shadow-sm" style="max-width: 400px; border-radius: 25px; overflow: hidden;">
-            {% if tipus_sel %}<input type="hidden" name="tipus" value="{{ tipus_sel }}">{% endif %}
-
-            <span class="input-group-text bg-white border-0"><i class="bi bi-search text-muted"></i></span>
-            <input type="text" name="q" class="form-control border-0 shadow-none" placeholder="Cerca títols, directors..." value="{{ query }}">
-            <button class="btn btn-primary px-3 border-0" type="submit">Cerca</button>
-        </form>
+        <span class="badge bg-light text-dark border fw-normal px-3 py-2 rounded-pill">
+            {{ contenidos|length }} resultats trobats
+        </span>
     </div>
 
-    <div class="card filter-card shadow-sm p-3 mb-5">
-        <form method="GET" action="{% url 'catalogo' %}" id="filterForm" class="row g-3">
-            <input type="hidden" name="q" value="{{ query }}">
+    <div class="filter-container">
+        <form method="GET" action="{% url 'catalogo' %}" id="filterForm" class="filter-row">
 
-            {% if tipus_sel %}<input type="hidden" name="tipus" value="{{ tipus_sel }}">{% endif %}
+            {% if tipus_actual %}
+                <input type="hidden" name="tipus" value="{{ tipus_actual }}">
+            {% endif %}
 
-            <div class="col-6 col-md-2">
-                <label class="form-label small fw-bold text-muted">GÈNERE</label>
-                <select name="genere" class="form-select border-light bg-light shadow-none" onchange="this.form.submit()">
-                    <option value="Tots">Tots</option>
-                    <option value="Action" {% if genere_sel == 'Action' %}selected{% endif %}>Acció</option>
-                    <option value="Animation" {% if genere_sel == 'Animation' %}selected{% endif %}>Animació</option>
-                    <option value="Crime" {% if genere_sel == 'Crime' %}selected{% endif %}>Crim</option>
-                    <option value="Drama" {% if genere_sel == 'Drama' %}selected{% endif %}>Drama</option>
-                    <option value="Sci-Fi" {% if genere_sel == 'Sci-Fi' %}selected{% endif %}>Ciència Ficció</option>
-                    <option value="Thriller" {% if genere_sel == 'Thriller' %}selected{% endif %}>Suspens</option>
-                </select>
-            </div>
+            <select name="plataforma" class="filter-select-figma" onchange="this.form.submit()">
+                <option value="">Totes les Plataformes</option>
+                <option value="CinePlus" {% if plataforma_sel == 'CinePlus' %}selected{% endif %}>CinePlus</option>
+                <option value="StreamHub" {% if plataforma_sel == 'StreamHub' %}selected{% endif %}>StreamHub</option>
+                <option value="PlayMax" {% if plataforma_sel == 'PlayMax' %}selected{% endif %}>PlayMax</option>
+            </select>
 
-            <div class="col-6 col-md-2">
-                <label class="form-label small fw-bold text-muted">IDIOMA</label>
-                <select name="idioma" class="form-select border-light bg-light shadow-none" onchange="this.form.submit()">
-                    <option value="Tots">Tots</option>
-                    <option value="English" {% if idioma_sel == 'English' %}selected{% endif %}>Anglès</option>
-                    <option value="Spanish" {% if idioma_sel == 'Spanish' %}selected{% endif %}>Castellà</option>
-                    <option value="Japanese" {% if idioma_sel == 'Japanese' %}selected{% endif %}>Japonès</option>
-                    <option value="Korean" {% if idioma_sel == 'Korean' %}selected{% endif %}>Coreà</option>
-                </select>
-            </div>
+            <select name="genere" class="filter-select-figma" onchange="this.form.submit()">
+                <option value="">Tots els Gèneres</option>
+                {% for g in opcions.generes %}
+                <option value="{{ g }}" {% if genere_sel == g %}selected{% endif %}>{{ g }}</option>
+                {% endfor %}
+            </select>
 
-            <div class="col-6 col-md-3">
-                <label class="form-label small fw-bold text-muted">EDAT RECOMANADA</label>
-                <select name="edat" class="form-select border-light bg-light shadow-none" onchange="this.form.submit()">
-                    <option value="Tots">Totes les edats</option>
-                    <option value="G" {% if edat_sel == 'G' %}selected{% endif %}>G (Tots els públics)</option>
-                    <option value="PG" {% if edat_sel == 'PG' %}selected{% endif %}>PG (+10 anys)</option>
-                    <option value="PG-13" {% if edat_sel == 'PG-13' %}selected{% endif %}>PG-13 (+13 anys)</option>
-                    <option value="R" {% if edat_sel == 'R' %}selected{% endif %}>R (+17 anys)</option>
-                </select>
-            </div>
+            <input type="text" name="director" class="filter-select-figma"
+                   placeholder="Buscar director..."
+                   value="{{ director_sel|default:'' }}"
+                   onchange="this.form.submit()">
 
-            <div class="col-6 col-md-2">
-                <label class="form-label small fw-bold text-muted">ANY</label>
-                <select name="any" class="form-select border-light bg-light shadow-none" onchange="this.form.submit()">
-                    <option value="Tots">Qualsevol any</option>
-                    <option value="2023" {% if any_sel == '2023' %}selected{% endif %}>2023</option>
-                    <option value="2022" {% if any_sel == '2022' %}selected{% endif %}>2022</option>
-                    <option value="2021" {% if any_sel == '2021' %}selected{% endif %}>2021</option>
-                    <option value="2019" {% if any_sel == '2019' %}selected{% endif %}>2019</option>
-                    <option value="2010" {% if any_sel == '2010' %}selected{% endif %}>2010</option>
-                </select>
-            </div>
+            <select name="edat" class="filter-select-figma" onchange="this.form.submit()">
+                <option value="">Totes les edats</option>
+                {% for e in opcions.edats %}
+                <option value="{{ e }}" {% if edat_sel == e %}selected{% endif %}>{{ e }}</option>
+                {% endfor %}
+            </select>
 
-            <div class="col-12 col-md-3">
-                <label class="form-label small fw-bold text-muted">ORDENA PER</label>
-                <select name="ordre" class="form-select border-light bg-light shadow-none" onchange="this.form.submit()">
-                    <option value="populars" {% if ordre_sel == 'populars' %}selected{% endif %}>Més populars</option>
-                    <option value="valorats" {% if ordre_sel == 'valorats' %}selected{% endif %}>Millor valorats</option>
-                    <option value="recents" {% if ordre_sel == 'recents' %}selected{% endif %}>Més recents</option>
-                </select>
-            </div>
-        </form>
-    </div>
-
-    <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-6 g-4">
-        {% for item in contenidos %}
-        <div class="col">
-            <div class="card h-100 border-0 shadow-sm content-card position-relative">
-
-                <div class="img-placeholder">
-                    {% if item.tipus == 'series' %}
-                        <i class="bi bi-tv fs-1 text-muted opacity-25"></i>
-                    {% else %}
-                        <i class="bi bi-film fs-1 text-muted opacity-25"></i>
-                    {% endif %}
-
-                    <span class="badge-rating"><i class="bi bi-star-fill"></i> {{ item.rating }}</span>
-
-                    <button class="btn btn-primary btn-add-float shadow" title="Afegir a la meva llista">
-                        <i class="bi bi-plus-lg"></i>
-                    </button>
+            <div class="slider-wrapper">
+                <div class="d-flex justify-content-between align-items-center mb-1">
+                    <label class="fw-bold text-muted m-0" style="font-size: 0.65rem;">Mínim:</label>
+                    <span id="valDisplay" class="text-primary fw-bold" style="font-size: 0.75rem;">{{ valoracio_sel|default:"0" }}⭐</span>
                 </div>
-
-                <div class="card-body p-3 text-center">
-                    <p class="text-primary small fw-bold mb-1 text-uppercase" style="font-size: 0.7rem;">
-                        {{ item.genere }} <span class="text-muted fw-normal ms-1">| {{ item.idioma }}</span>
-                    </p>
-                    <h6 class="card-title fw-bold text-dark mb-0 text-truncate">{{ item.titol }}</h6>
-                    <small class="text-muted">{{ item.any }}</small>
-                </div>
-
-                <a href="{% url 'detall_contingut' item.id %}" class="stretched-link"></a>
+                <input type="range" name="valoracio" class="custom-slider"
+                       min="0" max="10" step="0.5"
+                       value="{{ valoracio_sel|default:'0' }}"
+                       oninput="document.getElementById('valDisplay').innerText = this.value + '⭐'"
+                       onchange="this.form.submit()">
             </div>
-        </div>
 
-        {% empty %}
-        <div class="col-12 text-center py-5">
-            <i class="bi bi-search fs-1 text-muted opacity-50"></i>
-            <h4 class="mt-3 text-muted fw-bold">Cap resultat trobat</h4>
-            <p class="text-muted">No hem trobat contingut que coincideixi amb els teus filtres.</p>
-
-            <a href="{% url 'catalogo' %}{% if tipus_sel %}?tipus={{ tipus_sel }}{% endif %}" class="btn btn-outline-primary mt-2 rounded-pill fw-bold">
-                Netejar filtres
+            <a href="{% if tipus_actual == 'movie' %}{% url 'cataleg_pelis' %}{% elif tipus_actual == 'series' %}{% url 'cataleg_series' %}{% else %}{% url 'catalogo' %}{% endif %}"
+               class="btn btn-outline-danger btn-reset">
+                <i class="bi bi-trash3"></i> Netejar
             </a>
-        </div>
+        </form>
+    </div>
+
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xl-4 g-4">
+        {% for item in contenidos %}
+            {% include "components/card_contingut.html" %}
+        {% empty %}
+            <div class="col-12 text-center py-5">
+                <i class="bi bi-filter-circle fs-1 text-muted mb-3 d-block"></i>
+                <h4 class="text-muted">No hi ha resultats amb aquests filtres</h4>
+                <a href="{% if tipus_actual == 'movie' %}{% url 'cataleg_pelis' %}{% elif tipus_actual == 'series' %}{% url 'cataleg_series' %}{% else %}{% url 'catalogo' %}{% endif %}"
+                   class="btn btn-primary rounded-pill mt-2 px-4">Torna a carregar</a>
+            </div>
         {% endfor %}
     </div>
 </div>

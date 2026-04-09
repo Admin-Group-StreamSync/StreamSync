@@ -1,57 +1,51 @@
-<nav class="navbar navbar-expand bg-body-tertiary shadow-sm py-2">
-    <div class="container-fluid">
-        <a class="navbar-brand fw-bold d-flex align-items-center" href="{% url 'pagina_principal' %}" title="Inici">
-            <i class="bi bi-house-fill text-primary fs-4 me-2"></i> StreamSync
+<nav class="navbar navbar-expand py-2 shadow-sm" style="background-color: #8a2be2; min-height: 70px;">
+    <div class="container-fluid position-relative d-flex align-items-center justify-content-between">
+
+        <a class="navbar-brand fw-bold d-flex align-items-center m-0 text-white" href="{% url 'pagina_principal' %}" title="Inici">
+            <i class="bi bi-grid-fill fs-4 me-2"></i> StreamSync
         </a>
 
-        <form method="GET" action="{% url 'catalogo' %}" class="input-group mx-3 mb-0" style="max-width: 400px;">
-            <input type="text" name="q" class="form-control border-end-0 bg-light shadow-none" placeholder="Cerca contingut..." aria-label="Cerca">
-            <button class="btn btn-primary border-0 px-3 shadow-none" type="submit">
-                <i class="bi bi-search text-white"></i>
-            </button>
-        </form>
+        <div class="d-none d-lg-block position-absolute start-50 translate-middle-x" style="width: 100%; max-width: 400px; z-index: 1050;">
+            <form method="GET" action="{% url 'catalogo' %}" class="input-group">
+                <span class="input-group-text bg-white border-0 ps-3" style="border-radius: 50px 0 0 50px; background-color: rgba(255,255,255,0.2) !important;">
+                    <i class="bi bi-search text-white opacity-75"></i>
+                </span>
+                <input type="text" name="q" class="form-control border-0 text-white shadow-none"
+                       placeholder="Buscar pel·lícules i sèries..."
+                       style="background-color: rgba(255,255,255,0.2); border-radius: 0 50px 50px 0; color: white !important;">
 
-        <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent" aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
+                <style>
+                    /* Estil per al placeholder en blanc */
+                    .form-control::placeholder { color: rgba(255,255,255,0.7); }
+                </style>
+            </form>
+        </div>
 
-        <div class="collapse navbar-collapse" id="navbarContent">
-            <ul class="navbar-nav ms-auto align-items-center">
-                <li class="nav-item"><a class="nav-link fw-semibold" href="{% url 'llistes' %}">Llistes</a></li>
+        <div class="d-flex align-items-center">
+            <ul class="navbar-nav flex-row align-items-center gap-3">
+                <li class="nav-item">
+                    <a class="nav-link text-white fw-semibold small" href="{% url 'llistes' %}">Les meves llistes</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white fw-semibold small" href="{% url 'catalogo' %}?tipus=movie">Pel·lícules</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white fw-semibold small" href="{% url 'catalogo' %}?tipus=series">Sèries</a>
+                </li>
 
-                <li class="nav-item"><a class="nav-link fw-semibold" href="{% url 'catalogo' %}?tipus=series">Sèries</a></li>
-                <li class="nav-item"><a class="nav-link fw-semibold" href="{% url 'catalogo' %}?tipus=movie">Pel·lícules</a></li>
-
-                <div class="ms-3 ps-3 border-start d-flex align-items-center" style="min-height: 45px;">
+                <li class="nav-item ms-2">
                     {% if user.is_authenticated %}
-                        <li class="nav-item">
-                            <a class="nav-link text-primary fw-bold d-flex align-items-center bg-white border rounded-pill px-3 py-1 shadow-sm" href="{% url 'pagina_perfil1' %}">
-                                <i class="bi bi-person-circle fs-4 me-2"></i>
-                                <span>{{ user.username }}</span>
-                            </a>
-                        </li>
+                        <a class="btn btn-white text-primary fw-bold rounded-pill px-4 shadow-sm" href="{% url 'pagina_perfil1' %}" style="background-color: white;">
+                            <i class="bi bi-person-circle me-1"></i> {{ user.username }}
+                        </a>
                     {% else %}
-                        <li class="nav-item dropdown">
-                            <a class="nav-link text-primary p-0 d-flex align-items-center" href="#" id="perfilDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                <i class="bi bi-person-circle fs-2 lh-1"></i>
-                            </a>
-                            <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2">
-                                <li>
-                                    <a class="dropdown-item fw-bold text-primary py-2" href="{% url 'login' %}">
-                                        <i class="bi bi-box-arrow-in-right me-2"></i> Inicia sessió
-                                    </a>
-                                </li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li>
-                                    <a class="dropdown-item py-2 fw-semibold" href="{% url 'crear_cuenta' %}">
-                                        <i class="bi bi-person-plus me-2"></i> Registra't
-                                    </a>
-                                </li>
-                            </ul>
-                        </li>
+                        <a class="btn btn-white text-primary fw-bold rounded-pill px-4 shadow-sm" href="{% url 'login' %}" style="background-color: white;">
+                            Login
+                        </a>
                     {% endif %}
-                </div>
+                </li>
             </ul>
         </div>
+
     </div>
 </nav>
