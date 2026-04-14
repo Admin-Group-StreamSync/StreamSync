@@ -1,0 +1,42 @@
+name: Django CD
+
+on:
+  workflow_run:
+    workflows: [ "Django CI" ]
+    types:
+      - completed
+  push:
+    branches: ["master"]
+
+jobs:
+  deploy:
+    if: ${{ github.event.workflow_run.conclusion == 'success' || github.event_name == 'push' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4 # Fase de Code
+
+      # 1. FASE DE RELEASE: Construir y subir el artefacto al repositorio
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ vars.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_TOKEN }}
+
+      - name: Build and Push Docker image
+        run: |
+          # Se genera una imagen reusable para optimizar el rendimiento
+          docker build -t ${{ vars.DOCKER_USERNAME }}/mi-app:latest .
+          docker push ${{ vars.DOCKER_USERNAME }}/mi-app:latest
+
+
+      # Requiere la verison PRO de render para esto: Hay que deplegar manualmente.
+
+      # 2. FASE DE DEPLOY: Hacer el software disponible en producción
+      # Se utiliza un webhook para disparar el despliegue automático en Render
+      - name: Trigger Render Deployment
+        run: |
+          echo "Notificando a Render para iniciar el despliegue..."
+          curl -f ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
+
+          

@@ -4,6 +4,7 @@ import requests
 from datetime import datetime
 import matplotlib.pyplot as plt
 from matplotlib.ticker import MaxNLocator
+
 import os
 # ── Configuración ──────────────────────────────────────────────────────────────
 REPO   = "Admin-Group-StreamSync/StreamSync"
@@ -69,6 +70,7 @@ def count_open_per_week(
         open_count = sum(
             1
             for created, closed in issue_dates
+
             if start <= created <= end and (closed is None)
         )
         counts.append(open_count)
@@ -76,6 +78,7 @@ def count_open_per_week(
 
 # ── Main ───────────────────────────────────────────────────────────────────────
 def main():
+
     SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
     img_path = os.path.join(SCRIPT_DIR, 'issues_per_week.png')
     print("Obteniendo issues de GitHub…")
