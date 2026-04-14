@@ -1,0 +1,46 @@
+# Docker Compose file -- defines how to run the project's containers
+
+services:
+  # The Django web application
+  web:
+    # Build the image using the Dockerfile in the current directory (./Dockerfile)
+    build: .
+
+    # Map port 8000 on your machine to port 8000 in the container
+    # Access the app at http://localhost:8000
+    ports:
+      - "8000:8000"
+
+    # Mount the current directory into /app in the container
+    # This means code changes on your machine are reflected instantly (live reload)
+    volumes:
+      - .:/app  # "." = your project folder, "/app" = where it goes inside the container
+
+    # Wait for the database to be ready before starting the web server
+    depends_on:
+      - db
+
+  # PostgreSQL database
+  db:
+    # Use the official PostgreSQL 17 image (Alpine = smaller size)
+    image: postgres:17-alpine
+
+    # Set up the database credentials and name
+    environment:
+      POSTGRES_DB: StreamSyncDB
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: 1234
+
+    # Persist database data so it survives container restarts
+    # Without this, all data would be lost every time the container stops
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+    # Expose PostgreSQL port to the host (optional, useful so we can connect from the host too)
+    ports:
+      - "5432:5432"
+
+# Named volumes (folders managed by Docker that live outside the containers)
+# They keep data even if you delete and recreate the containers
+volumes:
+  pgdata:
