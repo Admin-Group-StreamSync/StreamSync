@@ -7,7 +7,33 @@
     .profile-container { background: #fff; min-height: 90vh; padding: 40px 0; }
 
     /* Sidebar */
-    .sidebar-nav { background: #fff; border-radius: 20px; padding: 30px; border: 1px solid #f2f2f2; box-shadow: 0 4px 20px rgba(0,0,0,0.03); }
+    .sidebar-nav {
+        background: #fff; border-radius: 20px; padding: 30px;
+        border: 1px solid #f2f2f2; box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+    }
+
+    /* Botó Tornar a l'inici amb efecte dinàmic (com a detalls) */
+    .btn-back-sidebar {
+        display: inline-flex;
+        align-items: center;
+        text-decoration: none;
+        color: #999;
+        font-weight: 800;
+        font-size: 0.7rem;
+        letter-spacing: 0.5px;
+        transition: all 0.3s ease;
+        padding: 8px 12px;
+        border-radius: 12px;
+        margin-left: -12px; /* Per alinear visualment amb el text de sota */
+        margin-bottom: 15px;
+    }
+
+    .btn-back-sidebar:hover {
+        color: #8a2be2;
+        background: #f8f0ff;
+        transform: translateX(-5px); /* Efecte de moviment lateral */
+    }
+
     .sidebar-title { font-weight: 800; font-size: 1.1rem; margin-bottom: 25px; color: #000; }
 
     .nav-link-custom {
@@ -22,7 +48,10 @@
     .content-card { background: white; border-radius: 24px; padding: 40px; border: 1px solid #f2f2f2; }
 
     /* Formulari */
-    .section-label { font-weight: 800; font-size: 0.7rem; color: #999; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px; display: block; }
+    .section-label {
+        font-weight: 800; font-size: 0.7rem; color: #999;
+        text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px; display: block;
+    }
     .form-control-figma {
         width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #ddd;
         background-color: #fff; font-size: 0.95rem; outline: none;
@@ -50,11 +79,12 @@
         <div class="row">
             <div class="col-md-3 mb-4">
                 <div class="sidebar-nav">
-                    <div class="mb-4">
-                        <a href="{% url 'pagina_principal' %}" class="text-decoration-none text-muted small fw-bold">
-                            ← TORNAR A L'INICI
+                    <div class="mb-2">
+                        <a href="{% url 'pagina_principal' %}" class="btn-back-sidebar text-uppercase">
+                            <i class="bi bi-arrow-left me-2"></i> Tornar a l'Inici
                         </a>
                     </div>
+
                     <div class="sidebar-title">El meu Compte</div>
                     <nav>
                         <a href="{% url 'pagina_perfil1' %}" class="nav-link-custom active">
@@ -78,7 +108,7 @@
             </div>
 
             <div class="col-md-9">
-                <div class="content-card">
+                <div class="content-card shadow-sm">
                     <div class="d-flex align-items-center mb-5">
                         <div style="width: 50px; height: 50px; background: #f4f0ff; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #8a2be2;" class="me-3">
                             <i class="bi bi-person-fill fs-3"></i>
@@ -111,7 +141,7 @@
                         </div>
 
                         <div class="pt-4 border-top d-flex align-items-center justify-content-between">
-                            <div class="d-flex gap-3">
+                            <div class="d-flex gap-3 flex-wrap">
                                 <button type="submit" class="btn-save">GUARDAR CANVIS</button>
                                 <a href="{% url 'cambiar_password' %}" class="btn-pass">CANVIAR CONTRASENYA</a>
                             </div>
@@ -130,13 +160,14 @@
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content border-0 shadow" style="border-radius: 20px;">
             <div class="modal-body p-5 text-center">
+                <i class="bi bi-exclamation-triangle text-danger display-4 mb-3"></i>
                 <h4 class="fw-bold">Esborrar compte?</h4>
-                <p class="text-muted">Aquesta acció és permanent.</p>
+                <p class="text-muted">Aquesta acció és permanent i perdràs totes les teves llistes guardades.</p>
                 <div class="d-flex gap-2 justify-content-center mt-4">
-                    <button type="button" class="btn btn-light px-4" data-bs-dismiss="modal" style="border-radius: 12px;">Cancel·lar</button>
+                    <button type="button" class="btn btn-light px-4 fw-bold" data-bs-dismiss="modal" style="border-radius: 12px;">Cancel·lar</button>
                     <form method="post" action="{% url 'esborrar_compte' %}">
                         {% csrf_token %}
-                        <button type="submit" class="btn btn-danger px-4" style="border-radius: 12px;">Sí, esborrar</button>
+                        <button type="submit" class="btn btn-danger px-4 fw-bold" style="border-radius: 12px;">Sí, esborrar</button>
                     </form>
                 </div>
             </div>

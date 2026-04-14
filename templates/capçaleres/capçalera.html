@@ -1,22 +1,105 @@
+<style>
+    /* 1. Animació i icona del Logo (Claqueta de cinema) */
+    .navbar-brand {
+        transition: transform 0.3s ease;
+    }
+
+    .navbar-brand:hover {
+        transform: scale(1.03);
+    }
+
+    .navbar-brand i {
+        display: inline-block;
+        transition: transform 0.4s ease, color 0.3s ease;
+        color: rgba(255,255,255,0.9);
+    }
+
+    /* Animació de cloenda de la claqueta al fer hover */
+    .navbar-brand:hover i {
+        animation: clapper-action 0.6s ease;
+        color: white;
+    }
+
+    @keyframes clapper-action {
+        0% { transform: rotate(0deg); }
+        30% { transform: rotate(-15deg); } /* Obre una mica */
+        60% { transform: rotate(5deg); }   /* Tanca fort */
+        100% { transform: rotate(0deg); }
+    }
+
+    /* 2. Animació per als enllaços del menú (Subratllat expansiu) */
+    .navbar-nav .nav-link {
+        position: relative;
+        transition: all 0.3s ease;
+        opacity: 0.85;
+    }
+
+    .navbar-nav .nav-link:hover, .navbar-nav .nav-link.active {
+        opacity: 1;
+        transform: translateY(-2px);
+        color: white !important;
+    }
+
+    .navbar-nav .nav-link::after {
+        content: '';
+        position: absolute;
+        width: 0;
+        height: 2px;
+        bottom: 0;
+        left: 50%;
+        background-color: white;
+        transition: all 0.3s ease;
+        transform: translateX(-50%);
+    }
+
+    .navbar-nav .nav-link:hover::after, .navbar-nav .nav-link.active::after {
+        width: 80%;
+    }
+
+    /* 3. Animació per al Botó de Login / Perfil (Efecte pop) */
+    .btn-light {
+        transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
+    }
+
+    .btn-light:hover {
+        transform: scale(1.08);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2) !important;
+        background-color: #ffffff !important;
+    }
+
+    /* 4. Animació per a la barra de cerca (Il·luminació) */
+    .input-group {
+        transition: all 0.3s ease;
+    }
+
+    .input-group:hover, .input-group:focus-within {
+        background: rgba(255, 255, 255, 0.35) !important;
+        border-color: rgba(255, 255, 255, 0.5) !important;
+        transform: scale(1.02);
+    }
+</style>
+
 <nav class="navbar navbar-expand-lg navbar-dark shadow-sm py-3" style="background: #8a2be2;">
     <div class="container-fluid px-4">
         <div class="d-flex align-items-center justify-content-between w-100">
 
             <div class="flex-grow-1" style="flex-basis: 0;">
                 <a class="navbar-brand fw-bold d-flex align-items-center fs-4 m-0" href="{% url 'pagina_principal' %}">
-                    <i class="bi bi-grid-fill me-2"></i> StreamSync
+                    <i class="bi bi-clapperboard-fill me-2 fs-3"></i>
+                    <span style="letter-spacing: -0.5px;">StreamSync</span>
                 </a>
             </div>
 
             <div class="flex-grow-1 d-none d-lg-flex justify-content-center" style="flex-basis: 0;">
                 {% if request.path != '/' %}
-                <form action="{% url 'catalogo' %}" method="GET" style="width: 100%; max-width: 400px;">
+                <form action="{% url 'cerca_contingut' %}" method="GET" style="width: 100%; max-width: 400px;">
                     <div class="input-group" style="background: rgba(255,255,255,0.2); border-radius: 50px; border: 1px solid rgba(255,255,255,0.1);">
                         <span class="input-group-text bg-transparent border-0 text-white opacity-75 ps-3">
                             <i class="bi bi-search"></i>
                         </span>
                         <input type="text" name="q" class="form-control bg-transparent border-0 text-white py-2 shadow-none"
-                               placeholder="Buscar pel·lícules i sèries..."
+                               placeholder="Cerca pel·lícules o sèries..."
+                               value="{{ query|default:'' }}"
                                style="color: white !important;">
                     </div>
                 </form>
@@ -26,13 +109,21 @@
             <div class="flex-grow-1 d-flex justify-content-end align-items-center" style="flex-basis: 0;">
                 <div class="collapse navbar-collapse justify-content-end" id="navMenu">
                     <ul class="navbar-nav align-items-center gap-2">
-                        <li class="nav-item"><a class="nav-link text-white fw-semibold small" href="{% url 'llistes' %}">Les meves llistes</a></li>
-                        <li class="nav-item"><a class="nav-link text-white fw-semibold small" href="{% url 'catalogo' %}?tipus=movie">Pel·lícules</a></li>
-                        <li class="nav-item"><a class="nav-link text-white fw-semibold small" href="{% url 'catalogo' %}?tipus=series">Sèries</a></li>
+                        <li class="nav-item">
+                            <a class="nav-link text-white fw-semibold small" href="{% url 'llistes' %}">Les meves llistes</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-white fw-semibold small {% if tipus_actual == 'movie' %}active{% endif %}"
+                               href="{% url 'cataleg_pelis' %}">Pel·lícules</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-white fw-semibold small {% if tipus_actual == 'series' %}active{% endif %}"
+                               href="{% url 'cataleg_series' %}">Sèries</a>
+                        </li>
                         <li class="nav-item ms-2">
                             {% if user.is_authenticated %}
                                 <a class="btn btn-light rounded-pill px-4 py-2 fw-bold text-primary shadow-sm" href="{% url 'pagina_perfil1' %}">
-                                    {{ user.username }}
+                                    <i class="bi bi-person-circle me-1"></i> {{ user.username }}
                                 </a>
                             {% else %}
                                 <a class="btn btn-light rounded-pill px-4 py-2 fw-bold text-primary shadow-sm" href="{% url 'login' %}">Login</a>

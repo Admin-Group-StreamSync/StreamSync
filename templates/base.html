@@ -32,7 +32,7 @@
             flex-grow: 1;
         }
 
-        /* --- ESTILS UNIFICATS PER A TARGETES (LOOK & FEEL FIGMA) --- */
+        /* --- ESTILS UNIFICATS PER A TARGETES --- */
         .card-streaming-figma {
             background: white;
             border-radius: 20px;
@@ -53,7 +53,7 @@
 
         .poster-wrapper {
             position: relative;
-            aspect-ratio: 16 / 9; /* Format horitzontal tipus Netflix */
+            aspect-ratio: 16 / 9;
             background: #000;
             overflow: hidden;
         }
@@ -69,7 +69,6 @@
             transform: scale(1.1);
         }
 
-        /* Badges sobre la imatge */
         .platform-tag {
             position: absolute;
             top: 12px;
@@ -100,7 +99,6 @@
             z-index: 2;
         }
 
-        /* Info de la targeta */
         .card-info-api {
             padding: 20px;
             flex-grow: 1;
@@ -143,7 +141,6 @@
             text-transform: uppercase;
         }
 
-        /* --- ESTILS PER ALS FILTRES DEL CATÀLEG --- */
         .filter-select-figma {
             appearance: none;
             background: white;
@@ -166,7 +163,6 @@
             outline: none;
             box-shadow: 0 0 0 4px rgba(138, 43, 226, 0.1);
         }
-
     </style>
 
     {% block extra_css %}{% endblock %}
@@ -183,8 +179,6 @@
         {% block content %}
         {% endblock %}
     </main>
-
-    {% include 'components/footer.html' %}
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 

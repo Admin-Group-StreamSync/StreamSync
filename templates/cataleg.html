@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block title %}
-    {% if tipus_actual == 'movie' %}Pel·lícules{% elif tipus_actual == 'series' %}Sèries{% else %}Catàleg{% endif %} - StreamSync
+    StreamSync - {% if query %}Cerca: {{ query }}{% elif tipus_actual == 'movie' %}Pel·lícules{% elif tipus_actual == 'series' %}Sèries{% else %}Catàleg{% endif %}
 {% endblock %}
 
 {% block extra_css %}
@@ -11,157 +11,148 @@
         border-bottom: 1px solid #eee;
         margin-bottom: 30px;
     }
-
     .filter-row {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
         gap: 15px;
         align-items: end;
     }
-
-    .filter-select-figma {
-        appearance: none;
-        background: white;
-        border: 1px solid #ddd;
-        border-radius: 12px;
-        padding: 12px 15px;
-        font-size: 0.85rem;
-        font-weight: 600;
-        color: #666;
-        cursor: pointer;
-        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%23666' viewBox='0 0 16 16'%3E%3Cpath d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3E%3C/svg%3E");
-        background-repeat: no-repeat;
-        background-position: right 12px center;
-        background-size: 10px;
-        transition: all 0.2s;
-        height: 48px;
+    .filter-active {
+        border-color: #8a2be2 !important;
+        background-color: #f8f0ff !important;
+        color: #8a2be2 !important;
     }
-
+    .filter-select-figma {
+        height: 48px;
+        border-radius: 12px;
+        border: 1px solid #ddd;
+        padding: 0 15px;
+        font-weight: 500;
+        background-color: white;
+        transition: all 0.2s;
+    }
     input.filter-select-figma {
-        background-image: none;
         cursor: text;
     }
-
-    .slider-wrapper {
-        background: white;
-        border: 1px solid #ddd;
-        border-radius: 12px;
-        padding: 8px 15px;
-        height: 48px;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-    }
-
-    .custom-slider {
-        -webkit-appearance: none;
-        width: 100%;
-        height: 4px;
-        background: #eee;
-        border-radius: 5px;
+    .filter-select-figma:focus {
+        border-color: #8a2be2;
         outline: none;
+        box-shadow: 0 0 0 3px rgba(138, 43, 226, 0.1);
     }
-
-    .custom-slider::-webkit-slider-thumb {
-        -webkit-appearance: none;
-        width: 14px;
-        height: 14px;
-        background: #8a2be2;
-        border-radius: 50%;
-        cursor: pointer;
-        border: 2px solid white;
-    }
-
-    .btn-reset {
-        height: 48px;
-        border-radius: 12px;
-        font-weight: 700;
-        font-size: 0.85rem;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 8px;
-        transition: 0.3s;
+    .custom-slider {
+        width: 100%;
+        accent-color: #8a2be2;
     }
 </style>
 {% endblock %}
 
 {% block content %}
 <div class="container mt-4 mb-5">
+
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2 class="fw-bold m-0">
-            {% if tipus_actual == 'movie' %} Pel·lícules
-            {% elif tipus_actual == 'series' %} Sèries
-            {% else %} Catàleg de Continguts {% endif %}
+            {% if query %} <i class="bi bi-search me-2"></i>Resultats per a "{{ query }}"
+            {% elif tipus_actual == 'movie' %} <i class="bi bi-film me-2"></i>Pel·lícules
+            {% elif tipus_actual == 'series' %} <i class="bi bi-tv me-2"></i>Sèries
+            {% else %} <i class="bi bi-grid-fill me-2"></i>Catàleg de Continguts {% endif %}
         </h2>
-        <span class="badge bg-light text-dark border fw-normal px-3 py-2 rounded-pill">
+        <span class="badge bg-light text-dark border fw-normal px-3 py-2 rounded-pill shadow-sm">
             {{ contenidos|length }} resultats trobats
         </span>
     </div>
 
     <div class="filter-container">
-        <form method="GET" action="{% url 'catalogo' %}" id="filterForm" class="filter-row">
+        <form method="GET" action="{{ request.path }}" id="filterForm" class="filter-row">
 
-            {% if tipus_actual %}
-                <input type="hidden" name="tipus" value="{{ tipus_actual }}">
-            {% endif %}
-
-            <select name="plataforma" class="filter-select-figma" onchange="this.form.submit()">
-                <option value="">Totes les Plataformes</option>
-                <option value="CinePlus" {% if plataforma_sel == 'CinePlus' %}selected{% endif %}>CinePlus</option>
-                <option value="StreamHub" {% if plataforma_sel == 'StreamHub' %}selected{% endif %}>StreamHub</option>
-                <option value="PlayMax" {% if plataforma_sel == 'PlayMax' %}selected{% endif %}>PlayMax</option>
-            </select>
-
-            <select name="genere" class="filter-select-figma" onchange="this.form.submit()">
-                <option value="">Tots els Gèneres</option>
-                {% for g in opcions.generes %}
-                <option value="{{ g }}" {% if genere_sel == g %}selected{% endif %}>{{ g }}</option>
-                {% endfor %}
-            </select>
-
-            <input type="text" name="director" class="filter-select-figma"
-                   placeholder="Buscar director..."
-                   value="{{ director_sel|default:'' }}"
-                   onchange="this.form.submit()">
-
-            <select name="edat" class="filter-select-figma" onchange="this.form.submit()">
-                <option value="">Totes les edats</option>
-                {% for e in opcions.edats %}
-                <option value="{{ e }}" {% if edat_sel == e %}selected{% endif %}>{{ e }}</option>
-                {% endfor %}
-            </select>
-
-            <div class="slider-wrapper">
-                <div class="d-flex justify-content-between align-items-center mb-1">
-                    <label class="fw-bold text-muted m-0" style="font-size: 0.65rem;">Mínim:</label>
-                    <span id="valDisplay" class="text-primary fw-bold" style="font-size: 0.75rem;">{{ valoracio_sel|default:"0" }}⭐</span>
-                </div>
-                <input type="range" name="valoracio" class="custom-slider"
-                       min="0" max="10" step="0.5"
-                       value="{{ valoracio_sel|default:'0' }}"
-                       oninput="document.getElementById('valDisplay').innerText = this.value + '⭐'"
-                       onchange="this.form.submit()">
+            <div class="d-flex flex-column">
+                <label class="small fw-bold text-muted mb-1 ms-2">PLATAFORMA</label>
+                <select name="plataforma" class="filter-select-figma {% if filtros_sel.p %}filter-active{% endif %}" onchange="this.form.submit()">
+                    <option value="">Totes</option>
+                    {% for p in opcions.plataformas %}
+                    <option value="{{ p }}" {% if filtros_sel.p == p %}selected{% endif %}>{{ p }}</option>
+                    {% endfor %}
+                </select>
             </div>
 
-            <a href="{% if tipus_actual == 'movie' %}{% url 'cataleg_pelis' %}{% elif tipus_actual == 'series' %}{% url 'cataleg_series' %}{% else %}{% url 'catalogo' %}{% endif %}"
-               class="btn btn-outline-danger btn-reset">
-                <i class="bi bi-trash3"></i> Netejar
+            <div class="d-flex flex-column">
+                <label class="small fw-bold text-muted mb-1 ms-2">GÈNERE</label>
+                <select name="genere" class="filter-select-figma {% if filtros_sel.g %}filter-active{% endif %}" onchange="this.form.submit()">
+                    <option value="">Tots els Gèneres</option>
+                    {% for g in genres_api %}
+                    <option value="{{ g.id }}" {% if filtros_sel.g == g.id|stringformat:"s" %}selected{% endif %}>{{ g.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="d-flex flex-column position-relative">
+                <label class="small fw-bold text-muted mb-1 ms-2">DIRECTOR</label>
+                <input type="text"
+                       name="director"
+                       class="filter-select-figma {% if filtros_sel.d %}filter-active{% endif %}"
+                       placeholder="Cerca director..."
+                       value="{{ filtros_sel.d|default:'' }}"
+                       onkeypress="if(event.key === 'Enter') this.form.submit();">
+                {% if filtros_sel.d %}
+                    <i class="bi bi-x-circle-fill position-absolute text-muted"
+                       style="right: 15px; top: 38px; cursor: pointer; z-index: 10;"
+                       onclick="document.getElementsByName('director')[0].value=''; this.form.closest('form').submit();"></i>
+                {% endif %}
+            </div>
+
+            <div class="d-flex flex-column">
+                <label class="small fw-bold text-muted mb-1 ms-2">EDAT</label>
+                <select name="edat" class="filter-select-figma {% if filtros_sel.e %}filter-active{% endif %}" onchange="this.form.submit()">
+                    <option value="">Totes les Edats</option>
+                    {% for r in ratings %}
+                    <option value="{{ r.id }}" {% if filtros_sel.e == r.id|stringformat:"s" %}selected{% endif %}>{{ r.description }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="d-flex flex-column">
+                <label class="small fw-bold text-muted mb-1 ms-2">RATING MÍNIM</label>
+                <div class="slider-wrapper {% if filtros_sel.v != '0' %}filter-active{% endif %}">
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <span id="valDisplay" class="text-primary fw-bold" style="font-size: 0.8rem;">{{ filtros_sel.v|default:"0" }}⭐</span>
+                    </div>
+                    <input type="range" name="valoracio" class="custom-slider"
+                           min="0" max="10" step="0.5" value="{{ filtros_sel.v|default:'0' }}"
+                           oninput="document.getElementById('valDisplay').innerText = this.value + '⭐'"
+                           onchange="this.form.submit()">
+                </div>
+            </div>
+
+            <a href="{{ request.path }}"
+               class="btn btn-outline-danger d-flex align-items-center justify-content-center fw-bold"
+               style="height: 48px; border-radius: 12px; min-width: 120px;">
+                <i class="bi bi-trash3 me-2"></i> NETEJAR
             </a>
         </form>
     </div>
 
     <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xl-4 g-4">
         {% for item in contenidos %}
-            {% include "components/card_contingut.html" %}
+            <div class="col">
+                {% include "components/card_contingut.html" with item=item %}
+            </div>
         {% empty %}
-            <div class="col-12 text-center py-5">
-                <i class="bi bi-filter-circle fs-1 text-muted mb-3 d-block"></i>
-                <h4 class="text-muted">No hi ha resultats amb aquests filtres</h4>
-                <a href="{% if tipus_actual == 'movie' %}{% url 'cataleg_pelis' %}{% elif tipus_actual == 'series' %}{% url 'cataleg_series' %}{% else %}{% url 'catalogo' %}{% endif %}"
-                   class="btn btn-primary rounded-pill mt-2 px-4">Torna a carregar</a>
+            <div class="empty-state-wrapper w-100 py-5 text-center">
+                <div class="empty-state-card shadow-sm p-5 bg-white rounded-4 border">
+                    <div class="mb-4">
+                        <i class="bi bi-search-heart display-1" style="color: #8a2be2; opacity: 0.4;"></i>
+                    </div>
+                    <h3 class="fw-bold text-dark mb-2">Vaja! No hem trobat res</h3>
+                    <p class="text-muted mb-4">
+                        Sembla que cap contingut coincideix amb els teus filtres actuals.
+                        Prova de canviar la cerca o neteja els filtres.
+                    </p>
+                    <a href="{{ request.path }}" class="btn btn-primary px-5 py-3 fw-bold rounded-pill shadow border-0" style="background-color: #8a2be2;">
+                        <i class="bi bi-arrow-clockwise me-2"></i> Reiniciar Filtres
+                    </a>
+                </div>
             </div>
         {% endfor %}
     </div>
+
 </div>
 {% endblock %}

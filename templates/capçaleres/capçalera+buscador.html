@@ -1,51 +1,108 @@
-<nav class="navbar navbar-expand py-2 shadow-sm" style="background-color: #8a2be2; min-height: 70px;">
-    <div class="container-fluid position-relative d-flex align-items-center justify-content-between">
+<style>
+    /* Efecte de pujada i línia inferior per als enllaços */
+    .navbar-nav .nav-link {
+        position: relative;
+        transition: all 0.3s ease;
+        opacity: 0.85;
+    }
+    .navbar-nav .nav-link:hover {
+        opacity: 1;
+        transform: translateY(-2px);
+        color: white !important;
+    }
+    .navbar-nav .nav-link::after {
+        content: '';
+        position: absolute;
+        width: 0;
+        height: 2px;
+        bottom: 0;
+        left: 50%;
+        background-color: white;
+        transition: all 0.3s ease;
+        transform: translateX(-50%);
+    }
+    .navbar-nav .nav-link:hover::after {
+        width: 80%;
+    }
 
-        <a class="navbar-brand fw-bold d-flex align-items-center m-0 text-white" href="{% url 'pagina_principal' %}" title="Inici">
-            <i class="bi bi-grid-fill fs-4 me-2"></i> StreamSync
-        </a>
+    /* Efecte per al botó blanc de Login / Perfil */
+    .btn-light, .btn-white {
+        transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
+    }
+    .btn-light:hover, .btn-white:hover {
+        transform: scale(1.08);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2) !important;
+    }
 
-        <div class="d-none d-lg-block position-absolute start-50 translate-middle-x" style="width: 100%; max-width: 400px; z-index: 1050;">
-            <form method="GET" action="{% url 'catalogo' %}" class="input-group">
-                <span class="input-group-text bg-white border-0 ps-3" style="border-radius: 50px 0 0 50px; background-color: rgba(255,255,255,0.2) !important;">
-                    <i class="bi bi-search text-white opacity-75"></i>
-                </span>
-                <input type="text" name="q" class="form-control border-0 text-white shadow-none"
-                       placeholder="Buscar pel·lícules i sèries..."
-                       style="background-color: rgba(255,255,255,0.2); border-radius: 0 50px 50px 0; color: white !important;">
+    /* Animació del Cercador */
+    .input-group {
+        transition: all 0.3s ease;
+    }
+    .input-group:hover, .input-group:focus-within {
+        background: rgba(255, 255, 255, 0.35) !important;
+        transform: scale(1.02);
+    }
+    .form-control::placeholder { color: rgba(255,255,255,0.7); }
 
-                <style>
-                    /* Estil per al placeholder en blanc */
-                    .form-control::placeholder { color: rgba(255,255,255,0.7); }
-                </style>
-            </form>
+    /* Animació del Logo */
+    .navbar-brand:hover i {
+        display: inline-block;
+        animation: rotate-logo 0.5s ease;
+    }
+    @keyframes rotate-logo {
+        0% { transform: rotate(0deg); }
+        50% { transform: rotate(20deg); }
+        100% { transform: rotate(0deg); }
+    }
+</style>
+
+<nav class="navbar navbar-expand-lg navbar-dark shadow-sm py-3" style="background: #8a2be2;">
+    <div class="container-fluid px-4">
+        <div class="d-flex align-items-center justify-content-between w-100">
+
+            <div class="flex-grow-1" style="flex-basis: 0;">
+                <a class="navbar-brand fw-bold d-flex align-items-center fs-4 m-0" href="{% url 'pagina_principal' %}">
+                    <i class="bi bi-grid-fill me-2"></i> StreamSync
+                </a>
+            </div>
+
+            <div class="flex-grow-1 d-none d-lg-flex justify-content-center" style="flex-basis: 0;">
+                {% if request.path != '/' %}
+                <form action="{% url 'catalogo' %}" method="GET" style="width: 100%; max-width: 400px;">
+                    <div class="input-group" style="background: rgba(255,255,255,0.2); border-radius: 50px; border: 1px solid rgba(255,255,255,0.1);">
+                        <span class="input-group-text bg-transparent border-0 text-white opacity-75 ps-3">
+                            <i class="bi bi-search"></i>
+                        </span>
+                        <input type="text" name="q" class="form-control bg-transparent border-0 text-white py-2 shadow-none"
+                               placeholder="Buscar pel·lícules i sèries..."
+                               style="color: white !important;">
+                    </div>
+                </form>
+                {% endif %}
+            </div>
+
+            <div class="flex-grow-1 d-flex justify-content-end align-items-center" style="flex-basis: 0;">
+                <div class="collapse navbar-collapse justify-content-end" id="navMenu">
+                    <ul class="navbar-nav align-items-center gap-2">
+                        <li class="nav-item"><a class="nav-link text-white fw-semibold small" href="{% url 'llistes' %}">Les meves llistes</a></li>
+                        <li class="nav-item"><a class="nav-link text-white fw-semibold small" href="{% url 'catalogo' %}?tipus=movie">Pel·lícules</a></li>
+                        <li class="nav-item"><a class="nav-link text-white fw-semibold small" href="{% url 'catalogo' %}?tipus=series">Sèries</a></li>
+                        <li class="nav-item ms-2">
+                            {% if user.is_authenticated %}
+                                <a class="btn btn-light rounded-pill px-4 py-2 fw-bold text-primary shadow-sm" href="{% url 'pagina_perfil1' %}">
+                                    <i class="bi bi-person-circle me-1"></i> {{ user.username }}
+                                </a>
+                            {% else %}
+                                <a class="btn btn-light rounded-pill px-4 py-2 fw-bold text-primary shadow-sm" href="{% url 'login' %}">Login</a>
+                            {% endif %}
+                        </li>
+                    </ul>
+                </div>
+                <button class="navbar-toggler border-0 ms-2 d-lg-none" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+            </div>
+
         </div>
-
-        <div class="d-flex align-items-center">
-            <ul class="navbar-nav flex-row align-items-center gap-3">
-                <li class="nav-item">
-                    <a class="nav-link text-white fw-semibold small" href="{% url 'llistes' %}">Les meves llistes</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link text-white fw-semibold small" href="{% url 'catalogo' %}?tipus=movie">Pel·lícules</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link text-white fw-semibold small" href="{% url 'catalogo' %}?tipus=series">Sèries</a>
-                </li>
-
-                <li class="nav-item ms-2">
-                    {% if user.is_authenticated %}
-                        <a class="btn btn-white text-primary fw-bold rounded-pill px-4 shadow-sm" href="{% url 'pagina_perfil1' %}" style="background-color: white;">
-                            <i class="bi bi-person-circle me-1"></i> {{ user.username }}
-                        </a>
-                    {% else %}
-                        <a class="btn btn-white text-primary fw-bold rounded-pill px-4 shadow-sm" href="{% url 'login' %}" style="background-color: white;">
-                            Login
-                        </a>
-                    {% endif %}
-                </li>
-            </ul>
-        </div>
-
     </div>
 </nav>

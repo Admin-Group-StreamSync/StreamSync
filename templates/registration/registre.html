@@ -4,22 +4,39 @@
 
 {% block extra_css %}
 <style>
-    .register-container { display: flex; justify-content: center; align-items: center; padding: 40px 20px; background: #fff; min-height: 90vh; }
+    .register-container { display: flex; justify-content: center; align-items: center; padding: 40px 20px; background: #f8f9fc; min-height: 90vh; }
     .register-card { width: 100%; max-width: 550px; background: white; border-radius: 20px; padding: 40px; box-shadow: 0 10px 40px rgba(0,0,0,0.05); text-align: center; border: 1px solid #f2f2f2; }
     .step-dot-container { display: flex; justify-content: center; gap: 8px; margin-bottom: 30px; }
     .step-dot { width: 45px; height: 6px; background: #eee; border-radius: 10px; transition: 0.3s; }
     .step-dot.active { background: #8a2be2; }
+
     .selection-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 15px; }
-    .select-item { border: 1px solid #ddd; border-radius: 12px; padding: 15px; cursor: pointer; transition: 0.2s; font-weight: 600; text-align: left; display: block; }
+
+    .select-item {
+        border: 1px solid #ddd; border-radius: 12px; padding: 15px; cursor: pointer;
+        transition: 0.2s; font-weight: 600; text-align: left; display: block;
+        position: relative; user-select: none; background: white;
+    }
     .select-item:hover { border-color: #8a2be2; background: #fcf9ff; }
     .select-item.selected { border-color: #8a2be2; background: #f8f0ff; color: #8a2be2; box-shadow: 0 0 0 1px #8a2be2; }
+
+    .checkbox-hidden {
+        position: absolute;
+        top: 0; left: 0; width: 100%; height: 100%;
+        opacity: 0; cursor: pointer; z-index: 2; margin: 0;
+    }
+
     .form-group-custom { text-align: left; margin-bottom: 15px; }
     .form-group-custom label { font-weight: 700; font-size: 0.8rem; color: #555; text-transform: uppercase; margin-bottom: 5px; display: block; }
-    .form-control-figma { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #ddd; outline: none; }
-    .btn-gradient { width: 100%; padding: 14px; border-radius: 12px; border: none; background: linear-gradient(90deg, #8a2be2, #d40078); color: white; font-weight: 700; cursor: pointer; margin-top: 10px; }
+    .form-control-figma { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #ddd; outline: none; transition: 0.3s; }
+    .form-control-figma:focus { border-color: #8a2be2; box-shadow: 0 0 8px rgba(138, 43, 226, 0.2); }
+
+    .btn-gradient { width: 100%; padding: 14px; border-radius: 12px; border: none; background: linear-gradient(90deg, #8a2be2, #d40078); color: white; font-weight: 700; cursor: pointer; margin-top: 10px; transition: 0.3s; }
+    .btn-gradient:hover { opacity: 0.9; transform: translateY(-2px); }
     .btn-back { background: none; border: none; color: #888; font-weight: 600; cursor: pointer; padding: 10px; margin-top: 10px; }
+
     .error-box { background: #fff0f0; border: 1px solid #ffbaba; color: #d8000c; padding: 15px; border-radius: 12px; margin-bottom: 20px; text-align: left; font-size: 0.85rem; }
-    .hidden { display: none; }
+    .hidden { display: none !important; }
 </style>
 {% endblock %}
 
@@ -58,7 +75,7 @@
                 </div>
                 <div class="form-group-custom">
                     <label>Nom complet</label>
-                    <input type="text" name="first_name" class="form-control-figma" placeholder="El teu nom" value="{{ form.first_name.value|default:'' }}" required>
+                    <input type="text" name="first_name" class="form-control-figma" placeholder="El teu nom i cognoms" value="{{ form.first_name.value|default:'' }}" required>
                 </div>
                 <div class="form-group-custom">
                     <label>Email</label>
@@ -76,35 +93,51 @@
             </div>
 
             <div id="step2" class="hidden">
-                <p class="text-start fw-bold mb-2">Plataformes</p>
-                <div class="selection-grid">
-                    {% for p in opcions.plataformes %}
-                    <label class="select-item"><input type="checkbox" name="plataformas" value="{{p}}" class="hidden" onchange="mark(this)">{{p}}</label>
+                <p class="text-start fw-bold mb-2 text-uppercase small text-muted">Què t'agrada veure?</p>
+                <div class="selection-grid mb-4">
+                    {% for val, nom in opcions.tipus %}
+                    <label class="select-item">
+                        <input type="checkbox" name="tipus" value="{{ val }}" class="checkbox-hidden" onchange="mark(this)">
+                        <span>{{ nom }}</span>
+                    </label>
                     {% endfor %}
                 </div>
-                <p class="text-start fw-bold mt-4 mb-2">Gèneres</p>
+
+                <p class="text-start fw-bold mb-2 text-uppercase small text-muted">Les teves plataformes</p>
                 <div class="selection-grid">
-                    {% for g in opcions.generes %}
-                    <label class="select-item"><input type="checkbox" name="generos" value="{{g}}" class="hidden" onchange="mark(this)">{{g}}</label>
+                    {% for p in opcions.plataformas %}
+                    <label class="select-item">
+                        <input type="checkbox" name="plataformes" value="{{ p }}" class="checkbox-hidden" onchange="mark(this)">
+                        <span>{{ p }}</span>
+                    </label>
                     {% endfor %}
                 </div>
+
                 <button type="button" class="btn-gradient mt-4" onclick="changeStep(3)">Continuar</button>
                 <button type="button" class="btn-back" onclick="changeStep(1)">Tornar</button>
             </div>
 
             <div id="step3" class="hidden">
-                <p class="text-start fw-bold mb-2">Idiomes</p>
-                <div class="selection-grid">
-                    {% for i in opcions.idiomes %}
-                    <label class="select-item"><input type="checkbox" name="idiomas" value="{{i}}" class="hidden" onchange="mark(this)">{{i}}</label>
+                <p class="text-start fw-bold mb-2 text-uppercase small text-muted">Gèneres favorits</p>
+                <div class="selection-grid" style="grid-template-columns: 1fr 1fr 1fr;">
+                    {% for g in opcions.genres_api %}
+                    <label class="select-item p-2 text-center" style="font-size: 0.8rem;">
+                        <input type="checkbox" name="generos" value="{{ g.id }}" class="checkbox-hidden" onchange="mark(this)">
+                        <span>{{ g.name }}</span>
+                    </label>
                     {% endfor %}
                 </div>
-                <p class="text-start fw-bold mt-4 mb-2">Edat</p>
+
+                <p class="text-start fw-bold mt-4 mb-2 text-uppercase small text-muted">Restricció d'edat</p>
                 <div class="selection-grid mb-4">
-                    {% for e in opcions.edats %}
-                    <label class="select-item"><input type="checkbox" name="edats" value="{{e}}" class="hidden" onchange="mark(this)">{{e}}</label>
+                    {% for e in opcions.ratings_api %}
+                    <label class="select-item">
+                        <input type="checkbox" name="edats" value="{{ e.id }}" class="checkbox-hidden" onchange="mark(this)">
+                        <span>{{ e.description }}</span>
+                    </label>
                     {% endfor %}
                 </div>
+
                 <button type="submit" class="btn-gradient">Finalitzar i Crear Compte</button>
                 <button type="button" class="btn-back" onclick="changeStep(2)">Tornar</button>
             </div>
@@ -117,12 +150,22 @@
         document.getElementById('step1').classList.toggle('hidden', s !== 1);
         document.getElementById('step2').classList.toggle('hidden', s !== 2);
         document.getElementById('step3').classList.toggle('hidden', s !== 3);
+
         document.getElementById('dot1').classList.toggle('active', s >= 1);
         document.getElementById('dot2').classList.toggle('active', s >= 2);
         document.getElementById('dot3').classList.toggle('active', s >= 3);
-        const txts = ["Dades del compte", "Tria les teves plataformes", "Configuració final"];
+
+        const txts = ["Dades del compte", "Plataformes i tipus", "Gèneres i edats"];
         document.getElementById('step-txt').innerText = txts[s-1];
+        window.scrollTo(0,0);
     }
-    function mark(cb) { cb.parentElement.classList.toggle('selected', cb.checked); }
+
+    function mark(cb) {
+        if (cb.checked) {
+            cb.parentElement.classList.add('selected');
+        } else {
+            cb.parentElement.classList.remove('selected');
+        }
+    }
 </script>
 {% endblock %}

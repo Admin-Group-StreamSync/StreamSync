@@ -4,7 +4,7 @@
 
 {% block extra_css %}
 <style>
-    /* 1. HERO SECTION (Degradado y Buscador Grande) */
+    /* 1. HERO SECTION */
     .hero-search {
         padding: 120px 0;
         background: linear-gradient(135deg, #8a2be2 0%, #d40078 100%);
@@ -15,6 +15,11 @@
     .main-search-bar-container {
         max-width: 750px;
         margin: 40px auto 0;
+        transition: transform 0.3s ease;
+    }
+
+    .main-search-bar-container:hover {
+        transform: scale(1.02);
     }
 
     .main-search-bar-white {
@@ -22,6 +27,7 @@
         border-radius: 50px;
         padding: 8px;
         box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+        border: none;
     }
 
     .main-search-bar-white input {
@@ -30,15 +36,24 @@
         font-size: 1.1rem;
         box-shadow: none !important;
         border-radius: 50px 0 0 50px;
+        color: #333;
     }
 
     .main-search-bar-white .btn-primary {
         border-radius: 50px;
-        padding: 12px 30px;
-        font-weight: bold;
+        padding: 12px 40px;
+        font-weight: 800;
+        background: #8a2be2;
+        border: none;
+        transition: 0.3s;
     }
 
-    /* 2. ESTILO DE LAS TARJETAS (CARD STREAMING) */
+    .main-search-bar-white .btn-primary:hover {
+        background: #6a11cb;
+        box-shadow: 0 5px 15px rgba(138, 43, 226, 0.4);
+    }
+
+    /* 2. ESTILO DE LAS SECCIONES */
     .section-container { padding: 60px 0; background-color: #ffffff; }
 
     .trending-title-main {
@@ -46,112 +61,65 @@
         font-weight: 800;
         color: #1a1a1a;
         margin-bottom: 30px;
-    }
-
-    .card-streaming {
-        transition: all 0.3s ease;
-        display: block;
-        text-decoration: none !important;
-    }
-
-    .card-streaming:hover {
-        transform: translateY(-8px);
-    }
-
-    /* Contenedor de la imagen (Negro) */
-    .portada-img {
-        background-color: #000;
-        aspect-ratio: 16 / 9;
-        border-radius: 15px;
-        position: relative;
+        letter-spacing: -0.5px;
         display: flex;
         align-items: center;
-        justify-content: center;
-        overflow: hidden;
-        margin-bottom: 15px;
     }
 
-    .play-icon {
-        font-size: 2.5rem;
-        color: white;
-        opacity: 0;
-        transition: opacity 0.3s ease;
-    }
+    .text-purple { color: #8a2be2; }
 
-    .card-streaming:hover .play-icon {
-        opacity: 0.8;
-    }
-
-    /* Badges sobre la imagen */
-    .platform-badge {
-        position: absolute;
-        top: 12px;
-        left: 12px;
-        background: #e50914; /* Netflix */
-        color: white;
-        font-size: 0.65rem;
-        font-weight: 800;
-        padding: 4px 10px;
-        border-radius: 5px;
-        text-transform: uppercase;
-    }
-
-    .type-badge {
-        position: absolute;
-        top: 12px;
-        right: 12px;
-        color: rgba(255, 255, 255, 0.6);
-        font-size: 0.65rem;
-    }
-
-    /* Info debajo de la imagen */
-    .info-area h5 {
-        font-size: 1.1rem;
-        font-weight: 700;
-        color: #1a1a1a;
-        margin-bottom: 4px;
-    }
-
-    .meta-info {
-        font-size: 0.85rem;
-        color: #6c757d;
-        font-weight: 600;
-    }
-
-    .line-clamp {
-        display: -webkit-box;
-        -webkit-line-clamp: 2;
-        -webkit-box-orient: vertical;
-        overflow: hidden;
-        font-size: 0.85rem;
-        color: #666;
-        margin: 8px 0;
-    }
-
-    .genre-badge {
-        background-color: #f8f9fa;
-        color: #6c757d;
+    .pref-badge {
         font-size: 0.75rem;
-        padding: 4px 12px;
-        border-radius: 20px;
-        border: 1px solid #eee;
+        text-transform: uppercase;
+        background: #f8f0ff;
+        color: #8a2be2;
+        padding: 5px 15px;
+        border-radius: 50px;
+        font-weight: 700;
+        margin-left: 15px;
+        border: 1px solid #eadaff;
     }
+
+    .empty-pref-card {
+        background: #fcfaff;
+        border: 2px dashed #eadaff;
+        border-radius: 30px;
+        padding: 40px;
+        text-align: center;
+        transition: 0.3s;
+    }
+    .empty-pref-card:hover {
+        border-color: #8a2be2;
+        background: #f8f4ff;
+    }
+
+    .btn-purple {
+        background: #8a2be2;
+        color: white;
+        font-weight: 700;
+        border-radius: 50px;
+        padding: 10px 25px;
+        transition: 0.3s;
+        border: none;
+    }
+    .btn-purple:hover { background: #6a11cb; color: white; transform: translateY(-2px); }
 </style>
 {% endblock %}
 
 {% block content %}
 <section class="hero-search">
     <div class="container">
-        <h1 class="display-3 fw-bold mb-3">Descobreix la teva propera<br>sèrie o pel·lícula favorita</h1>
+        <h1 class="display-3 fw-bold mb-3" style="letter-spacing: -2px;">Descobreix la teva propera<br>sèrie o pel·lícula favorita</h1>
         <p class="fs-5 mb-5 opacity-75">Milers de títols de totes les plataformes en un sol lloc</p>
 
         <div class="main-search-bar-container">
-            <form action="{% url 'catalogo' %}" method="GET">
+            <form action="{% url 'cerca_contingut' %}" method="GET">
                 <div class="input-group main-search-bar-white">
-                    <input type="text" name="q" class="form-control" placeholder="Busca pel·lícules, sèries, directors..." aria-label="Cerca">
-                    <button class="btn btn-primary" type="submit">
-                        <i class="bi bi-search me-2"></i> Cerca
-                    </button>
+                    <span class="input-group-text bg-transparent border-0 ps-4 text-muted">
+                        <i class="bi bi-search fs-5"></i>
+                    </span>
+                    <input type="text" name="q" class="form-control" placeholder="Busca pel·lícules, sèries, directors..." required>
+                    <button class="btn btn-primary" type="submit">CERCAR</button>
                 </div>
             </form>
         </div>
@@ -160,38 +128,61 @@
 
 <div class="container section-container">
 
+    {% if user.is_authenticated %}
     <section class="mb-5">
-        <h3 class="trending-title-main"><i class="bi bi-graph-up-arrow text-danger me-2"></i> Tendències de la setmana</h3>
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h3 class="trending-title-main m-0">
+                <i class="bi bi-stars text-purple me-2"></i> Per a tu
+                <span class="pref-badge">Personalitzat</span>
+            </h3>
+            <a href="{% url 'profile2' %}" class="btn btn-sm btn-link text-decoration-none text-muted fw-bold">
+                <i class="bi bi-gear-fill me-1"></i> CONFIGURAR
+            </a>
+        </div>
+
+        {% if recomanacions_perfil %}
+            <div class="row row-cols-1 row-cols-md-3 row-cols-lg-4 g-4">
+                {% for item in recomanacions_perfil %}
+                    <div class="col">
+                        {% include "components/card_contingut.html" with item=item %}
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="empty-pref-card">
+                <div class="mb-3">
+                    <i class="bi bi-palette2 display-6 text-purple opacity-50"></i>
+                </div>
+                <h5 class="fw-bold">Busques alguna cosa específica?</h5>
+                <p class="text-muted small">Tria els teus gèneres preferits o un filtre d'edat per personalitzar aquesta secció.</p>
+                <a href="{% url 'profile2' %}" class="btn btn-purple btn-sm mt-2">CONFIGURAR PREFERÈNCIES</a>
+            </div>
+        {% endif %}
+    </section>
+    {% endif %}
+
+    <section class="mb-5">
+        <h3 class="trending-title-main">
+            <i class="bi bi-fire text-danger me-2"></i> Tendències de la setmana
+        </h3>
         <div class="row row-cols-1 row-cols-md-3 row-cols-lg-4 g-4">
             {% for item in tendencies %}
-                {% include "components/card_contingut.html" %}
+                <div class="col">
+                    {% include "components/card_contingut.html" with item=item %}
+                </div>
             {% endfor %}
         </div>
     </section>
 
     <section class="mb-5">
-        <h3 class="trending-title-main"><i class="bi bi-eye text-primary me-2"></i> Més vistes</h3>
+        <h3 class="trending-title-main">
+            <i class="bi bi-star-fill text-warning me-2"></i> Millor valorades
+        </h3>
         <div class="row row-cols-1 row-cols-md-3 row-cols-lg-4 g-4">
-            {% for item in tendencies|dictsortreversed:"rating" %}
-                {% include "components/card_contingut.html" %}
-            {% endfor %}
-        </div>
-    </section>
-
-    <section class="mb-5">
-        <h3 class="trending-title-main"><i class="bi bi-clock-history text-success me-2"></i> Afegides recentment</h3>
-        <div class="row row-cols-1 row-cols-md-3 row-cols-lg-4 g-4">
-            {% for item in tendencies|dictsortreversed:"any" %}
-                {% include "components/card_contingut.html" %}
-            {% endfor %}
-        </div>
-    </section>
-
-    <section class="mb-5">
-        <h3 class="trending-title-main"><i class="bi bi-star-fill text-warning me-2"></i> Millor valorades</h3>
-        <div class="row row-cols-1 row-cols-md-3 row-cols-lg-4 g-4">
-            {% for item in tendencies %}
-                {% include "components/card_contingut.html" %}
+            {% for item in millor_valorades %}
+                <div class="col">
+                    {% include "components/card_contingut.html" with item=item %}
+                </div>
             {% endfor %}
         </div>
     </section>
