@@ -4,16 +4,12 @@
 
 {% block extra_css %}
 <style>
-<<<<<<< HEAD
     .register-container { display: flex; justify-content: center; align-items: center; padding: 40px 20px; background: #fff; min-height: 90vh; }
-=======
     .register-container { display: flex; justify-content: center; align-items: center; padding: 40px 20px; background: #f8f9fc; min-height: 90vh; }
->>>>>>> f836f06874fec630e2831f55536be2793acacc47
     .register-card { width: 100%; max-width: 550px; background: white; border-radius: 20px; padding: 40px; box-shadow: 0 10px 40px rgba(0,0,0,0.05); text-align: center; border: 1px solid #f2f2f2; }
     .step-dot-container { display: flex; justify-content: center; gap: 8px; margin-bottom: 30px; }
     .step-dot { width: 45px; height: 6px; background: #eee; border-radius: 10px; transition: 0.3s; }
     .step-dot.active { background: #8a2be2; }
-<<<<<<< HEAD
     .selection-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 15px; }
     .select-item { border: 1px solid #ddd; border-radius: 12px; padding: 15px; cursor: pointer; transition: 0.2s; font-weight: 600; text-align: left; display: block; }
     .select-item:hover { border-color: #8a2be2; background: #fcf9ff; }
@@ -25,7 +21,6 @@
     .btn-back { background: none; border: none; color: #888; font-weight: 600; cursor: pointer; padding: 10px; margin-top: 10px; }
     .error-box { background: #fff0f0; border: 1px solid #ffbaba; color: #d8000c; padding: 15px; border-radius: 12px; margin-bottom: 20px; text-align: left; font-size: 0.85rem; }
     .hidden { display: none; }
-=======
 
     .selection-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 15px; }
 
@@ -54,7 +49,6 @@
 
     .error-box { background: #fff0f0; border: 1px solid #ffbaba; color: #d8000c; padding: 15px; border-radius: 12px; margin-bottom: 20px; text-align: left; font-size: 0.85rem; }
     .hidden { display: none !important; }
->>>>>>> f836f06874fec630e2831f55536be2793acacc47
 </style>
 {% endblock %}
 
@@ -93,11 +87,11 @@
                 </div>
                 <div class="form-group-custom">
                     <label>Nom complet</label>
-<<<<<<< HEAD
+
                     <input type="text" name="first_name" class="form-control-figma" placeholder="El teu nom" value="{{ form.first_name.value|default:'' }}" required>
-=======
+
                     <input type="text" name="first_name" class="form-control-figma" placeholder="El teu nom i cognoms" value="{{ form.first_name.value|default:'' }}" required>
->>>>>>> f836f06874fec630e2831f55536be2793acacc47
+
                 </div>
                 <div class="form-group-custom">
                     <label>Email</label>
@@ -105,26 +99,26 @@
                 </div>
                 <div class="form-group-custom">
                     <label>Contrasenya</label>
-<<<<<<< HEAD
+
                     <input type="password" name="password1" class="form-control-figma" placeholder="Minim 8 caracters" minlength="8" required>
                     <small class="text-muted d-block mt-1">La contrasenya ha de tenir com a minim 8 caracters.</small>
                 </div>
                 <div class="form-group-custom">
                     <label>Repeteix Contrasenya</label>
                     <input type="password" name="password2" class="form-control-figma" placeholder="Repeteix la contrasenya" minlength="8" required>
-=======
+
                     <input type="password" name="password1" class="form-control-figma" placeholder="••••••••" required>
                 </div>
                 <div class="form-group-custom">
                     <label>Repeteix Contrasenya</label>
                     <input type="password" name="password2" class="form-control-figma" placeholder="••••••••" required>
->>>>>>> f836f06874fec630e2831f55536be2793acacc47
+
                 </div>
                 <button type="button" class="btn-gradient" onclick="changeStep(2)">Següent</button>
             </div>
 
             <div id="step2" class="hidden">
-<<<<<<< HEAD
+
                 <p class="text-start fw-bold mb-2">Plataformes</p>
                 <div class="selection-grid">
                     {% for p in opcions.plataformes %}
@@ -137,7 +131,7 @@
                     <label class="select-item"><input type="checkbox" name="generos" value="{{g}}" class="hidden" onchange="mark(this)">{{g}}</label>
                     {% endfor %}
                 </div>
-=======
+
                 <p class="text-start fw-bold mb-2 text-uppercase small text-muted">Què t'agrada veure?</p>
                 <div class="selection-grid mb-4">
                     {% for val, nom in opcions.tipus %}
@@ -158,13 +152,13 @@
                     {% endfor %}
                 </div>
 
->>>>>>> f836f06874fec630e2831f55536be2793acacc47
+
                 <button type="button" class="btn-gradient mt-4" onclick="changeStep(3)">Continuar</button>
                 <button type="button" class="btn-back" onclick="changeStep(1)">Tornar</button>
             </div>
 
             <div id="step3" class="hidden">
-<<<<<<< HEAD
+
                 <p class="text-start fw-bold mb-2">Idiomes</p>
                 <div class="selection-grid">
                     {% for i in opcions.idiomes %}
@@ -177,7 +171,7 @@
                     <label class="select-item"><input type="checkbox" name="edats" value="{{e}}" class="hidden" onchange="mark(this)">{{e}}</label>
                     {% endfor %}
                 </div>
-=======
+
                 <p class="text-start fw-bold mb-2 text-uppercase small text-muted">Gèneres favorits</p>
                 <div class="selection-grid" style="grid-template-columns: 1fr 1fr 1fr;">
                     {% for g in opcions.genres_api %}
@@ -198,7 +192,7 @@
                     {% endfor %}
                 </div>
 
->>>>>>> f836f06874fec630e2831f55536be2793acacc47
+
                 <button type="submit" class="btn-gradient">Finalitzar i Crear Compte</button>
                 <button type="button" class="btn-back" onclick="changeStep(2)">Tornar</button>
             </div>
@@ -211,7 +205,7 @@
         document.getElementById('step1').classList.toggle('hidden', s !== 1);
         document.getElementById('step2').classList.toggle('hidden', s !== 2);
         document.getElementById('step3').classList.toggle('hidden', s !== 3);
-<<<<<<< HEAD
+
         document.getElementById('dot1').classList.toggle('active', s >= 1);
         document.getElementById('dot2').classList.toggle('active', s >= 2);
         document.getElementById('dot3').classList.toggle('active', s >= 3);
@@ -219,7 +213,7 @@
         document.getElementById('step-txt').innerText = txts[s-1];
     }
     function mark(cb) { cb.parentElement.classList.toggle('selected', cb.checked); }
-=======
+
 
         document.getElementById('dot1').classList.toggle('active', s >= 1);
         document.getElementById('dot2').classList.toggle('active', s >= 2);
@@ -237,6 +231,6 @@
             cb.parentElement.classList.remove('selected');
         }
     }
->>>>>>> f836f06874fec630e2831f55536be2793acacc47
+
 </script>
 {% endblock %}
