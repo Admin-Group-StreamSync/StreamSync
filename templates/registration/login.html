@@ -1,52 +1,56 @@
 {% extends "base.html" %}
 
-{% block title %}Log In - StreamSync{% endblock %}
+{% block title %}Iniciar Sessió - StreamSync{% endblock %}
 
-{% block navbar %}{% endblock %}
-
-{% block main_class %}d-flex flex-column align-items-center justify-content-center{% endblock %}
+{% block extra_css %}
+<style>
+    .login-container { display: flex; justify-content: center; align-items: center; min-height: 90vh; background: #fff; padding: 20px; }
+    .login-card { width: 100%; max-width: 450px; background: white; border-radius: 20px; padding: 40px; box-shadow: 0 10px 40px rgba(0,0,0,0.05); border: 1px solid #f2f2f2; text-align: center; }
+    .form-group-custom { text-align: left; margin-bottom: 20px; }
+    .form-group-custom label { font-weight: 700; font-size: 0.8rem; color: #555; text-transform: uppercase; margin-bottom: 5px; display: block; }
+    .form-control-figma { width: 100%; padding: 12px; border-radius: 12px; border: 1px solid #ddd; outline: none; transition: 0.3s; }
+    .form-control-figma:focus { border-color: #8a2be2; box-shadow: 0 0 0 3px rgba(138, 43, 226, 0.1); }
+    .btn-gradient { width: 100%; padding: 14px; border-radius: 12px; border: none; background: linear-gradient(90deg, #8a2be2, #d40078); color: white; font-weight: 700; cursor: pointer; transition: 0.3s; }
+    .btn-gradient:hover { opacity: 0.9; transform: translateY(-1px); }
+    .error-box { background: #fff0f0; border: 1px solid #ffbaba; color: #d8000c; padding: 12px; border-radius: 10px; margin-bottom: 20px; font-size: 0.85rem; text-align: left; }
+</style>
+{% endblock %}
 
 {% block content %}
-<div class="container d-flex justify-content-center mb-3" style="max-width: 350px; padding: 0;">
-    <div class="w-100 text-start">
-        <a href="{% url 'pagina_principal' %}" class="btn btn-outline-secondary btn-sm rounded-pill shadow-sm">
-            <i class="bi bi-arrow-left"></i> Pàgina Principal
-        </a>
+<div class="login-container">
+    <div class="login-card">
+        <div class="mx-auto mb-3" style="width: 45px; height: 45px; background: linear-gradient(135deg, #8a2be2, #d40078); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: white;">
+            <i class="bi bi-film"></i>
+        </div>
+
+        <h3 class="fw-bold mb-1">Benvingut</h3>
+        <p class="text-muted small mb-4">Introdueix les teves credencials</p>
+
+        {% if form.errors %}
+        <div class="error-box">
+            <i class="bi bi-exclamation-circle-fill me-2"></i> L'usuari o la contrasenya no són correctes.
+        </div>
+        {% endif %}
+
+        <form method="POST">
+            {% csrf_token %}
+
+            <div class="form-group-custom">
+                <label>Nom d'usuari</label>
+                <input type="text" name="username" class="form-control-figma" placeholder="nom_usuari" required>
+            </div>
+
+            <div class="form-group-custom">
+                <label>Contrasenya</label>
+                <input type="password" name="password" class="form-control-figma" placeholder="••••••••" required>
+            </div>
+
+            <button type="submit" class="btn-gradient">Iniciar Sessió</button>
+        </form>
+
+        <p class="mt-4 small text-muted">
+            No tens compte? <a href="{% url 'registre' %}" class="text-primary fw-bold text-decoration-none">Registra't aquí</a>
+        </p>
     </div>
-</div>
-
-<div class="card p-4 shadow border-0" style="width: 100%; max-width: 350px; border-radius: 15px;">
-    <div class="text-center mb-4">
-        <i class="bi bi-person-circle text-primary" style="font-size: 4rem;"></i>
-    </div>
-
-    {% if form.errors %}
-        <div class="alert alert-danger p-2 small text-center">Usuari o contrasenya incorrectes.</div>
-    {% endif %}
-
-    <form method="post" action="{% url 'login' %}">
-        {% csrf_token %}
-
-        <div class="mb-3">
-            <label class="form-label small fw-bold text-muted">USUARI</label>
-            <input type="text" name="username" class="form-control bg-light border-0 py-2" placeholder="El teu usuari" required>
-        </div>
-
-        <div class="mb-4">
-            <label class="form-label small fw-bold text-muted">CONTRASENYA</label>
-            <input type="password" name="password" class="form-control bg-light border-0 py-2" placeholder="********" required>
-        </div>
-
-        <button type="submit" class="btn btn-primary w-100 fw-bold py-2 shadow-sm">
-            LOG IN
-        </button>
-
-        <div class="text-center mt-4">
-            <span class="text-muted small">Si no tens compte, </span>
-            <a href="{% url 'crear_cuenta' %}" class="text-decoration-none small fw-bold text-primary">
-                registra't aquí
-            </a>
-        </div>
-    </form>
 </div>
 {% endblock %}

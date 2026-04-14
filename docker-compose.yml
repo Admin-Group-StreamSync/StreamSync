@@ -1,46 +1,46 @@
-version: '3.9'
+# Docker Compose file -- defines how to run the project's containers
 
 services:
-  db:
-    image: postgres:16-alpine
-    container_name: movies_db
-    restart: unless-stopped
-    environment:
-      POSTGRES_DB: ${POSTGRES_DB:-moviesdb}
-      POSTGRES_USER: ${POSTGRES_USER:-moviesuser}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-moviespassword}
+  # The Django web application
+  web:
+    # Build the image using the Dockerfile in the current directory (./Dockerfile)
+    build: .
+
+    # Map port 8000 on your machine to port 8000 in the container
+    # Access the app at http://localhost:8000
+    ports:
+      - "8000:8000"
+
+    # Mount the current directory into /app in the container
+    # This means code changes on your machine are reflected instantly (live reload)
     volumes:
-      - postgres_data:/var/lib/postgresql/data
-      - ./db/init:/docker-entrypoint-initdb.d:ro
+      - .:/app  # "." = your project folder, "/app" = where it goes inside the container
+
+    # Wait for the database to be ready before starting the web server
+    depends_on:
+      - db
+
+  # PostgreSQL database
+  db:
+    # Use the official PostgreSQL 17 image (Alpine = smaller size)
+    image: postgres:17-alpine
+
+    # Set up the database credentials and name
+    environment:
+      POSTGRES_DB: StreamSyncDB
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: 1234
+
+    # Persist database data so it survives container restarts
+    # Without this, all data would be lost every time the container stops
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+    # Expose PostgreSQL port to the host (optional, useful so we can connect from the host too)
     ports:
       - "5432:5432"
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-moviesuser} -d ${POSTGRES_DB:-moviesdb}"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
 
-  api:
-    build:
-      context: ./api
-      dockerfile: Dockerfile
-    container_name: movies_api
-    restart: unless-stopped
-    environment:
-      NODE_ENV: ${NODE_ENV:-production}
-      PORT: 8080
-      DB_HOST: db
-      DB_PORT: 5432
-      DB_NAME: ${POSTGRES_DB:-moviesdb}
-      DB_USER: ${POSTGRES_USER:-moviesuser}
-      DB_PASSWORD: ${POSTGRES_PASSWORD:-moviespassword}
-      JWT_SECRET: ${JWT_SECRET:-changeme_supersecret_jwt}
-      ADMIN_API_KEY: ${ADMIN_API_KEY:-admin-default-key}
-    ports:
-      - "8080:8080"
-    depends_on:
-      db:
-        condition: service_healthy
-
+# Named volumes (folders managed by Docker that live outside the containers)
+# They keep data even if you delete and recreate the containers
 volumes:
-  postgres_data:
+  pgdata:

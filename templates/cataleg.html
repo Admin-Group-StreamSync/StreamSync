@@ -1,66 +1,47 @@
 {% extends "base.html" %}
 
-{% block title %}Catàleg - StreamSync{% endblock %}
+{% block title %}
+    StreamSync - {% if query %}Cerca: {{ query }}{% elif tipus_actual == 'movie' %}Pel·lícules{% elif tipus_actual == 'series' %}Sèries{% else %}Catàleg{% endif %}
+{% endblock %}
 
 {% block extra_css %}
 <style>
-    /* Estils de la targeta de filtres */
-    .filter-card {
-        background-color: #ffffff;
-        border-radius: 15px;
-        border: none;
+    .filter-container {
+        padding: 30px 0;
+        border-bottom: 1px solid #eee;
+        margin-bottom: 30px;
     }
-
-    /* Estils de les targetes de contingut */
-    .content-card {
-        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    .filter-row {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 15px;
+        align-items: end;
+    }
+    .filter-active {
+        border-color: #8a2be2 !important;
+        background-color: #f8f0ff !important;
+        color: #8a2be2 !important;
+    }
+    .filter-select-figma {
+        height: 48px;
         border-radius: 12px;
-        overflow: hidden;
-        background: #fff;
+        border: 1px solid #ddd;
+        padding: 0 15px;
+        font-weight: 500;
+        background-color: white;
+        transition: all 0.2s;
     }
-    .content-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important;
+    input.filter-select-figma {
+        cursor: text;
     }
-
-    .img-placeholder {
-        height: 220px;
-        background-color: #e9ecef;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        position: relative;
+    .filter-select-figma:focus {
+        border-color: #8a2be2;
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(138, 43, 226, 0.1);
     }
-
-    /* Indicador de puntuació (Rating) */
-    .badge-rating {
-        position: absolute;
-        top: 10px;
-        left: 10px;
-        background: rgba(255, 255, 255, 0.9);
-        color: #ffc107;
-        font-weight: bold;
-        padding: 4px 8px;
-        border-radius: 8px;
-        font-size: 0.8rem;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        z-index: 3; /* Per sobre del link */
-    }
-
-    /* Botó flotant d'afegir (més visible) */
-    .btn-add-float {
-        position: absolute;
-        bottom: 10px;
-        right: 10px;
-        border-radius: 50%;
-        width: 35px;
-        height: 35px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: 0;
-        z-index: 3; /* Per sobre del link */
-        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    .custom-slider {
+        width: 100%;
+        accent-color: #8a2be2;
     }
 </style>
 {% endblock %}
@@ -68,84 +49,110 @@
 {% block content %}
 <div class="container mt-4 mb-5">
 
-    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
-        <h2 class="fw-bold mb-0"><i class="bi bi-grid-3x3-gap-fill text-primary me-2"></i>Catàleg de Contingut</h2>
-        <div class="input-group shadow-sm" style="max-width: 400px; border-radius: 25px; overflow: hidden;">
-            <span class="input-group-text bg-white border-0"><i class="bi bi-search text-muted"></i></span>
-            <input type="text" class="form-control border-0" placeholder="Cerca pel·lícules o sèries...">
-        </div>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold m-0">
+            {% if query %} <i class="bi bi-search me-2"></i>Resultats per a "{{ query }}"
+            {% elif tipus_actual == 'movie' %} <i class="bi bi-film me-2"></i>Pel·lícules
+            {% elif tipus_actual == 'series' %} <i class="bi bi-tv me-2"></i>Sèries
+            {% else %} <i class="bi bi-grid-fill me-2"></i>Catàleg de Continguts {% endif %}
+        </h2>
+        <span class="badge bg-light text-dark border fw-normal px-3 py-2 rounded-pill shadow-sm">
+            {{ contenidos|length }} resultats trobats
+        </span>
     </div>
 
-    <div class="card filter-card shadow-sm p-3 mb-5">
-        <div class="row g-3">
-            <div class="col-6 col-md-3">
-                <label class="form-label small fw-bold text-muted">GÈNERE</label>
-                <select class="form-select border-light bg-light">
-                    <option selected>Tots els gèneres</option>
-                    <option>Acció</option>
-                    <option>Drama</option>
-                    <option>Comèdia</option>
-                    <option>Ciència Ficció</option>
+    <div class="filter-container">
+        <form method="GET" action="{{ request.path }}" id="filterForm" class="filter-row">
+
+            <div class="d-flex flex-column">
+                <label class="small fw-bold text-muted mb-1 ms-2">PLATAFORMA</label>
+                <select name="plataforma" class="filter-select-figma {% if filtros_sel.p %}filter-active{% endif %}" onchange="this.form.submit()">
+                    <option value="">Totes</option>
+                    {% for p in opcions.plataformas %}
+                    <option value="{{ p }}" {% if filtros_sel.p == p %}selected{% endif %}>{{ p }}</option>
+                    {% endfor %}
                 </select>
             </div>
-            <div class="col-6 col-md-3">
-                <label class="form-label small fw-bold text-muted">PLATAFORMA</label>
-                <select class="form-select border-light bg-light">
-                    <option selected>Totes les plataformes</option>
-                    <option>Netflix</option>
-                    <option>Max</option>
-                    <option>Disney+</option>
+
+            <div class="d-flex flex-column">
+                <label class="small fw-bold text-muted mb-1 ms-2">GÈNERE</label>
+                <select name="genere" class="filter-select-figma {% if filtros_sel.g %}filter-active{% endif %}" onchange="this.form.submit()">
+                    <option value="">Tots els Gèneres</option>
+                    {% for g in genres_api %}
+                    <option value="{{ g.id }}" {% if filtros_sel.g == g.id|stringformat:"s" %}selected{% endif %}>{{ g.name }}</option>
+                    {% endfor %}
                 </select>
             </div>
-            <div class="col-6 col-md-3">
-                <label class="form-label small fw-bold text-muted">ANY</label>
-                <select class="form-select border-light bg-light">
-                    <option selected>Qualsevol any</option>
-                    <option>2026</option>
-                    <option>2025</option>
-                    <option>Anteriors</option>
+
+            <div class="d-flex flex-column position-relative">
+                <label class="small fw-bold text-muted mb-1 ms-2">DIRECTOR</label>
+                <input type="text"
+                       name="director"
+                       class="filter-select-figma {% if filtros_sel.d %}filter-active{% endif %}"
+                       placeholder="Cerca director..."
+                       value="{{ filtros_sel.d|default:'' }}"
+                       onkeypress="if(event.key === 'Enter') this.form.submit();">
+                {% if filtros_sel.d %}
+                    <i class="bi bi-x-circle-fill position-absolute text-muted"
+                       style="right: 15px; top: 38px; cursor: pointer; z-index: 10;"
+                       onclick="document.getElementsByName('director')[0].value=''; this.form.closest('form').submit();"></i>
+                {% endif %}
+            </div>
+
+            <div class="d-flex flex-column">
+                <label class="small fw-bold text-muted mb-1 ms-2">EDAT</label>
+                <select name="edat" class="filter-select-figma {% if filtros_sel.e %}filter-active{% endif %}" onchange="this.form.submit()">
+                    <option value="">Totes les Edats</option>
+                    {% for r in ratings %}
+                    <option value="{{ r.id }}" {% if filtros_sel.e == r.id|stringformat:"s" %}selected{% endif %}>{{ r.description }}</option>
+                    {% endfor %}
                 </select>
             </div>
-            <div class="col-6 col-md-3">
-                <label class="form-label small fw-bold text-muted">ORDENA PER</label>
-                <select class="form-select border-light bg-light">
-                    <option selected>Més populars</option>
-                    <option>Millor valorades</option>
-                    <option>Recents</option>
-                </select>
+
+            <div class="d-flex flex-column">
+                <label class="small fw-bold text-muted mb-1 ms-2">RATING MÍNIM</label>
+                <div class="slider-wrapper {% if filtros_sel.v != '0' %}filter-active{% endif %}">
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <span id="valDisplay" class="text-primary fw-bold" style="font-size: 0.8rem;">{{ filtros_sel.v|default:"0" }}⭐</span>
+                    </div>
+                    <input type="range" name="valoracio" class="custom-slider"
+                           min="0" max="10" step="0.5" value="{{ filtros_sel.v|default:'0' }}"
+                           oninput="document.getElementById('valDisplay').innerText = this.value + '⭐'"
+                           onchange="this.form.submit()">
+                </div>
             </div>
-        </div>
+
+            <a href="{{ request.path }}"
+               class="btn btn-outline-danger d-flex align-items-center justify-content-center fw-bold"
+               style="height: 48px; border-radius: 12px; min-width: 120px;">
+                <i class="bi bi-trash3 me-2"></i> NETEJAR
+            </a>
+        </form>
     </div>
 
-    <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-6 g-4">
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xl-4 g-4">
         {% for item in contenidos %}
-        <div class="col">
-            <div class="card h-100 border-0 shadow-sm content-card position-relative">
-
-                <div class="img-placeholder">
-                    <i class="bi bi-camera-reels fs-1 text-muted opacity-25"></i>
-
-                    <span class="badge-rating"><i class="bi bi-star-fill"></i> {{ item.rating }}</span>
-
-                    <button class="btn btn-primary btn-add-float shadow" title="Afegir a la meva llista">
-                        <i class="bi bi-plus-lg"></i>
-                    </button>
-                </div>
-
-                <div class="card-body p-3 text-center">
-                    <p class="text-primary small fw-bold mb-1 text-uppercase" style="font-size: 0.7rem;">{{ item.genere }}</p>
-                    <h6 class="card-title fw-bold text-dark mb-0 text-truncate">{{ item.titol }}</h6>
-                </div>
-
-                <a href="{% url 'detall_contingut' item.id %}" class="stretched-link"></a>
+            <div class="col">
+                {% include "components/card_contingut.html" with item=item %}
             </div>
-        </div>
         {% empty %}
-        <div class="col-12 text-center py-5">
-            <i class="bi bi-emoji-frown fs-1 text-muted opacity-50"></i>
-            <p class="mt-3 text-muted">No hem trobat contingut disponible ara mateix.</p>
-        </div>
+            <div class="empty-state-wrapper w-100 py-5 text-center">
+                <div class="empty-state-card shadow-sm p-5 bg-white rounded-4 border">
+                    <div class="mb-4">
+                        <i class="bi bi-search-heart display-1" style="color: #8a2be2; opacity: 0.4;"></i>
+                    </div>
+                    <h3 class="fw-bold text-dark mb-2">Vaja! No hem trobat res</h3>
+                    <p class="text-muted mb-4">
+                        Sembla que cap contingut coincideix amb els teus filtres actuals.
+                        Prova de canviar la cerca o neteja els filtres.
+                    </p>
+                    <a href="{{ request.path }}" class="btn btn-primary px-5 py-3 fw-bold rounded-pill shadow border-0" style="background-color: #8a2be2;">
+                        <i class="bi bi-arrow-clockwise me-2"></i> Reiniciar Filtres
+                    </a>
+                </div>
+            </div>
         {% endfor %}
     </div>
+
 </div>
 {% endblock %}

@@ -4,118 +4,198 @@
 
 {% block extra_css %}
 <style>
-    /* Efecto de "pila" de portadas para las listas */
-    .lista-stack {
+    body {
+        background-color: #f8f9fc;
+        min-height: 100vh;
+        font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    }
+
+    /* --- BOTÓ DE TORNAR UNIFICAT (IGUAL QUE A DETALL) --- */
+    .btn-back {
+        display: inline-flex;
+        align-items: center;
+        color: #718096;
+        text-decoration: none;
+        font-weight: 600;
+        transition: 0.3s;
+        padding: 8px 16px;
+        border-radius: 50px;
+    }
+    .btn-back:hover {
+        color: #8a2be2;
+        background: #f3f0ff;
+        transform: translateX(-5px);
+    }
+
+    .lists-container {
+        padding-top: 2rem; /* Ajustat per coherència */
+        padding-bottom: 6rem;
+    }
+
+    .main-title {
+        font-size: 2.8rem;
+        letter-spacing: -2px; /* Estil "Display" com al detall */
+        color: #1a1a1a;
+        margin-bottom: 0.5rem;
+    }
+
+    /* --- CARPETES 3D --- */
+    .folder-wrapper {
+        perspective: 1000px;
+        margin-bottom: 1rem;
+        text-decoration: none;
+        display: block;
+    }
+
+    .folder-card {
         position: relative;
-        width: 150px;
-        height: 200px;
+        width: 190px;
+        height: 240px;
+        cursor: pointer;
         margin: 0 auto;
     }
-    .stack-base, .stack-top {
+
+    .folder-bg {
         position: absolute;
-        width: 100%;
-        height: 100%;
-        border-radius: 10px;
-        border: 1px solid #dee2e6;
+        inset: 0;
+        border-radius: 28px;
+        background: white;
+        border: 1px solid #e2e8f0;
+        transition: all 0.4s cubic-bezier(0.2, 1, 0.3, 1);
     }
-    .stack-base {
-        background-color: #e9ecef;
-        top: -8px;
-        right: -8px;
-        z-index: 1;
-    }
-    .stack-top {
-        background-color: #ffffff;
-        top: 0;
-        left: 0;
-        z-index: 2;
+
+    .bg-2 { transform: translate(0, 0); opacity: 0; z-index: 1; }
+    .bg-1 { transform: translate(0, 0); opacity: 0; z-index: 2; }
+
+    .folder-front {
+        position: absolute;
+        inset: 0;
+        background: white;
+        border-radius: 28px;
+        border: 1px solid #e2e8f0;
         display: flex;
+        flex-direction: column;
         align-items: center;
         justify-content: center;
-        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        z-index: 3;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+        transition: all 0.4s cubic-bezier(0.2, 1, 0.3, 1);
+        overflow: hidden;
     }
 
-    /* Estilo para el botón de lista nueva */
-    .btn-new-list .stack-top {
-        border: 2px dashed #0d6efd;
-        color: #0d6efd;
-        background-color: #f0f7ff;
-    }
-    .btn-new-list:hover .stack-top {
-        background-color: #0d6efd;
-        color: white;
+    .folder-wrapper:hover .folder-front {
+        transform: translateY(-12px);
+        border-color: #8a2be2;
+        box-shadow: 0 20px 40px rgba(138, 43, 226, 0.12);
     }
 
-    .list-title {
-        font-weight: bold;
-        margin-top: 15px;
+    .folder-wrapper:hover .bg-2 {
+        opacity: 1;
+        transform: translate(10px, -10px);
+        background: #f8f6ff;
+    }
+
+    .folder-wrapper:hover .bg-1 {
+        opacity: 0.6;
+        transform: translate(18px, -18px);
+        background: #fcfaff;
+    }
+
+    .add-new {
+        border: 2px dashed #cbd5e0;
+        background: #ffffff !important;
+    }
+
+    .list-name {
+        margin-top: 1.2rem;
+        font-weight: 700;
+        color: #2d3748;
+        font-size: 1.1rem;
         text-align: center;
+        transition: color 0.3s;
     }
 
-    /* Contenedor del buscador central */
-    .search-container-large {
-        padding: 40px 0;
-        border-bottom: 2px solid #eee;
-        margin-bottom: 40px;
+    .folder-wrapper:hover .list-name {
+        color: #8a2be2;
+    }
+
+    .delete-link {
+        transition: 0.3s;
+        opacity: 0.6;
+        font-weight: 600;
+    }
+    .delete-link:hover {
+        opacity: 1;
+        color: #dc3545 !important;
     }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="container mt-4 mb-5">
+<div class="container lists-container">
 
-    <div class="mb-3">
-        <a href="javascript:history.back()" class="btn btn-outline-secondary btn-sm rounded-pill shadow-sm">
-            <i class="bi bi-arrow-left"></i> Enrere
+    <div class="mb-4">
+        <a href="{% url 'pagina_principal' %}" class="btn-back">
+            <i class="bi bi-arrow-left-circle-fill fs-5 me-2"></i> Tornar a l'Inici
         </a>
     </div>
 
-    <div class="search-container-large text-center">
-        <h2 class="mb-4 fw-bold">Les Meves Llistes</h2>
-        <div class="input-group mx-auto shadow-sm" style="max-width: 600px;">
-            <input type="text" class="form-control form-control-lg" placeholder="Busca entre les teves llistes...">
-            <button class="btn btn-primary px-4"><i class="bi bi-search"></i></button>
-        </div>
+    <div class="text-center mb-5">
+        <h1 class="main-title fw-bold">Les Meves Llistes</h1>
+        <p class="text-muted fs-5">Totes les teves col·leccions personals en un sol lloc.</p>
     </div>
 
-    <div class="row row-cols-2 row-cols-md-3 row-cols-lg-5 g-5 justify-content-center">
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5 g-5 justify-content-center">
 
-        <div class="col">
-            <a href="#" class="text-decoration-none text-dark">
-                <div class="lista-stack">
-                    <div class="stack-base shadow-sm"></div>
-                    <div class="stack-top">
-                        <i class="bi bi-collection-play fs-1 text-secondary opacity-50"></i>
+        <div class="col d-flex justify-content-center">
+            <a href="{% url 'crear_llista' %}" class="folder-wrapper text-decoration-none">
+                <div class="folder-card">
+                    <div class="folder-front add-new">
+                        <div class="bg-light border rounded-circle d-flex align-items-center justify-content-center shadow-sm mb-3" style="width: 65px; height: 65px;">
+                            <i class="bi bi-plus-lg text-primary fs-3"></i>
+                        </div>
+                        <span class="fw-bold text-muted small">NOVA LLISTA</span>
                     </div>
                 </div>
-                <div class="list-title">Favorits 2026</div>
+                <p class="list-name text-primary">Crear</p>
             </a>
         </div>
 
-        <div class="col">
-            <a href="#" class="text-decoration-none text-dark">
-                <div class="lista-stack">
-                    <div class="stack-base shadow-sm"></div>
-                    <div class="stack-top">
-                        <i class="bi bi-collection-play fs-1 text-secondary opacity-50"></i>
+        {% for carpeta in carpetes %}
+        <div class="col d-flex justify-content-center text-center">
+            <div>
+                <a href="{% url 'detall_carpeta' carpeta.id %}" class="folder-wrapper text-decoration-none">
+                    <div class="folder-card">
+                        <div class="folder-bg bg-1"></div>
+                        <div class="folder-bg bg-2"></div>
+                        <div class="folder-front">
+                            <div class="rounded-circle d-flex align-items-center justify-content-center mb-3"
+                                 style="background: {{ carpeta.color }}15; width: 75px; height: 75px; border: 1px solid {{ carpeta.color }}30;">
+                                <i class="bi {{ carpeta.icona }}" style="color: {{ carpeta.color }}; font-size: 2.2rem;"></i>
+                            </div>
+                            <span class="badge rounded-pill bg-white text-dark border px-3 py-2 shadow-sm" style="font-size: 0.75rem;">
+                                {{ carpeta.elements.count }} ítems
+                            </span>
+                        </div>
                     </div>
-                </div>
-                <div class="list-title">Per veure</div>
-            </a>
-        </div>
+                    <p class="list-name">{{ carpeta.nom }}</p>
+                </a>
 
-        <div class="col">
-            <a href="#" class="text-decoration-none btn-new-list">
-                <div class="lista-stack">
-                    <div class="stack-base"></div>
-                    <div class="stack-top">
-                        <i class="bi bi-plus-lg fs-1"></i>
-                    </div>
-                </div>
-                <div class="list-title text-primary">Nova Llista</div>
-            </a>
+                <a href="{% url 'eliminar_carpeta' carpeta.id %}" class="delete-link text-danger small text-decoration-none"
+                   onclick="return confirm('Segur que vols eliminar aquesta llista?')">
+                    <i class="bi bi-trash3-fill me-1"></i> Eliminar
+                </a>
+            </div>
         </div>
-
+        {% endfor %}
     </div>
+
+    {% if not carpetes %}
+    <div class="text-center mt-5 py-5">
+        <i class="bi bi-folder2-open display-1 text-muted opacity-25"></i>
+        <p class="text-muted mt-3">Encara no has creat cap llista personalitzada.</p>
+    </div>
+    {% endif %}
+
 </div>
 {% endblock %}
