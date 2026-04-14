@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="ca">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,22 +7,181 @@
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary-gradient: linear-gradient(90deg, #8a2be2 0%, #d40078 100%);
+            --figma-bg: #ffffff;
+            --figma-gray: #f8f9fa;
+            --figma-border: #eeeeee;
+            --text-main: #1a1a1a;
+            --text-muted: #666666;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--figma-bg);
+            color: var(--text-main);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        main {
+            flex-grow: 1;
+        }
+
+        /* --- ESTILS UNIFICATS PER A TARGETES --- */
+        .card-streaming-figma {
+            background: white;
+            border-radius: 20px;
+            border: 1px solid var(--figma-border);
+            overflow: hidden;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            text-decoration: none !important;
+            color: inherit !important;
+        }
+
+        .card-streaming-figma:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.08);
+        }
+
+        .poster-wrapper {
+            position: relative;
+            aspect-ratio: 16 / 9;
+            background: #000;
+            overflow: hidden;
+        }
+
+        .poster-wrapper img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: 0.5s;
+        }
+
+        .card-streaming-figma:hover .poster-wrapper img {
+            transform: scale(1.1);
+        }
+
+        .platform-tag {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            color: white;
+            padding: 5px 12px;
+            border-radius: 8px;
+            font-size: 0.7rem;
+            font-weight: 800;
+            z-index: 2;
+            text-transform: uppercase;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+
+        .rating-tag {
+            position: absolute;
+            bottom: 12px;
+            right: 12px;
+            background: rgba(255, 255, 255, 0.9);
+            color: #ffb800;
+            padding: 4px 10px;
+            border-radius: 8px;
+            font-weight: 800;
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            z-index: 2;
+        }
+
+        .card-info-api {
+            padding: 20px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .movie-title-api {
+            font-weight: 800;
+            font-size: 1.1rem;
+            color: var(--text-main);
+            margin: 0 0 5px 0;
+            line-height: 1.2;
+        }
+
+        .movie-meta-api {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin-bottom: 10px;
+        }
+
+        .desc-api {
+            font-size: 0.85rem;
+            color: #888;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            margin-bottom: 15px;
+        }
+
+        .genre-tag-api {
+            background: var(--figma-gray);
+            color: #999;
+            padding: 4px 12px;
+            border-radius: 8px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .filter-select-figma {
+            appearance: none;
+            background: white;
+            border: 1px solid var(--figma-border);
+            border-radius: 12px;
+            padding: 12px 15px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            cursor: pointer;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%23666' viewBox='0 0 16 16'%3E%3Cpath d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 15px center;
+            background-size: 12px;
+            transition: all 0.2s;
+        }
+
+        .filter-select-figma:focus {
+            border-color: #8a2be2;
+            outline: none;
+            box-shadow: 0 0 0 4px rgba(138, 43, 226, 0.1);
+        }
+    </style>
 
     {% block extra_css %}{% endblock %}
 </head>
-<body class="d-flex flex-column min-vh-100" style="background-color: #f8f9fa;">
+<body>
 
-    {% block navbar %}
-        {% include 'capçaleres/capçalera+buscador.html' %}
-    {% endblock %}
+    <header>
+        {% block navbar %}
+            {% include 'capçaleres/capçalera.html' %}
+        {% endblock %}
+    </header>
 
-    <main class="flex-grow-1 {% block main_class %}{% endblock %}">
+    <main>
         {% block content %}
         {% endblock %}
     </main>
 
-    {% include 'components/footer.html' %}
-
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    {% block extra_js %}{% endblock %}
 </body>
 </html>

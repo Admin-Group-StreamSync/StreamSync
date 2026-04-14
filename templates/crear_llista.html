@@ -1,0 +1,169 @@
+{% extends "base.html" %}
+
+{% block title %}Crear Nova Llista - StreamSync{% endblock %}
+
+{% block extra_css %}
+<style>
+    :root {
+        --primary-purple: #8a2be2;
+        --soft-purple: #f3e5f5;
+    }
+
+    .create-card {
+        background: white;
+        border: 1px solid #eee;
+        border-radius: 32px;
+        box-shadow: 0 20px 50px rgba(0,0,0,0.05);
+    }
+
+    .form-control-figma {
+        background: #f8f9fa;
+        border: 2px solid transparent;
+        border-radius: 16px;
+        padding: 15px 20px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+    .form-control-figma:focus {
+        background: white;
+        border-color: var(--primary-purple);
+        box-shadow: 0 0 0 4px rgba(138, 43, 226, 0.1);
+        outline: none;
+    }
+
+    /* Selector d'icones personalitzat */
+    .icon-selector input[type="radio"] {
+        display: none;
+    }
+
+    .icon-box {
+        width: 60px;
+        height: 60px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 16px;
+        border: 2px solid #eee;
+        cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        color: #666;
+    }
+
+    .icon-selector input[type="radio"]:checked + .icon-box {
+        border-color: var(--primary-purple);
+        background-color: var(--soft-purple);
+        color: var(--primary-purple);
+        transform: scale(1.1);
+    }
+
+    /* Selector de color circular */
+    .color-input-wrapper {
+        width: 100%;
+        height: 56px;
+        border-radius: 16px;
+        overflow: hidden;
+        border: 2px solid #eee;
+        position: relative;
+    }
+
+    input[type="color"] {
+        position: absolute;
+        top: -10px;
+        left: -10px;
+        width: 120%;
+        height: 120%;
+        cursor: pointer;
+        border: none;
+    }
+
+    .btn-create {
+        background: linear-gradient(90deg, #8a2be2 0%, #d40078 100%);
+        border: none;
+        color: white;
+        padding: 16px;
+        border-radius: 16px;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        transition: all 0.3s ease;
+    }
+
+    .btn-create:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 20px rgba(138, 43, 226, 0.3);
+        opacity: 0.9;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-5 col-md-8">
+            <div class="create-card p-5">
+                <div class="text-center mb-5">
+                    <div class="d-inline-block p-3 rounded-circle mb-3" style="background: var(--soft-purple);">
+                        <i class="bi bi-folder-plus fs-1 text-primary" style="color: var(--primary-purple) !important;"></i>
+                    </div>
+                    <h2 class="fw-bold text-dark">Nova Llista</h2>
+                    <p class="text-muted">Organitza el teu contingut preferit</p>
+                </div>
+
+                <form method="POST">
+                    {% csrf_token %}
+
+                    <div class="mb-4">
+                        <label class="form-label fw-bold text-dark small text-uppercase">Nom de la llista</label>
+                        <input type="text" name="nom" class="form-control form-control-figma"
+                               placeholder="Ex: Pel·lis per al cap de setmana" required>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label fw-bold text-dark small text-uppercase">Tria una icona</label>
+                        <div class="d-flex justify-content-between icon-selector">
+                            <label>
+                                <input type="radio" name="icona" value="bi-star-fill" checked>
+                                <div class="icon-box"><i class="bi bi-star-fill fs-4"></i></div>
+                            </label>
+                            <label>
+                                <input type="radio" name="icona" value="bi-heart-fill">
+                                <div class="icon-box"><i class="bi bi-heart-fill fs-4"></i></div>
+                            </label>
+                            <label>
+                                <input type="radio" name="icona" value="bi-rocket-takeoff-fill">
+                                <div class="icon-box"><i class="bi bi-rocket-takeoff-fill fs-4"></i></div>
+                            </label>
+                            <label>
+                                <input type="radio" name="icona" value="bi-lightning-fill">
+                                <div class="icon-box"><i class="bi bi-lightning-fill fs-4"></i></div>
+                            </label>
+                            <label>
+                                <input type="radio" name="icona" value="bi-bookmark-fill">
+                                <div class="icon-box"><i class="bi bi-bookmark-fill fs-4"></i></div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="mb-5">
+                        <label class="form-label fw-bold text-dark small text-uppercase">Color de la carpeta</label>
+                        <div class="color-input-wrapper">
+                            <input type="color" name="color" value="#8a2be2">
+                        </div>
+                        <div class="form-text text-center mt-2 small">Aquest color s'aplicarà al fons de la teva llista</div>
+                    </div>
+
+                    <div class="d-grid gap-3">
+                        <button type="submit" class="btn-create shadow">
+                            <i class="bi bi-plus-circle me-2"></i>Crear Llista
+                        </button>
+                        <a href="{% url 'llistes' %}" class="btn btn-link text-muted fw-bold text-decoration-none">
+                            Tornar enrere
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
