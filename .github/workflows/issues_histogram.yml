@@ -27,38 +27,20 @@ jobs:
         with:
           python-version: "3.11"
 
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install requests matplotlib python-decouple
 
-      - name: Run issues histogram script
+      - name: Install dependencies
+        run: python -m pip install --upgrade pip && pip install matplotlib>=3.7.3 && pip install requests matplotlib python-decouple # comment
+
+      - name: Run script
         working-directory: ./IshikawaTools
         env:
-          HISTOGRAM_TOKEN: ${{ secrets.HISTOGRAM_TOKEN }}
-        run: python ./histogram.py
+           HISTOGRAM_TOKEN: ${{ secrets.HISTOGRAM_TOKEN }}
 
-      - name: Commit and Push changes
-        env:
-          HISTOGRAM_TOKEN: ${{ secrets.HISTOGRAM_TOKEN }}
-        run: |
-          # Configurar el usuario de Git (puedes usar el bot de GitHub)
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          
-          BRANCH="auto/update-histogram-$(date +%Y%m%d)"
-          git checkout -b $BRANCH
-                    
-          git add IshikawaTools/issues_per_week.png
-          if git diff --cached --quiet; then
-            echo  "No changes to commit"
-          else
-            git commit -m "Update issues histogram graph [skip ci]"
-            git push origin $BRANCH
+        run: git pull && python ./histogram.py
 
-            gh pr create \
-              --title "Update issues histogram graph" \
-              --body "Histogram actualizado automáticamente por GitHub Actions." \
-              --base master \
-              --head $BRANCH
-          fi
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ishikawa-chart
+          path: IshikawaTools/issues_per_week.png
+

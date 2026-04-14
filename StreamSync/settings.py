@@ -124,11 +124,12 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
-# Si algú no està loguejat, que el enviï a '/login/'
+# Si algú intenta entrar a una pàgina privada sense estar loguejat
 LOGIN_URL = 'login'
 
-# On va l'usuari just després de posar bé la seva contrasenya
-LOGIN_REDIRECT_URL = 'pagina_principal'
+# CANVIA AIXÒ: On va l'usuari just després de posar bé la seva contrasenya
+# Volem que vagi al perfil tal com has demanat
+LOGIN_REDIRECT_URL = 'pagina_perfil1'
 
 # On va l'usuari en tancar la sessió
 LOGOUT_REDIRECT_URL = 'pagina_principal'
