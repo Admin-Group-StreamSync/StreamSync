@@ -93,6 +93,30 @@ paths:
             type: string
           required: false
           description: Genre to filter
+        - in: query
+          name: title
+          schema:
+            type: string
+          required: false
+          description: Title to filter
+        - in: query
+          name: id
+          schema:
+            type: string
+          required: false
+          description: ID to filter
+        - in: query
+          name: synopsis
+          schema:
+            type: string
+          required: false
+          description: Synopsis to filter
+        - in: query
+          name: age_rating
+          schema:
+            type: string
+          required: false
+          description: Age rating to filter
       description: Returns a list of all series in the database.
       responses:
         '200':
@@ -147,6 +171,7 @@ components:
           readOnly: true
         title:
           type: string
+        
     Director:
       type: object
       properties:
@@ -176,6 +201,16 @@ components:
           type: integer
           readOnly: true
         description:
+          type: string
+    Country:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+        iso_code:
           type: string
   securitySchemes:
     ApiKey: 

@@ -56,7 +56,7 @@ class Repository {
     }
 
     async getAllSeries(filters) {
-        let query = "SELECT * FROM ser  ies WHERE expires_at > current_timestamp";
+        let query = "SELECT * FROM series WHERE expires_at > current_timestamp";
         if (filters) {
             query += " AND ";
             const conditions = [];
