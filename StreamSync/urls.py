@@ -9,6 +9,8 @@ urlpatterns = [
 
     # LOGIN: Utilitzem la vista de Django però el TEU template
     path('login/', auth_views.LoginView.as_view(template_name='registration/login.html'), name='login'),
+    path('portal-responsables/', auth_views.LoginView.as_view(template_name='registration/login_spm.html'),
+         name='login_spm'),
 
     # LOGOUT
     path('logout/', auth_views.LogoutView.as_view(), name='logout'),

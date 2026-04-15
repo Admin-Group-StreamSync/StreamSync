@@ -1,0 +1,119 @@
+{% extends "base.html" %}
+
+{% block title %}Portal de Gestio - StreamSync{% endblock %}
+
+{% block extra_css %}
+<style>
+    .spm-login-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 90vh;
+        padding: 20px;
+        background: radial-gradient(circle at top left, #283488 0%, #1f2d75 45%, #191f4f 100%);
+    }
+    .spm-login-card {
+        width: 100%;
+        max-width: 460px;
+        background: #ffffff;
+        border-radius: 20px;
+        padding: 36px;
+        box-shadow: 0 16px 40px rgba(5, 8, 35, 0.35);
+        text-align: center;
+    }
+    .spm-icon {
+        width: 52px;
+        height: 52px;
+        border-radius: 14px;
+        background: linear-gradient(135deg, #7c4dff, #8a2be2);
+        color: white;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 12px;
+        font-size: 1.2rem;
+    }
+    .spm-form-group {
+        text-align: left;
+        margin-bottom: 16px;
+    }
+    .spm-form-group label {
+        display: block;
+        font-size: 0.75rem;
+        font-weight: 700;
+        color: #5a5a6f;
+        text-transform: uppercase;
+        margin-bottom: 6px;
+    }
+    .spm-input {
+        width: 100%;
+        border: 1px solid #d8d8e6;
+        border-radius: 10px;
+        padding: 11px 12px;
+        outline: none;
+        transition: 0.2s;
+    }
+    .spm-input:focus {
+        border-color: #7c4dff;
+        box-shadow: 0 0 0 3px rgba(124, 77, 255, 0.14);
+    }
+    .spm-btn {
+        width: 100%;
+        border: none;
+        border-radius: 10px;
+        padding: 12px;
+        font-weight: 700;
+        color: white;
+        background: linear-gradient(90deg, #7c4dff, #5e35b1);
+    }
+    .spm-error {
+        background: #fff1f1;
+        border: 1px solid #ffb8b8;
+        color: #bf2525;
+        border-radius: 10px;
+        padding: 10px;
+        font-size: 0.85rem;
+        text-align: left;
+        margin-bottom: 14px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="spm-login-container">
+    <div class="spm-login-card">
+        <div class="spm-icon">
+            <i class="bi bi-shield-lock"></i>
+        </div>
+        <h3 class="fw-bold mb-1">Portal de Gestio</h3>
+        <p class="text-muted small mb-4">Acces per responsables de plataforma</p>
+
+        {% if form.errors %}
+        <div class="spm-error">
+            <i class="bi bi-exclamation-circle-fill me-2"></i> Les credencials no son correctes.
+        </div>
+        {% endif %}
+
+        <form method="post">
+            {% csrf_token %}
+            <div class="spm-form-group">
+                <label>Correu corporatiu</label>
+                <input class="spm-input" type="text" name="username" placeholder="responsable@plataforma.com" required>
+            </div>
+
+            <div class="spm-form-group">
+                <label>Contrasenya</label>
+                <input class="spm-input" type="password" name="password" placeholder="********" required>
+            </div>
+
+            <button type="submit" class="spm-btn">Accedir al dashboard</button>
+        </form>
+
+        <p class="small text-muted mt-3 mb-1">Acces restringit.</p>
+        <p class="small mb-0">
+            No tens credencials de gestor?
+            <a href="mailto:support@streamsync.local" class="fw-bold text-decoration-none">Sol licita accés</a>
+        </p>
+    </div>
+</div>
+{% endblock %}
