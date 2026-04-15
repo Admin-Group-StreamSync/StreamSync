@@ -1,5 +1,4 @@
 .venv/
-*.pyc
 db.sqlite3
 .env
 .vscode/
@@ -12,11 +11,13 @@ actions-runner
 
 # Python
 __pycache__/
+*.pyc
 *.py[cod]
 *.egg-info/
 
 # IDE
 .idea/
+
 
 # Django
 
