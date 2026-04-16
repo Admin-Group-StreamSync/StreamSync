@@ -62,7 +62,7 @@ jobs:
                 labelsToAdd.add('feature');
                 break;
               case 'fix':
-                labelsToAdd.add('bug');
+                labelsToAdd.add('feat');
                 break;
               case 'docs':
                 labelsToAdd.add('documentation');
