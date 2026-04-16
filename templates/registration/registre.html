@@ -168,6 +168,14 @@
 
         if (s === 2 && currentStep === 1) {
             const step1Inputs = document.querySelectorAll('#step1 input[required]');
+            const pass1 = document.querySelector('input[name="password1"]').value;
+            const commonPasswords = ['12345678', 'password', 'contrasenya', '123456789'];
+
+            if (commonPasswords.includes(pass1)) {
+                alert("Aquesta contrasenya és massa comuna. Si us plau, tria una més segura.");
+                return; // Bloquea el paso al paso 2
+            }
+
             let allValid = true;
             step1Inputs.forEach(input => {
                 if (!input.checkValidity()) {
