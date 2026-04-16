@@ -2,6 +2,7 @@ import os
 import requests
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import update_session_auth_hash, login
+from django.contrib.auth.views import LoginView
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.contrib.auth.forms import PasswordChangeForm
@@ -23,6 +24,13 @@ OPCIONS = {
     'plataformas': ['CinePlus', 'StreamHub', 'PlayMax'],
     'idiomas': ['Català', 'Castellano', 'English', 'Français']
 }
+
+
+class StreamSyncLoginView(LoginView):
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        messages.success(self.request, f"Benvingut/da de nou, {form.get_user().username}!")
+        return response
 
 # --- 2. FUNCIONS AUXILIARS I MAPEIG ---
 
