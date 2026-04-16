@@ -216,7 +216,7 @@ def pagina_principal(request):
         'ratings': ratings_api
     })
 
-
+@login_required(request, tipus, content_id):
 def detall_contingut(request, tipus, content_id):
     # 1. Agafem el contingut mapejat (que només té IDs)
     totes = get_all_series() if tipus == 'series' else get_all_movies()
@@ -263,7 +263,7 @@ def detall_contingut(request, tipus, content_id):
         'recomanacions': [p for p in totes if str(p['id']) != str(content_id)][:5],
     })
 
-
+@login_required(requests, tipus = None):
 def catalogo(request, tipus=None):
     # 1. Obtenim les dades brutes
     if tipus == 'movie':
@@ -525,7 +525,7 @@ def esborrar_compte(request):
         return redirect('pagina_principal')
     return render(request, 'registration/esborrar_compte.html')
 
-
+@login_required(request):
 def cerca_contingut(request):
     query = request.GET.get('q', '').strip()
 
