@@ -60,40 +60,44 @@
         <form method="POST" id="reg-form">
             {% csrf_token %}
 
-            {% if form.errors %}
-            <div class="error-box">
-                <p class="fw-bold mb-1">Corregeix el següent:</p>
-                <ul class="mb-0">
-                    {% for field in form %}{% for error in field.errors %}<li>{{ field.label }}: {{ error }}</li>{% endfor %}{% endfor %}
-                    {% for error in form.non_field_errors %}<li>{{ error }}</li>{% endfor %}
-                </ul>
-            </div>
-            {% endif %}
-
             <div id="step1">
+
+                {% if form.errors %}
+                <div class="error-box">
+                    <p class="fw-bold mb-1">Corregeix el següent:</p>
+                    <ul class="mb-0">
+                        {% for field in form %}{% for error in field.errors %}<li>{{ field.label }}: {{ error }}</li>{% endfor %}{% endfor %}
+                        {% for error in form.non_field_errors %}<li>{{ error }}</li>{% endfor %}
+                    </ul>
+                </div>
+                {% endif %}
+
                 <div class="form-group-custom">
                     <label>Usuari</label>
                     <input type="text" name="username" class="form-control-figma" placeholder="nom_usuari" value="{{ form.username.value|default:'' }}" required>
                 </div>
+
                 <div class="form-group-custom">
                     <label>Nom complet</label>
-
                     <input type="text" name="first_name" class="form-control-figma" placeholder="El teu nom i cognoms" value="{{ form.first_name.value|default:'' }}" required>
                 </div>
+
                 <div class="form-group-custom">
                     <label>Email</label>
                     <input type="email" name="email" class="form-control-figma" placeholder="correu@exemple.com" value="{{ form.email.value|default:'' }}" required>
                 </div>
+
                 <div class="form-group-custom">
                     <label>Contrasenya</label>
                     <input type="password" name="password1" class="form-control-figma" placeholder="Minim 8 caracters" minlength="8" required>
                     <small class="text-muted d-block mt-1">La contrasenya ha de tenir com a minim 8 caracters.</small>
                 </div>
+
                 <div class="form-group-custom">
                     <label>Repeteix Contrasenya</label>
                     <input type="password" name="password2" class="form-control-figma" placeholder="Repeteix la contrasenya" minlength="8" required>
-
                 </div>
+
                 <button type="button" class="btn-gradient" onclick="changeStep(2)">Següent</button>
             </div>
 
@@ -160,6 +164,39 @@
 
 <script>
     function changeStep(s) {
+        const currentStep = Array.from(document.querySelectorAll('.step-dot')).findIndex(dot => dot.classList.contains('active')) + 1;
+
+        if (s === 2 && currentStep === 1) {
+            const step1Inputs = document.querySelectorAll('#step1 input[required]');
+            const pass1 = document.querySelector('input[name="password1"]').value;
+            const commonPasswords = ['12345678', 'password', 'contrasenya', '123456789'];
+
+            if (commonPasswords.includes(pass1)) {
+                alert("Aquesta contrasenya és massa comuna. Si us plau, tria una més segura.");
+                return; // Bloquea el paso al paso 2
+            }
+
+            let allValid = true;
+            step1Inputs.forEach(input => {
+                if (!input.checkValidity()) {
+                    input.reportValidity();
+                    allValid = false;
+                }
+            });
+            if (!allValid) return;
+        }
+
+        if (s === 3 && currentStep === 2) {
+            const tipusSelected = document.querySelectorAll('input[name="tipus"]:checked').length > 0;
+            const platSelected = document.querySelectorAll('input[name="plataformes"]:checked').length > 0;
+
+            if (!tipusSelected || !platSelected) {
+                alert("Si us plau, selecciona com a mínim un tipus de contingut i una plataforma.");
+                return;
+            }
+        }
+
+
         document.getElementById('step1').classList.toggle('hidden', s !== 1);
         document.getElementById('step2').classList.toggle('hidden', s !== 2);
         document.getElementById('step3').classList.toggle('hidden', s !== 3);
@@ -174,6 +211,10 @@
         window.scrollTo(0,0);
     }
 
+    document.getElementById('reg-form').onsubmit = function(e) {
+        return true
+    };
+
     function mark(cb) {
         if (cb.checked) {
             cb.parentElement.classList.add('selected');
@@ -181,5 +222,12 @@
             cb.parentElement.classList.remove('selected');
         }
     }
+
+    document.addEventListener("DOMContentLoaded", function() {
+        const errorBox = document.querySelector('.error-box');
+        if (errorBox) {
+            changeStep(1);
+        }
+    });
 </script>
 {% endblock %}
