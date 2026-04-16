@@ -212,13 +212,7 @@
     }
 
     document.getElementById('reg-form').onsubmit = function(e) {
-        const genSelected = document.querySelectorAll('input[name="generos"]:checked').length > 0;
-        const edatSelected = document.querySelectorAll('input[name="edats"]:checked').length > 0;
-
-        if (!genSelected || !edatSelected) {
-            e.preventDefault();
-            alert("Si us plau, selecciona els teus gèneres favorits i la restricció d'edat.");
-        }
+        return true
     };
 
     function mark(cb) {
