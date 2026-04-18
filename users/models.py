@@ -95,7 +95,7 @@ class Ressenya(models.Model):
         return f"{self.usuari.username} - {self.pelicula.titol} ({self.puntuacio}/10)"
 
 
-class Views:
+class Views(models.Model):
     usuari = models.ForeignKey(User, on_delete=models.CASCADE, related_name='views')
     pelicula = models.ForeignKey(Pelicula, on_delete=models.CASCADE, related_name='views')
     visualization_date = models.DateTimeField(auto_now_add=True)

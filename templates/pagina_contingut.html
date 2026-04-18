@@ -251,16 +251,17 @@
         </div>
     </div>
 
-
     <script>
+        const token = document.querySelector('meta[name="csrf-token"]').content;
+
         document.getElementById("submit_view").addEventListener("click", function () {
-            fetch("/mi-url/", {
+            fetch("{% url 'register_view' %}", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
-                    "X-CSRFToken": getCookie("csrftoken")
+                    "X-CSRFToken": token
                 },
-                body: JSON.stringify({ accion: "play" })
+                body: JSON.stringify({ film: "{{ item.id }}" })
             })
             .then(res => res.json())
             .then(data => console.log(data));
