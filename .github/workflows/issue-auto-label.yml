@@ -59,7 +59,7 @@ jobs:
 
             switch (ccType) {
               case 'feat':
-                labelsToAdd.add('feature');
+                labelsToAdd.add('feat');
                 break;
               case 'fix':
                 labelsToAdd.add('bug');
