@@ -7,6 +7,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.contrib.auth.forms import PasswordChangeForm
 from dotenv import load_dotenv
+from rest_framework.decorators import api_view
 from thefuzz import process, fuzz
 
 # Importem els teus models i formularis
@@ -585,3 +586,8 @@ def cerca_contingut(request):
         'resultat': resultat_principal,
         'resultats': recomanacions  # Ara 'resultats' són les recomanacions ordenades
     })
+
+# @login_required
+# @api_view(['POST'])
+# def register_view(request):
+#     request.

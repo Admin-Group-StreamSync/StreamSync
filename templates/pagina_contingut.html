@@ -102,7 +102,7 @@
             </div>
 
             <div class="d-flex flex-wrap gap-3 mb-5">
-                <button class="btn-play d-flex align-items-center gap-2">
+                <button id="submit_view" class="btn-play d-flex align-items-center gap-2">
                     <i class="bi bi-play-fill fs-3"></i> REPRODUIR ARA
                 </button>
 
@@ -251,5 +251,20 @@
         </div>
     </div>
 
+
+    <script>
+        document.getElementById("submit_view").addEventListener("click", function () {
+            fetch("/mi-url/", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": getCookie("csrftoken")
+                },
+                body: JSON.stringify({ accion: "play" })
+            })
+            .then(res => res.json())
+            .then(data => console.log(data));
+        });
+    </script>
 </div>
 {% endblock %}
