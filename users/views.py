@@ -27,6 +27,15 @@ OPCIONS = {
 
 
 class StreamSyncLoginView(LoginView):
+    def get_success_url(self):
+        user = self.request.user
+
+        if hasattr(user, 'profile') and user.profile.manager_de:
+            return f'/dashboard/{user.profile.manager_de}/'
+
+
+        return '/perfil/'
+
     def form_valid(self, form):
         response = super().form_valid(form)
         messages.success(self.request, f"Benvingut/da de nou, {form.get_user().username}!")
@@ -584,4 +593,19 @@ def cerca_contingut(request):
         'query': query,
         'resultat': resultat_principal,
         'resultats': recomanacions  # Ara 'resultats' són les recomanacions ordenades
+    })
+
+
+@login_required
+def dashboard_manager(request, plataforma_nom):
+    if request.user.profile.manager_de != plataforma_nom:
+        messages.error(request, "No tens permís per gestionar aquesta plataforma.")
+        return redirect('pagina_principal')
+
+    contingut = Pelicula.objects.filter(plataforma=plataforma_nom)
+
+    # CAMBIO AQUÍ: indicamos la subcarpeta registration
+    return render(request, 'registration/dashboard_manager.html', {
+        'plataforma': plataforma_nom,
+        'pelicules': contingut
     })
