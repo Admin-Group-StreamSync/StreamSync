@@ -10,7 +10,6 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.contrib.auth.forms import PasswordChangeForm
 from dotenv import load_dotenv
-from httplib2 import Response
 from rest_framework.decorators import api_view
 from thefuzz import process, fuzz
 
