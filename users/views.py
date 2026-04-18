@@ -1,6 +1,5 @@
 import os
 
-import httplib2
 import requests
 from django.contrib.auth.models import User
 from django.http import HttpResponse
