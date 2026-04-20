@@ -10,6 +10,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.contrib.auth.forms import PasswordChangeForm
 from dotenv import load_dotenv
+from rest_framework.decorators import api_view
 from thefuzz import process, fuzz
 
 # Importem els teus models i formularis
@@ -183,9 +184,10 @@ def get_age_ratings_from_api():
     return []
 
 
-# --- 5. VISTES PRINCIPALS ---
+# --- 4. VISTES PRINCIPALS ---
 
 def pagina_principal(request):
+    # 1. Obtenim i etiquetem les dades
     movies = get_all_movies()
     for m in movies: m['tipus'] = 'movie'
 
@@ -194,6 +196,7 @@ def pagina_principal(request):
 
     totes = movies + series
 
+    # 2. Carreguem diccionaris de traducció de l'API (només per visualització)
     genres_api = get_genres_from_api()
     ratings_api = get_age_ratings_from_api()
 
