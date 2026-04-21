@@ -48,7 +48,7 @@ jobs:
     - name: Docker of the api (Build stage)
       run:
         |
-        docker compose -f ./api/docker-compose.yaml up
+        docker compose -f ./api/docker-compose.yaml build
         docker save api-movies.api:latest api-movies.api-2:latest api-movies.api-3:latest -o StreamSync.tar
       # Para Usar la imagen:
       #   - Extraer del artifact.
