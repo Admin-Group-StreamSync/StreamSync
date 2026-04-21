@@ -48,11 +48,14 @@ jobs:
     - name: Docker of the api (Build stage)
       run:
         |
+        echo "Debug"
         docker compose -f ./api/docker-compose.yaml build
+        echo "Debug 1"
         docker images
-        docker save -o StreamSync.tar api-movies.api:latest api-movies.api-2:latest api-movies.api-3:latest
+        echo "Debug 2"
+        docker save -o StreamSync.tar api-movies-api:latest api-movies-api-2:latest api-movies-api-3:latest
 #        docker save api-movies.api:latest api-movies.api-2:latest api-movies.api-3:latest -o StreamSync.tar
-
+        echo "Debug 3"
       # Para Usar la imagen:
       #   - Extraer del artifact.
       #   - Usar los siguiente comando:
