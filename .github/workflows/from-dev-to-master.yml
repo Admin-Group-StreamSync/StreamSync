@@ -1,10 +1,12 @@
 
-name: From develop to master
+name: Sync develop -> master
 
 on:
   pull_request: 
     branches: [develop]
     types: [closed]
+  push:
+    branches: [ develop ]
 #  wsorkflow_dispatch:
       
 
@@ -18,7 +20,11 @@ jobs:
       pull-requests: write
 
     steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
       - name: Create PR
+        id: cpr
         uses: repo-sync/pull-request@v2
         with:
           source_branch: develop
@@ -26,3 +32,6 @@ jobs:
           pr_title: "[Auto PR]: develop → master"
           pr_body: "Actualización automática desde develop"
           github_token: ${{ secrets.GITHUB_TOKEN }}
+      # DEBUG
+      - name: Show PR number
+        run: echo "PR número ${{ steps.cpr.outputs.pr_number }}"
