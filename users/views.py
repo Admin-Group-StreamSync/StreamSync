@@ -1,5 +1,4 @@
 import os
-
 import requests
 from django.http import HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
@@ -30,6 +29,15 @@ OPCIONS = {
 
 
 class StreamSyncLoginView(LoginView):
+    def get_success_url(self):
+        user = self.request.user
+
+        if hasattr(user, 'profile') and user.profile.manager_de:
+            return f'/dashboard/{user.profile.manager_de}/'
+
+
+        return '/perfil/'
+
     def form_valid(self, form):
         response = super().form_valid(form)
         messages.success(self.request, f"Benvingut/da de nou, {form.get_user().username}!")
@@ -243,7 +251,8 @@ def detall_contingut(request, tipus, content_id):
 
     # Traduïm el Director
     directors = get_directors_from_api()
-    item['director_nom'] = next((d['name'] for d in directors if str(d['id']) == str(item['director_id'])),"Desconegut")
+    item['director_nom'] = next((d['name'] for d in directors if str(d['id']) == str(item['director_id'])),
+                                "Desconegut")
 
     # Traduïm l'Edat
     ratings = get_age_ratings_from_api()
@@ -588,6 +597,20 @@ def cerca_contingut(request):
         'resultats': recomanacions  # Ara 'resultats' són les recomanacions ordenades
     })
 
+
+@login_required
+def dashboard_manager(request, plataforma_nom):
+    if request.user.profile.manager_de != plataforma_nom:
+        messages.error(request, "No tens permís per gestionar aquesta plataforma.")
+        return redirect('pagina_principal')
+
+    contingut = Pelicula.objects.filter(plataforma=plataforma_nom)
+
+    # CAMBIO AQUÍ: indicamos la subcarpeta registration
+    return render(request, 'registration/dashboard_manager.html', {
+        'plataforma': plataforma_nom,
+        'pelicules': contingut
+    })
 @login_required
 @api_view(['POST'])
 def register_view(request):
