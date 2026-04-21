@@ -49,7 +49,10 @@ jobs:
       run:
         |
         docker compose -f ./api/docker-compose.yaml build
-        docker save api-movies.api:latest api-movies.api-2:latest api-movies.api-3:latest -o StreamSync.tar
+        docker images
+        docker save -o StreamSync.tar api-movies.api:latest api-movies.api-2:latest api-movies.api-3:latest
+#        docker save api-movies.api:latest api-movies.api-2:latest api-movies.api-3:latest -o StreamSync.tar
+
       # Para Usar la imagen:
       #   - Extraer del artifact.
       #   - Usar los siguiente comando:
