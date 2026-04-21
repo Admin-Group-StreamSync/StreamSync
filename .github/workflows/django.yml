@@ -38,14 +38,20 @@ jobs:
         password: ${{ secrets.DOCKER_TOKEN }}
 
 
-    - name: Docker build and push
+    - name: Docker build and push (Build stage)
       run: |
          docker build -t ${{ vars.DOCKER_USERNAME }}/streamsync-group-c:latest .
          docker save ${{ vars.DOCKER_USERNAME }}/streamsync-group-c:latest -o StreamSync.tar
          
-         docker push ${{ vars.DOCKER_USERNAME }}/streamsync-group-c:latest 
+#         docker push ${{ vars.DOCKER_USERNAME }}/streamsync-group-c:latest
         
-
+    - name: Docker of the api (Build stage)
+      run:
+        |
+        docker compose -f ./api/docker-compose.yaml build
+        docker images
+        docker save -o StreamSync.tar api-movies-api:latest api-movies-api-2:latest api-movies-api-3:latest
+#        docker save api-movies.api:latest api-movies.api-2:latest api-movies.api-3:latest -o StreamSync.tar
       # Para Usar la imagen:
       #   - Extraer del artifact.
       #   - Usar los siguiente comando:
