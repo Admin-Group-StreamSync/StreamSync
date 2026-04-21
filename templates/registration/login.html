@@ -51,6 +51,13 @@
         <p class="mt-4 small text-muted">
             No tens compte? <a href="{% url 'registre' %}" class="text-primary fw-bold text-decoration-none">Registra't aquí</a>
         </p>
+        <hr class="my-4">
+            <div class="admin-access-section">
+                <p class="small text-muted mb-2">Ets gestor d'una plataforma?</p>
+                <a href="{% url 'login_admin' %}" class="btn btn-outline-dark w-100 py-2" style="border-radius: 12px; font-size: 0.85rem; font-weight: 600;">
+                    <i class="bi bi-shield-lock-fill me-2"></i> Accés Platform Managers
+                </a>
+            </div>
     </div>
 </div>
 {% endblock %}

@@ -5,24 +5,24 @@ on:
   pull_request: 
     branches: [develop]
     types: [closed]
-  workflow_dispatch: 
+#  wsorkflow_dispatch:
       
 
 jobs:
-  merge:
+  create-pr:
     if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
 
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - name: Merge develop into master
-        run: |
-          git config --global user.name "github-actions"
-          git config --global user.email "actions@github.com"
+    permissions:
+      contents: write
+      pull-requests: write
 
-          git fetch origin
-          git checkout master
-          git merge origin/develop
-          git push origin master
+    steps:
+      - name: Create PR
+        uses: repo-sync/pull-request@v2
+        with:
+          source_branch: develop
+          destination_branch: master
+          pr_title: "[Auto PR]: develop → master"
+          pr_body: "Actualización automática desde develop"
+          github_token: ${{ secrets.GITHUB_TOKEN }}

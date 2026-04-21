@@ -1,0 +1,139 @@
+{% extends 'base.html' %}
+
+{% block title %}Login Gestors - StreamSync{% endblock %}
+
+{% block extra_css %}
+<style>
+
+    .login-admin-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 90vh;
+        background-color: #f8f9fa;
+        padding: 20px;
+    }
+
+
+    .login-admin-card {
+        width: 100%;
+        max-width: 450px;
+        background: white;
+        border-radius: 20px;
+        padding: 40px;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+        border: 1px solid #eee;
+        text-align: center;
+    }
+
+
+    .login-admin-card form p {
+        text-align: left;
+        margin-bottom: 15px;
+    }
+
+
+    .login-admin-card form label {
+        display: block;
+        font-weight: 700;
+        font-size: 0.8rem;
+        color: #555;
+        text-transform: uppercase;
+        margin-bottom: 5px;
+    }
+
+
+    .login-admin-card form input[type="text"],
+    .login-admin-card form input[type="password"] {
+        width: 100%;
+        padding: 12px;
+        border-radius: 12px;
+        border: 1px solid #ddd;
+        outline: none;
+        transition: 0.3s;
+        box-sizing: border-box;
+    }
+
+    .login-admin-card form input:focus {
+        border-color: #343a40;
+        box-shadow: 0 0 0 3px rgba(52, 58, 64, 0.1);
+    }
+
+
+    .admin-icon-box {
+        width: 50px;
+        height: 50px;
+        background-color: #343a40;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.5rem;
+        margin: 0 auto 20px auto;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    }
+
+
+    .btn-admin-dark {
+        width: 100%;
+        padding: 14px;
+        border-radius: 12px;
+        border: none;
+        background-color: #343a40;
+        color: white;
+        font-weight: 700;
+        cursor: pointer;
+        transition: 0.3s;
+        margin-top: 10px;
+    }
+
+    .btn-admin-dark:hover {
+        background-color: #23272b;
+        transform: translateY(-1px);
+    }
+
+    .back-section {
+        margin-top: 25px;
+        padding-top: 15px;
+        border-top: 1px solid #eee;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="login-admin-container">
+    <div class="login-admin-card shadow-lg">
+
+        <div class="admin-icon-box">
+            <i class="bi bi-shield-lock-fill"></i>
+        </div>
+
+        <h3 class="fw-bold mb-1">Login Gestors</h3>
+        <p class="text-muted small mb-4">Introdueix les credencials facilitades per l'Administrador.</p>
+
+        {% if form.errors %}
+        <div class="alert alert-danger py-2 small text-start" role="alert">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i> L'usuari o contrasenya no són correctes.
+        </div>
+        {% endif %}
+
+        <form method="post">
+            {% csrf_token %}
+
+            {{ form.as_p }}
+
+            <button type="submit" class="btn-admin-dark">
+                Entrar al Dashboard <i class="bi bi-arrow-right-short ms-1"></i>
+            </button>
+        </form>
+
+        <div class="back-section text-center mt-3">
+            <a href="{% url 'login' %}" class="small text-muted text-decoration-none">
+                <i class="bi bi-arrow-left me-1"></i> Tornar al login d'usuari
+            </a>
+        </div>
+
+    </div>
+</div>
+{% endblock %}
