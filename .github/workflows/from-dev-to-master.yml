@@ -20,6 +20,9 @@ jobs:
       pull-requests: write
 
     steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
       - name: Create PR
         id: cpr
         uses: repo-sync/pull-request@v2
