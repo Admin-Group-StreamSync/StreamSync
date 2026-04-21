@@ -1,5 +1,6 @@
 import os
 import requests
+from django.http import HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import update_session_auth_hash, login
 from django.contrib.auth.views import LoginView
@@ -7,10 +8,11 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.contrib.auth.forms import PasswordChangeForm
 from dotenv import load_dotenv
+from rest_framework.decorators import api_view
 from thefuzz import process, fuzz
 
 # Importem els teus models i formularis
-from .models import Pelicula, LlistaPersonal, Carpeta, Profile, Ressenya
+from .models import Pelicula, LlistaPersonal, Carpeta, Profile, Ressenya, Views
 from .forms import RegistroUsuarioForm, UserUpdateForm
 
 # 1. CARREGUEM CONFIGURACIÓ
@@ -27,6 +29,15 @@ OPCIONS = {
 
 
 class StreamSyncLoginView(LoginView):
+    def get_success_url(self):
+        user = self.request.user
+
+        if hasattr(user, 'profile') and user.profile.manager_de:
+            return f'/dashboard/{user.profile.manager_de}/'
+
+
+        return '/perfil/'
+
     def form_valid(self, form):
         response = super().form_valid(form)
         messages.success(self.request, f"Benvingut/da de nou, {form.get_user().username}!")
@@ -585,3 +596,43 @@ def cerca_contingut(request):
         'resultat': resultat_principal,
         'resultats': recomanacions  # Ara 'resultats' són les recomanacions ordenades
     })
+
+
+@login_required
+def dashboard_manager(request, plataforma_nom):
+    if request.user.profile.manager_de != plataforma_nom:
+        messages.error(request, "No tens permís per gestionar aquesta plataforma.")
+        return redirect('pagina_principal')
+
+    contingut = Pelicula.objects.filter(plataforma=plataforma_nom)
+
+    # CAMBIO AQUÍ: indicamos la subcarpeta registration
+    return render(request, 'registration/dashboard_manager.html', {
+        'plataforma': plataforma_nom,
+        'pelicules': contingut
+    })
+@login_required
+@api_view(['POST'])
+def register_view(request):
+    film_id = request.data.get("film")
+
+    # comprobar que llega film_id
+    if not film_id:
+        return HttpResponse({"error": "film_id requerido"}, status=400)#
+
+    # obtener película
+    film = get_object_or_404(Pelicula, id=film_id)
+
+    # crear o actualizar view
+    view_reg, created = Views.objects.get_or_create(
+        usuari=request.user,
+        pelicula=film,
+        defaults={"count": 0}
+    )
+
+    view_reg.count += 1
+    view_reg.save()
+
+    return HttpResponse({"ok": True, "count": view_reg.count})
+
+
