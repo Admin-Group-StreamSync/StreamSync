@@ -1,0 +1,398 @@
+{% extends "base_manager.html" %}
+
+{% block title %}Panell d'Anàlisi - {{ plataforma }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* FRANJA BLAU DEL SUB-HEADER */
+    .sub-header {
+        background-color: #3b5bdb;
+        color: white;
+        padding: 35px 0;
+        margin-bottom: 30px;
+    }
+
+    /* TARGETES DE METRIQUES */
+    .stat-card {
+        background: #ffffff;
+        border-radius: 12px;
+        padding: 20px;
+        border: none;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .stat-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 10px;
+    }
+
+    /* CAIXES DELS ICONES */
+    .icon-box {
+        width: 38px;
+        height: 38px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+    }
+    .icon-purple { background-color: #f3e8ff; color: #9333ea; }
+    .icon-blue   { background-color: #e0f2fe; color: #0284c7; }
+    .icon-yellow { background-color: #fef9c3; color: #ca8a04; }
+    .icon-pink   { background-color: #fce7f3; color: #db2777; }
+    .icon-green  { background-color: #dcfce7; color: #16a34a; }
+
+    /* TEXTOS I TENDENCIES */
+    .stat-title {
+        color: #64748b;
+        font-size: 0.85rem;
+        font-weight: 600;
+        margin-bottom: 5px;
+    }
+    .stat-value {
+        font-size: 1.8rem;
+        font-weight: 800;
+        color: #1e293b;
+        margin: 0;
+        line-height: 1.2;
+    }
+    .stat-subtitle {
+        color: #94a3b8;
+        font-size: 0.75rem;
+        margin-top: 8px;
+    }
+
+    /* ESTILS BARRES D'EDAT */
+    .age-bar-container {
+        margin-bottom: 18px;
+    }
+    .age-label-row {
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: #334155;
+        margin-bottom: 6px;
+    }
+    .progress-custom {
+        height: 10px;
+        background-color: #f1f5f9;
+        border-radius: 10px;
+        overflow: hidden;
+    }
+    .progress-custom .progress-bar {
+        border-radius: 10px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="sub-header">
+    <div class="container">
+        <h2 class="fw-bold mb-1">Panell d'Anàlisi - {{ plataforma }}</h2>
+        <p class="mb-0 opacity-75" style="font-size: 0.95rem;">Benvingut/da, Responsable {{ plataforma }} | Dades actualitzades en temps real</p>
+    </div>
+</div>
+
+<div class="container mb-5">
+
+    <div class="row row-cols-1 row-cols-md-3 row-cols-lg-5 g-4 mb-4">
+        <div class="col">
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div class="icon-box icon-purple"><i class="bi bi-eye-fill"></i></div>
+                    <div class="fw-bold {% if tendencias.views > 0 %}text-success{% elif tendencias.views < 0 %}text-danger{% else %}text-muted{% endif %}" style="font-size: 0.85rem;">
+                        {% if tendencias.views > 0 %}<i class="bi bi-graph-up-arrow"></i> +{{ tendencias.views }}%
+                        {% elif tendencias.views < 0 %}<i class="bi bi-graph-down-arrow"></i> {{ tendencias.views }}%
+                        {% else %}<i class="bi bi-dash"></i> 0%{% endif %}
+                    </div>
+                </div>
+                <div class="stat-title">Total Visualitzacions</div>
+                <h3 class="stat-value">{{ metricas.total_views }}</h3>
+                <div class="stat-subtitle">Historic acumulat</div>
+            </div>
+        </div>
+
+        <div class="col">
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div class="icon-box icon-blue"><i class="bi bi-people-fill"></i></div>
+                    <div class="fw-bold {% if tendencias.users > 0 %}text-success{% elif tendencias.users < 0 %}text-danger{% else %}text-muted{% endif %}" style="font-size: 0.85rem;">
+                        {% if tendencias.users > 0 %}<i class="bi bi-graph-up-arrow"></i> +{{ tendencias.users }}%
+                        {% elif tendencias.users < 0 %}<i class="bi bi-graph-down-arrow"></i> {{ tendencias.users }}%
+                        {% else %}<i class="bi bi-dash"></i> 0%{% endif %}
+                    </div>
+                </div>
+                <div class="stat-title">Usuaris Actius (Fidels)</div>
+                <h3 class="stat-value">{{ metricas.usuaris_interessats }}</h3>
+                <div class="stat-subtitle">Tota la plataforma</div>
+            </div>
+        </div>
+
+        <div class="col">
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div class="icon-box icon-yellow"><i class="bi bi-star-fill"></i></div>
+                    <div class="fw-bold {% if tendencias.nota > 0 %}text-success{% elif tendencias.nota < 0 %}text-danger{% else %}text-muted{% endif %}" style="font-size: 0.85rem;">
+                        {% if tendencias.nota > 0 %}<i class="bi bi-graph-up-arrow"></i> +{{ tendencias.nota }}
+                        {% elif tendencias.nota < 0 %}<i class="bi bi-graph-down-arrow"></i> {{ tendencias.nota }}
+                        {% else %}<i class="bi bi-dash"></i> 0{% endif %}
+                    </div>
+                </div>
+                <div class="stat-title">Valoracio Mitjana</div>
+                <h3 class="stat-value">{{ metricas.nota_mitjana }}</h3>
+                <div class="stat-subtitle">Sobre 10 punts</div>
+            </div>
+        </div>
+
+        <div class="col">
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div class="icon-box icon-pink"><i class="bi bi-chat-quote-fill"></i></div>
+                    <div class="fw-bold {% if tendencias.ressenyes > 0 %}text-success{% elif tendencias.ressenyes < 0 %}text-danger{% else %}text-muted{% endif %}" style="font-size: 0.85rem;">
+                        {% if tendencias.ressenyes > 0 %}<i class="bi bi-graph-up-arrow"></i> +{{ tendencias.ressenyes }}%
+                        {% elif tendencias.ressenyes < 0 %}<i class="bi bi-graph-down-arrow"></i> {{ tendencias.ressenyes }}%
+                        {% else %}<i class="bi bi-dash"></i> 0%{% endif %}
+                    </div>
+                </div>
+                <div class="stat-title">Total Ressenyes</div>
+                <h3 class="stat-value">{{ metricas.total_ressenyes }}</h3>
+                <div class="stat-subtitle">Historic acumulat</div>
+            </div>
+        </div>
+
+        <div class="col">
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div class="icon-box icon-green"><i class="bi bi-bookmark-heart-fill"></i></div>
+                    <div class="fw-bold {% if tendencias.guardados > 0 %}text-success{% elif tendencias.guardados < 0 %}text-danger{% else %}text-muted{% endif %}" style="font-size: 0.85rem;">
+                        {% if tendencias.guardados > 0 %}<i class="bi bi-graph-up-arrow"></i> +{{ tendencias.guardados }}%
+                        {% elif tendencias.guardados < 0 %}<i class="bi bi-graph-down-arrow"></i> {{ tendencias.guardados }}%
+                        {% else %}<i class="bi bi-dash"></i> 0%{% endif %}
+                    </div>
+                </div>
+                <div class="stat-title">Guardats a Llistes</div>
+                <h3 class="stat-value">{{ metricas.total_guardados }}</h3>
+                <div class="stat-subtitle">Interes d'usuaris</div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="row g-4 mt-2 mb-4">
+        <div class="col-lg-7">
+            <div class="stat-card p-4">
+                <h6 class="fw-bold mb-4" style="color: #1e293b;">Visualitzacions per Genere</h6>
+                <div style="height: 300px;">
+                    <canvas id="barChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-5">
+            <div class="stat-card p-4">
+                <h6 class="fw-bold mb-4" style="color: #1e293b;">Distribucio de Contingut Consumit</h6>
+                <div style="height: 300px; display: flex; justify-content: center;">
+                    <canvas id="doughnutChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4 mt-2 mb-4">
+
+        <div class="col-lg-7">
+            <div class="stat-card p-4">
+                <h6 class="fw-bold mb-4" style="color: #1e293b;">Evolucio de Visualitzacions i Usuaris</h6>
+                <div style="height: 300px;">
+                    <canvas id="lineChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-5">
+            <div class="stat-card p-4">
+                <h6 class="fw-bold mb-4" style="color: #1e293b;">Contingut Consumit per Classificacio d'Edat</h6>
+                <div class="pt-2">
+
+                    <div class="age-bar-container">
+                        <div class="age-label-row">
+                            <span>Tots</span>
+                            <span>{{ edats_pct.tots }}%</span>
+                        </div>
+                        <div class="progress-custom">
+                            <div class="progress-bar" style="width: {{ edats_pct.tots }}%; background-color: #10b981;"></div>
+                        </div>
+                    </div>
+
+                    <div class="age-bar-container">
+                        <div class="age-label-row">
+                            <span>7+</span>
+                            <span>{{ edats_pct.m7 }}%</span>
+                        </div>
+                        <div class="progress-custom">
+                            <div class="progress-bar" style="width: {{ edats_pct.m7 }}%; background-color: #3b82f6;"></div>
+                        </div>
+                    </div>
+
+                    <div class="age-bar-container">
+                        <div class="age-label-row">
+                            <span>13+</span>
+                            <span>{{ edats_pct.m13 }}%</span>
+                        </div>
+                        <div class="progress-custom">
+                            <div class="progress-bar" style="width: {{ edats_pct.m13 }}%; background-color: #f59e0b;"></div>
+                        </div>
+                    </div>
+
+                    <div class="age-bar-container">
+                        <div class="age-label-row">
+                            <span>16+</span>
+                            <span>{{ edats_pct.m16 }}%</span>
+                        </div>
+                        <div class="progress-custom">
+                            <div class="progress-bar" style="width: {{ edats_pct.m16 }}%; background-color: #ef4444;"></div>
+                        </div>
+                    </div>
+
+                    <div class="age-bar-container">
+                        <div class="age-label-row">
+                            <span>18+</span>
+                            <span>{{ edats_pct.m18 }}%</span>
+                        </div>
+                        <div class="progress-custom">
+                            <div class="progress-bar" style="width: {{ edats_pct.m18 }}%; background-color: #7f1d1d;"></div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="row g-4 mt-2">
+        <div class="col-12">
+            <div class="stat-card p-4">
+                <h5 class="fw-bold mb-4" style="color: #1e293b;">Top 5 Continguts Mes Vistos</h5>
+
+                {% if top_contingut %}
+                    <div class="row row-cols-1 row-cols-md-3 row-cols-lg-5 g-3">
+                        {% for item in top_contingut %}
+                            <div class="col position-relative">
+                                <span class="badge position-absolute top-0 start-50 translate-middle rounded-pill px-3 py-2 z-3 shadow-sm" style="background-color: #8a2be2; font-size: 0.85rem;">
+                                    <i class="bi bi-eye-fill me-1"></i> {{ item.vistes_totals|default:"0" }}
+                                </span>
+                                {% include "components/card_contingut.html" with item=item %}
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="text-center p-5 rounded" style="background-color: #f8f9fa; border: 2px dashed #cbd5e1;">
+                        <i class="bi bi-bar-chart-line display-4 text-muted mb-3 d-block"></i>
+                        <p class="text-muted fw-bold mb-0">No hi ha dades suficients per mostrar els grafics ni el ranquing.</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+
+        // 1. GRAFIC DE BARRES
+        const ctxBar = document.getElementById('barChart').getContext('2d');
+        new Chart(ctxBar, {
+            type: 'bar',
+            data: {
+                labels: {{ grafic_generes_labels|safe }},
+                datasets: [{
+                    data: {{ grafic_generes_data|safe }},
+                    backgroundColor: '#a855f7',
+                    borderRadius: 4,
+                    barPercentage: 0.7
+                }]
+            },
+            options: {
+                responsive: true, maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: { beginAtZero: true, grid: { borderDash: [4, 4], color: '#f1f5f9' }, border: { display: false } },
+                    x: { grid: { display: false }, border: { display: false } }
+                }
+            }
+        });
+
+        // 2. GRAFIC DE DONA
+        const ctxDoughnut = document.getElementById('doughnutChart').getContext('2d');
+        new Chart(ctxDoughnut, {
+            type: 'doughnut',
+            data: {
+                labels: ['Pel·lícules', 'Sèries'],
+                datasets: [{
+                    data: {{ grafic_tipus_data|safe }},
+                    backgroundColor: ['#a855f7', '#ec4899'],
+                    borderWidth: 0, hoverOffset: 4
+                }]
+            },
+            options: {
+                responsive: true, maintainAspectRatio: false, cutout: '60%',
+                plugins: { legend: { position: 'bottom', labels: { padding: 20, usePointStyle: true, boxWidth: 8 } } }
+            }
+        });
+
+        // 3. GRAFIC DE LINIES (Evolucio)
+        const ctxLine = document.getElementById('lineChart').getContext('2d');
+        new Chart(ctxLine, {
+            type: 'line',
+            data: {
+                labels: {{ grafic_evolucio_labels|safe }},
+                datasets: [
+                    {
+                        label: 'Visualitzacions',
+                        data: {{ grafic_evolucio_vistes|safe }},
+                        borderColor: '#a855f7', // Lila
+                        backgroundColor: '#a855f7',
+                        tension: 0.4,
+                        yAxisID: 'y'
+                    },
+                    {
+                        label: 'Usuaris',
+                        data: {{ grafic_evolucio_usuaris|safe }},
+                        borderColor: '#ec4899', // Rosa
+                        backgroundColor: '#ec4899',
+                        tension: 0.4,
+                        yAxisID: 'y1'
+                    }
+                ]
+            },
+            options: {
+                responsive: true, maintainAspectRatio: false,
+                interaction: { mode: 'index', intersect: false },
+                plugins: { legend: { position: 'bottom', labels: { usePointStyle: true, boxWidth: 8 } } },
+                scales: {
+                    x: { grid: { display: false }, border: { display: false } },
+                    y: {
+                        type: 'linear', display: true, position: 'left',
+                        grid: { borderDash: [4, 4], color: '#f1f5f9' }, border: { display: false }
+                    },
+                    y1: {
+                        type: 'linear', display: true, position: 'right',
+                        grid: { drawOnChartArea: false }, border: { display: false }
+                    }
+                }
+            }
+        });
+
+    });
+</script>
+
+{% endblock %}

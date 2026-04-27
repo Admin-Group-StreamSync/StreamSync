@@ -44,4 +44,7 @@ urlpatterns = [
 
     # STATISTICS DATA MANAGEMENT (Always use POST for those)
     path("statistics/views", views.register_view ,name="register_view"), ##
+
+    # DASHBOARD SPM
+    path('dashboard/<str:plataforma_nom>/', views.dashboard_manager, name='dashboard_manager'),
 ]

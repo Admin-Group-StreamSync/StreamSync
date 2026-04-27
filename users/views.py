@@ -10,11 +10,15 @@ from django.contrib.auth.forms import PasswordChangeForm
 from dotenv import load_dotenv
 from rest_framework.decorators import api_view
 from thefuzz import process, fuzz
+from django.db.models import Count, Avg, Sum
 
-# Importem els teus models i formularis
+import json
+from django.utils import timezone
+from datetime import timedelta
 from .models import Pelicula, LlistaPersonal, Carpeta, Profile, Ressenya, Views
 from .forms import RegistroUsuarioForm, UserUpdateForm
-
+from functools import wraps
+from django.shortcuts import redirect
 # 1. CARREGUEM CONFIGURACIÓ
 load_dotenv()
 
@@ -43,6 +47,20 @@ class StreamSyncLoginView(LoginView):
         messages.success(self.request, f"Benvingut/da de nou, {form.get_user().username}!")
         return response
 
+# --- decorador usuari SPM---
+
+def cap_manager_permes(view_func):
+
+    @wraps(view_func)
+    def _wrapped_view(request, *args, **kwargs):
+        if request.user.is_authenticated and hasattr(request.user, 'profile'):
+            plataforma = request.user.profile.manager_de
+            if plataforma:
+                # Es un SPM. Lo mandamos a su panel.
+                messages.info(request, "Ets un Manager. Aquesta és la teva àrea de treball.")
+                return redirect('dashboard_manager', plataforma_nom=plataforma)
+        return view_func(request, *args, **kwargs)
+    return _wrapped_view
 # --- 2. FUNCIONS AUXILIARS I MAPEIG ---
 
 def mapejar_dades(item, port):
@@ -164,7 +182,7 @@ def get_age_ratings_from_api():
 
 
 # --- 4. VISTES PRINCIPALS ---
-
+@cap_manager_permes
 def pagina_principal(request):
     # 1. Obtenim i etiquetem les dades
     movies = get_all_movies()
@@ -235,7 +253,7 @@ def pagina_principal(request):
         'ratings': ratings_api
     })
 
-
+@cap_manager_permes
 def detall_contingut(request, tipus, content_id):
     # 1. Agafem el contingut mapejat (que només té IDs)
     totes = get_all_series() if tipus == 'series' else get_all_movies()
@@ -282,7 +300,7 @@ def detall_contingut(request, tipus, content_id):
         'recomanacions': [p for p in totes if str(p['id']) != str(content_id)][:5],
     })
 
-
+@cap_manager_permes
 def catalogo(request, tipus=None):
     # 1. Obtenim les dades brutes
     if tipus == 'movie':
@@ -381,6 +399,7 @@ def eliminar_ressenya(request, ressenya_id):
 
 
 @login_required
+@cap_manager_permes
 def llistes(request):
     return render(request, 'llistes.html', {
         'carpetes': request.user.les_meves_carpetes.all(),
@@ -487,6 +506,7 @@ def pagina_perfil1(request):
 
 
 @login_required
+@cap_manager_permes
 def profile2(request):
     # Accedim al perfil directament a través de la relació OneToOne
     try:
@@ -606,11 +626,153 @@ def dashboard_manager(request, plataforma_nom):
 
     contingut = Pelicula.objects.filter(plataforma=plataforma_nom)
 
-    # CAMBIO AQUÍ: indicamos la subcarpeta registration
-    return render(request, 'registration/dashboard_manager.html', {
+    # Consultes globals segures
+    estadisticas_ressenyes = Ressenya.objects.filter(pelicula__in=contingut).aggregate(
+        mitjana=Avg('puntuacio'), total=Count('id')
+    )
+    total_guardados = LlistaPersonal.objects.filter(pelicula__in=contingut).count()
+    usuaris_interessats = sum(1 for p in Profile.objects.all() if plataforma_nom in p.plataformes)
+
+    # Temps per a les tendencies
+    ara = timezone.now()
+    fa_30_dies = ara - timedelta(days=30)
+    fa_60_dies = ara - timedelta(days=60)
+
+    def calcular_percentatge(actual, anterior):
+        if anterior == 0:
+            return 100.0 if actual > 0 else 0.0
+        return round(((actual - anterior) / anterior) * 100, 1)
+
+    try:
+        # --- TENDENCIES ---
+        vistes_actuals = \
+        Views.objects.filter(pelicula__in=contingut, visualization_date__gte=fa_30_dies).aggregate(t=Sum('count'))[
+            't'] or 0
+        vistes_anteriors = Views.objects.filter(pelicula__in=contingut, visualization_date__gte=fa_60_dies,
+                                                visualization_date__lt=fa_30_dies).aggregate(t=Sum('count'))['t'] or 0
+        trend_views = calcular_percentatge(vistes_actuals, vistes_anteriors)
+
+        ress_actuals = Ressenya.objects.filter(pelicula__in=contingut, data_publicacio__gte=fa_30_dies).count()
+        ress_anteriors = Ressenya.objects.filter(pelicula__in=contingut, data_publicacio__gte=fa_60_dies,
+                                                 data_publicacio__lt=fa_30_dies).count()
+        trend_ress = calcular_percentatge(ress_actuals, ress_anteriors)
+
+        guardats_actuals = LlistaPersonal.objects.filter(pelicula__in=contingut, data_afegida__gte=fa_30_dies).count()
+        guardats_anteriors = LlistaPersonal.objects.filter(pelicula__in=contingut, data_afegida__gte=fa_60_dies,
+                                                           data_afegida__lt=fa_30_dies).count()
+        trend_guardats = calcular_percentatge(guardats_actuals, guardats_anteriors)
+
+        nota_actual = \
+        Ressenya.objects.filter(pelicula__in=contingut, data_publicacio__gte=fa_30_dies).aggregate(m=Avg('puntuacio'))[
+            'm'] or 0
+        nota_anterior = Ressenya.objects.filter(pelicula__in=contingut, data_publicacio__gte=fa_60_dies,
+                                                data_publicacio__lt=fa_30_dies).aggregate(m=Avg('puntuacio'))['m'] or 0
+        trend_nota = round(nota_actual - nota_anterior, 1) if nota_anterior else round(nota_actual, 1)
+
+        usuaris_actuals = sum(
+            1 for p in Profile.objects.filter(user__date_joined__gte=fa_30_dies) if plataforma_nom in p.plataformes)
+        usuaris_anteriors = sum(
+            1 for p in Profile.objects.filter(user__date_joined__gte=fa_60_dies, user__date_joined__lt=fa_30_dies) if
+            plataforma_nom in p.plataformes)
+        trend_usuaris = calcular_percentatge(usuaris_actuals, usuaris_anteriors)
+
+        # --- DADES GENERALS ---
+        total_views = Views.objects.filter(pelicula__in=contingut).aggregate(total=Sum('count'))['total'] or 0
+        top_contingut = contingut.annotate(vistes_totals=Sum('views__count')).order_by('-vistes_totals')[:5]
+
+        # --- GRAFIC 1 i 2 (Dona i Barres) ---
+        vistes_pelis = Views.objects.filter(pelicula__in=contingut, pelicula__tipus='movie').aggregate(t=Sum('count'))[
+                           't'] or 0
+        vistes_series = \
+        Views.objects.filter(pelicula__in=contingut, pelicula__tipus='series').aggregate(t=Sum('count'))['t'] or 0
+
+        vistes_generes = Views.objects.filter(pelicula__in=contingut).values('pelicula__generes__nom').annotate(
+            total=Sum('count')).order_by('-total')[:6]
+        noms_generes = [v['pelicula__generes__nom'] or 'Altres' for v in vistes_generes]
+        valors_generes = [v['total'] for v in vistes_generes]
+
+        # --- GRAFIC 3 (Evolucio Línies - Ultims 4 mesos) ---
+        mesos_cat = ['Gen', 'Feb', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Oct', 'Nov', 'Des']
+        evolucio_labels = []
+        evolucio_vistes = []
+        evolucio_usuaris = []
+
+        for i in range(3, -1, -1):
+            data_inici = ara - timedelta(days=30 * (i + 1))
+            data_fi = ara - timedelta(days=30 * i)
+            mes_nom = mesos_cat[data_fi.month - 1]
+            evolucio_labels.append(mes_nom)
+
+            v = Views.objects.filter(pelicula__in=contingut, visualization_date__gte=data_inici,
+                                     visualization_date__lt=data_fi).aggregate(t=Sum('count'))['t'] or 0
+            u = sum(
+                1 for p in Profile.objects.filter(user__date_joined__gte=data_inici, user__date_joined__lt=data_fi) if
+                plataforma_nom in p.plataformes)
+            evolucio_vistes.append(v)
+            evolucio_usuaris.append(u)
+
+        # --- GRAFIC 4 (Classificacio Edat - Progress Bars) ---
+        vistes_edat = Views.objects.filter(pelicula__in=contingut).values('pelicula__classificacio_edat').annotate(
+            total=Sum('count'))
+        total_vistes_edat = sum(v['total'] for v in vistes_edat) if vistes_edat else 1
+
+        edats_dist = {'Tots': 0, '7+': 0, '13+': 0, '16+': 0, '18+': 0}
+        for v in vistes_edat:
+            edat = str(v['pelicula__classificacio_edat']).upper()
+            count = v['total']
+            if edat in ['G', 'PG']:
+                edats_dist['Tots'] += count
+            elif edat in ['7+', '10+', 'PG-13', 'TEEN']:
+                edats_dist['13+'] += count  # Agrupem comum
+            elif edat in ['16+', 'PG-14']:
+                edats_dist['16+'] += count
+            elif edat in ['R', 'NC-17', 'MATURE', '18+']:
+                edats_dist['18+'] += count
+            else:
+                edats_dist['Tots'] += count
+
+        edats_pct = {
+            'tots': round((edats_dist['Tots'] / total_vistes_edat) * 100),
+            'm7': round((edats_dist['7+'] / total_vistes_edat) * 100),
+            'm13': round((edats_dist['13+'] / total_vistes_edat) * 100),
+            'm16': round((edats_dist['16+'] / total_vistes_edat) * 100),
+            'm18': round((edats_dist['18+'] / total_vistes_edat) * 100),
+        }
+
+    except Exception as e:
+        print(f"Error cargando estadisticas: {e}")
+        total_views = trend_views = trend_ress = trend_guardats = trend_nota = trend_usuaris = vistes_pelis = vistes_series = 0
+        top_contingut = noms_generes = valors_generes = evolucio_labels = evolucio_vistes = evolucio_usuaris = []
+        edats_pct = {'tots': 0, 'm7': 0, 'm13': 0, 'm16': 0, 'm18': 0}
+
+    context = {
         'plataforma': plataforma_nom,
-        'pelicules': contingut
-    })
+        'pelicules': contingut,
+        'metricas': {
+            'total_views': total_views,
+            'nota_mitjana': round(estadisticas_ressenyes['mitjana'] or 0, 1),
+            'total_ressenyes': estadisticas_ressenyes['total'],
+            'total_guardados': total_guardados,
+            'usuaris_interessats': usuaris_interessats,
+        },
+        'tendencias': {
+            'views': trend_views,
+            'users': trend_usuaris,
+            'nota': trend_nota,
+            'ressenyes': trend_ress,
+            'guardados': trend_guardats,
+        },
+        'top_contingut': top_contingut,
+        'edats_pct': edats_pct,
+        'grafic_tipus_data': json.dumps([vistes_pelis, vistes_series]),
+        'grafic_generes_labels': json.dumps(noms_generes),
+        'grafic_generes_data': json.dumps(valors_generes),
+        'grafic_evolucio_labels': json.dumps(evolucio_labels),
+        'grafic_evolucio_vistes': json.dumps(evolucio_vistes),
+        'grafic_evolucio_usuaris': json.dumps(evolucio_usuaris),
+    }
+
+    return render(request, 'registration/dashboard_manager.html', context)
 @login_required
 @api_view(['POST'])
 def register_view(request):
