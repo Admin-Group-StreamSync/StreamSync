@@ -1,5 +1,7 @@
 import os
 import requests
+from concurrent.futures import ThreadPoolExecutor
+from django.core.paginator import Paginator
 from django.http import HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import update_session_auth_hash, login
@@ -22,6 +24,8 @@ urls_list = os.getenv('API_BASE_URLS', '').split(',')
 keys_list = os.getenv('API_KEYS_DJANGO', '').split(',')
 API_CONFIG = dict(zip(urls_list, keys_list))
 
+TMDB_API_KEY = os.getenv('TMDB_API_KEY')
+
 OPCIONS = {
     'plataformas': ['CinePlus', 'StreamHub', 'PlayMax'],
     'idiomas': ['Català', 'Castellano', 'English', 'Français']
@@ -43,15 +47,48 @@ class StreamSyncLoginView(LoginView):
         messages.success(self.request, f"Benvingut/da de nou, {form.get_user().username}!")
         return response
 
-# --- 2. FUNCIONS AUXILIARS I MAPEIG ---
+
+# --- 2. FUNCIONS TMDB ---
+
+def get_imatge_tmdb(titol):
+    """Busca la imatge d'un contingut a TMDB per títol."""
+    try:
+        response = requests.get(
+            "https://api.themoviedb.org/3/search/multi",
+            params={
+                "api_key": TMDB_API_KEY,
+                "query": titol,
+                "language": "en"
+            },
+            timeout=2
+        )
+        if response.status_code == 200:
+            resultats = response.json().get("results", [])
+            if resultats and resultats[0].get("poster_path"):
+                return f"https://image.tmdb.org/t/p/w500{resultats[0]['poster_path']}"
+    except (requests.RequestException, ValueError):
+        pass
+    return 'https://via.placeholder.com/300x450'
+
+
+def enriquir_imatges_tmdb(llista):
+    """Afegeix imatges de TMDB a tota una llista en paral·lel."""
+    def carregar_imatge(item):
+        item['imatge'] = get_imatge_tmdb(item['titol'])
+        return item
+
+    with ThreadPoolExecutor(max_workers=10) as executor:
+        llista = list(executor.map(carregar_imatge, llista))
+    return llista
+
+
+# --- 3. MAPEIG DE DADES ---
 
 def mapejar_dades(item, port):
     plataformes = {"8080": "CinePlus", "8081": "StreamHub", "8082": "PlayMax"}
 
-    # Unificació de claus bàsiques
     titol = item.get('title') or item.get('titol') or "Sense títol"
     synopsis = item.get('synopsis') or "Sense sinopsi disponible."
-    # Movies usen 'year', Series usen 'start_year'
     any_contingut = item.get('year') or item.get('start_year') or 0
 
     return {
@@ -59,24 +96,21 @@ def mapejar_dades(item, port):
         'titol': titol,
         'sinopsi': synopsis,
         'any': any_contingut,
-        'any_fi': item.get('end_year'),          # ✅ Nou
-        'total_seasons': item.get('total_seasons'),  # ✅ Nou
+        'any_fi': item.get('end_year'),
+        'total_seasons': item.get('total_seasons'),
         'rating': item.get('rating', '0.0'),
         'imatge': item.get('imatge') or 'https://via.placeholder.com/300x450',
         'plataforma': plataformes.get(port, "Altres"),
-
-        # Guardem els IDs tal qual ens els dóna l'API ara
         'genre_id': item.get('genre_id'),
         'director_id': item.get('director_id'),
         'age_rating_id': item.get('age_rating_id'),
-
-        # Valors per defecte que omplirem a la vista de detall
         'genere_nom': "General",
         'director_nom': "Desconegut",
         'edat_nom': "N/A"
     }
 
-# --- 3. CRIDES API ---
+
+# --- 4. CRIDES API STREAMSYNC ---
 
 def get_all_movies(query=None):
     resultats = []
@@ -97,7 +131,6 @@ def get_all_movies(query=None):
 
 
 def enriquir_dades_api(llista_contingut):
-    """Afegeix noms de gènere i edat a una llista d'objectes que només tenen IDs."""
     genres_api = get_genres_from_api()
     ratings_api = get_age_ratings_from_api()
 
@@ -107,16 +140,13 @@ def enriquir_dades_api(llista_contingut):
     for item in llista_contingut:
         gid = str(item.get('genre_id'))
         eid = str(item.get('age_rating_id'))
-
         item['genere_nom'] = mapa_genres.get(gid, "General")
         item['edat_nom'] = mapa_ratings.get(eid, "N/A")
-
-        # Opcional: assegura't que el tipus estigui definit per a l'enllaç de la card
         if 'tipus' not in item:
-            # Si l'API no ho diu, pots inferir-ho o defecte a movie
             item['tipus'] = item.get('media_type', 'movie')
 
     return llista_contingut
+
 
 def get_all_series(query=None):
     resultats = []
@@ -163,7 +193,7 @@ def get_age_ratings_from_api():
     return []
 
 
-# --- 4. VISTES PRINCIPALS ---
+# --- 5. VISTES PRINCIPALS ---
 
 def pagina_principal(request):
     # 1. Obtenim i etiquetem les dades
@@ -272,6 +302,10 @@ def detall_contingut(request, tipus, content_id):
         }
     )
 
+    # ✅ Recomanacions amb imatges TMDB en paral·lel
+    recomanacions_raw = [p for p in totes if str(p['id']) != str(content_id)][:5]
+    recomanacions = enriquir_imatges_tmdb(recomanacions_raw)
+
     return render(request, 'pagina_contingut.html', {
         'item': item,
         'tipus': tipus,
@@ -279,7 +313,7 @@ def detall_contingut(request, tipus, content_id):
                                                      pelicula=peli_db).exists() if request.user.is_authenticated else False,
         'carpetes': request.user.les_meves_carpetes.all() if request.user.is_authenticated else [],
         'ressenyes': Ressenya.objects.filter(pelicula=peli_db).order_by('-data_publicacio'),
-        'recomanacions': [p for p in totes if str(p['id']) != str(content_id)][:5],
+        'recomanacions': recomanacions,  # ✅ Ara amb imatges
     })
 
 
@@ -295,7 +329,7 @@ def catalogo(request, tipus=None):
     # 2. Carreguem totes les traduccions de l'API
     genres_api = get_genres_from_api()
     ratings_api = get_age_ratings_from_api()
-    directors_api = get_directors_from_api()  # Necessari per traduir l'ID a nom
+    directors_api = get_directors_from_api()
 
     mapa_genres = {str(g['id']): g['name'] for g in genres_api}
     mapa_ratings = {str(r['id']): r.get('description', 'N/A') for r in ratings_api}

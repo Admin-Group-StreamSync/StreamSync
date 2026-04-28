@@ -27,6 +27,14 @@
     .btn-delete-review { color: #e53e3e; background: transparent; border: none; padding: 5px; transition: 0.2s; border-radius: 8px; }
     .btn-delete-review:hover { background: #fff5f5; color: #c53030; }
     .badge-series-info { background-color: #00bcd4; color: white; }
+
+    /* ✅ Plataforma badge */
+    .plataforma-cineplus { background: #fff0f0; border-color: #e50914 !important; }
+    .plataforma-cineplus i { color: #e50914 !important; }
+    .plataforma-streamhub { background: #f0f4ff; border-color: #0071eb !important; }
+    .plataforma-streamhub i { color: #0071eb !important; }
+    .plataforma-playmax { background: #f0fff4; border-color: #00b300 !important; }
+    .plataforma-playmax i { color: #00b300 !important; }
 </style>
 {% endblock %}
 
@@ -51,7 +59,6 @@
                 <span class="badge rounded-pill {% if tipus == 'movie' %}bg-primary{% else %}bg-info{% endif %} text-uppercase px-3">
                     {{ tipus }}
                 </span>
-
                 <span class="text-muted fw-bold small">
                     <i class="bi bi-calendar3 me-1"></i>
                     {% if tipus == 'series' %}
@@ -65,10 +72,30 @@
             <h1 class="display-3 fw-bold text-dark mb-4" style="letter-spacing: -2px;">{{ item.titol }}</h1>
 
             <div class="meta-info-grid">
+
                 <div class="meta-item shadow-sm">
                     <i class="bi bi-megaphone"></i>
                     <span class="label">Director</span>
                     <span class="value text-truncate w-100">{{ item.director_nom|default:"Desconegut" }}</span>
+                </div>
+
+                <!-- ✅ PLATAFORMA -->
+                <div class="meta-item shadow-sm
+                    {% if item.plataforma == 'CinePlus' %}plataforma-cineplus
+                    {% elif item.plataforma == 'StreamHub' %}plataforma-streamhub
+                    {% elif item.plataforma == 'PlayMax' %}plataforma-playmax
+                    {% endif %}">
+                    {% if item.plataforma == 'CinePlus' %}
+                        <i class="bi bi-camera-reels"></i>
+                    {% elif item.plataforma == 'StreamHub' %}
+                        <i class="bi bi-broadcast"></i>
+                    {% elif item.plataforma == 'PlayMax' %}
+                        <i class="bi bi-play-circle"></i>
+                    {% else %}
+                        <i class="bi bi-tv"></i>
+                    {% endif %}
+                    <span class="label">Plataforma</span>
+                    <span class="value">{{ item.plataforma|default:"N/A" }}</span>
                 </div>
 
                 {% if tipus == 'series' %}
@@ -90,6 +117,7 @@
                     <span class="label">Edat</span>
                     <span class="value">{{ item.edat_nom|default:"N/A" }}</span>
                 </div>
+
             </div>
 
             <div class="mb-5">
@@ -198,12 +226,10 @@
                             <h6 class="m-0 fw-bold">{{ r.usuari.username }}</h6>
                             <small class="text-muted">{{ r.data_publicacio|date:"d F, Y" }}</small>
                         </div>
-
                         <div class="d-flex align-items-center gap-2">
                             <div class="badge bg-warning text-dark fs-6 rounded-3 px-3 py-2">
                                 <i class="bi bi-star-fill me-1"></i> {{ r.puntuacio }}
                             </div>
-
                             {% if r.usuari == user %}
                             <form action="{% url 'eliminar_ressenya' r.id %}" method="POST" onsubmit="return confirm('Segur que vols eliminar la teva ressenya?');">
                                 {% csrf_token %}
@@ -226,22 +252,29 @@
         </div>
     </div>
 
+    <!-- TAMBÉ ET PODRIA AGRADAR -->
     <div class="mt-5 pt-5">
         <h4 class="fw-bold mb-4"><i class="bi bi-stars text-purple me-2"></i> També et podria agradar</h4>
         <div class="row row-cols-2 row-cols-md-4 row-cols-lg-5 g-4">
             {% for reco in recomanacions %}
             <div class="col">
                 <a href="{% url 'pagina_contingut' tipus=reco.tipus content_id=reco.id %}" class="text-decoration-none">
-                    <div class="card h-100 border-0 shadow-sm rounded-4 overflow-hidden card-hover-effect" style="transition: 0.3s;">
+                    <div class="card h-100 border-0 shadow-sm rounded-4 overflow-hidden" style="transition: 0.3s;">
                         <img src="{{ reco.imatge|default:'https://via.placeholder.com/300x450' }}"
                              class="card-img-top" style="aspect-ratio: 2/3; object-fit: cover;">
                         <div class="card-body p-3">
                             <h6 class="fw-bold text-dark text-truncate m-0" style="font-size: 0.9rem;">{{ reco.titol }}</h6>
                             <div class="d-flex justify-content-between align-items-center mt-1">
-                                <small class="text-muted">
-                                    {{ reco.any }}
-                                </small>
-                                <span class="badge bg-light text-dark border-0" style="font-size: 0.6rem;">{{ reco.tipus|upper }}</span>
+                                <small class="text-muted">{{ reco.any }}</small>
+                                <!-- ✅ Plataforma a les recomanacions -->
+                                <span class="badge border fw-normal"
+                                    style="font-size: 0.6rem;
+                                    {% if reco.plataforma == 'CinePlus' %}background:#fff0f0; color:#e50914; border-color:#e50914!important;
+                                    {% elif reco.plataforma == 'StreamHub' %}background:#f0f4ff; color:#0071eb; border-color:#0071eb!important;
+                                    {% elif reco.plataforma == 'PlayMax' %}background:#f0fff4; color:#00b300; border-color:#00b300!important;
+                                    {% else %}background:#f5f5f5; color:#666;{% endif %}">
+                                    {{ reco.plataforma|default:reco.tipus|upper }}
+                                </span>
                             </div>
                         </div>
                     </div>
