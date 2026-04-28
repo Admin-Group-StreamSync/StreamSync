@@ -43,6 +43,37 @@
         width: 100%;
         accent-color: #8a2be2;
     }
+
+    /* ✅ PAGINACIÓ */
+    .pagination-btn {
+        height: 42px;
+        min-width: 42px;
+        border-radius: 10px;
+        border: 1px solid #ddd;
+        background: white;
+        color: #444;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0 14px;
+        text-decoration: none;
+        transition: all 0.2s;
+    }
+    .pagination-btn:hover {
+        border-color: #8a2be2;
+        color: #8a2be2;
+        background: #f8f0ff;
+    }
+    .pagination-btn.active {
+        background: #8a2be2;
+        border-color: #8a2be2;
+        color: white;
+    }
+    .pagination-btn.disabled {
+        opacity: 0.4;
+        pointer-events: none;
+    }
 </style>
 {% endblock %}
 
@@ -56,8 +87,9 @@
             {% elif tipus_actual == 'series' %} <i class="bi bi-tv me-2"></i>Sèries
             {% else %} <i class="bi bi-grid-fill me-2"></i>Catàleg de Continguts {% endif %}
         </h2>
+        <!-- ✅ Ara mostra el total real de resultats filtrats -->
         <span class="badge bg-light text-dark border fw-normal px-3 py-2 rounded-pill shadow-sm">
-            {{ contenidos|length }} resultats trobats
+            {{ page_obj.paginator.count }} resultats trobats
         </span>
     </div>
 
@@ -153,6 +185,47 @@
             </div>
         {% endfor %}
     </div>
+
+    <!-- ✅ PAGINACIÓ -->
+    {% if page_obj.has_other_pages %}
+    <div class="d-flex justify-content-center align-items-center gap-2 mt-5">
+
+        <!-- Botó Anterior -->
+        {% if page_obj.has_previous %}
+        <a href="?page={{ page_obj.previous_page_number }}{{ filtres_url }}" class="pagination-btn">
+            <i class="bi bi-chevron-left"></i>
+        </a>
+        {% else %}
+        <span class="pagination-btn disabled"><i class="bi bi-chevron-left"></i></span>
+        {% endif %}
+
+        <!-- Números de pàgina -->
+        {% for num in page_obj.paginator.page_range %}
+            {% if page_obj.number == num %}
+                <span class="pagination-btn active">{{ num }}</span>
+            {% elif num > page_obj.number|add:"-3" and num < page_obj.number|add:"3" %}
+                <a href="?page={{ num }}{{ filtres_url }}" class="pagination-btn">{{ num }}</a>
+            {% endif %}
+        {% endfor %}
+
+        <!-- Botó Següent -->
+        {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}{{ filtres_url }}" class="pagination-btn">
+            <i class="bi bi-chevron-right"></i>
+        </a>
+        {% else %}
+        <span class="pagination-btn disabled"><i class="bi bi-chevron-right"></i></span>
+        {% endif %}
+
+    </div>
+
+    <!-- Info de pàgina -->
+    <p class="text-center text-muted small mt-3">
+        Pàgina {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}
+        &nbsp;·&nbsp;
+        {{ page_obj.paginator.count }} resultats en total
+    </p>
+    {% endif %}
 
 </div>
 {% endblock %}

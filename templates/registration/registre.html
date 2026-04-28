@@ -4,11 +4,13 @@
 
 {% block extra_css %}
 <style>
+
     .register-container { display: flex; justify-content: center; align-items: center; padding: 40px 20px; background: #f8f9fc; min-height: 90vh; }
     .register-card { width: 100%; max-width: 550px; background: white; border-radius: 20px; padding: 40px; box-shadow: 0 10px 40px rgba(0,0,0,0.05); text-align: center; border: 1px solid #f2f2f2; }
     .step-dot-container { display: flex; justify-content: center; gap: 8px; margin-bottom: 30px; }
     .step-dot { width: 45px; height: 6px; background: #eee; border-radius: 10px; transition: 0.3s; }
     .step-dot.active { background: #8a2be2; }
+
 
     .selection-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 15px; }
 
@@ -75,6 +77,7 @@
                 </div>
                 <div class="form-group-custom">
                     <label>Nom complet</label>
+
                     <input type="text" name="first_name" class="form-control-figma" placeholder="El teu nom i cognoms" value="{{ form.first_name.value|default:'' }}" required>
                 </div>
                 <div class="form-group-custom">
@@ -83,16 +86,19 @@
                 </div>
                 <div class="form-group-custom">
                     <label>Contrasenya</label>
-                    <input type="password" name="password1" class="form-control-figma" placeholder="••••••••" required>
+                    <input type="password" name="password1" class="form-control-figma" placeholder="Minim 8 caracters" minlength="8" required>
+                    <small class="text-muted d-block mt-1">La contrasenya ha de tenir com a minim 8 caracters.</small>
                 </div>
                 <div class="form-group-custom">
                     <label>Repeteix Contrasenya</label>
-                    <input type="password" name="password2" class="form-control-figma" placeholder="••••••••" required>
+                    <input type="password" name="password2" class="form-control-figma" placeholder="Repeteix la contrasenya" minlength="8" required>
+
                 </div>
                 <button type="button" class="btn-gradient" onclick="changeStep(2)">Següent</button>
             </div>
 
             <div id="step2" class="hidden">
+
                 <p class="text-start fw-bold mb-2 text-uppercase small text-muted">Què t'agrada veure?</p>
                 <div class="selection-grid mb-4">
                     {% for val, nom in opcions.tipus %}
@@ -118,6 +124,13 @@
             </div>
 
             <div id="step3" class="hidden">
+                <p class="text-start fw-bold mb-2">Idiomes</p>
+                <div class="selection-grid">
+                    {% for i in opcions.idiomes %}
+                    <label class="select-item"><input type="checkbox" name="idiomas" value="{{i}}" class="hidden" onchange="mark(this)">{{i}}</label>
+                    {% endfor %}
+                </div>
+
                 <p class="text-start fw-bold mb-2 text-uppercase small text-muted">Gèneres favorits</p>
                 <div class="selection-grid" style="grid-template-columns: 1fr 1fr 1fr;">
                     {% for g in opcions.genres_api %}
@@ -150,6 +163,7 @@
         document.getElementById('step1').classList.toggle('hidden', s !== 1);
         document.getElementById('step2').classList.toggle('hidden', s !== 2);
         document.getElementById('step3').classList.toggle('hidden', s !== 3);
+
 
         document.getElementById('dot1').classList.toggle('active', s >= 1);
         document.getElementById('dot2').classList.toggle('active', s >= 2);
