@@ -1,6 +1,7 @@
 import os
 import requests
 from django.http import HttpResponse
+from django.http import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import update_session_auth_hash, login
 from django.contrib.auth.views import LoginView
@@ -19,6 +20,7 @@ from .models import Pelicula, LlistaPersonal, Carpeta, Profile, Ressenya, Views
 from .forms import RegistroUsuarioForm, UserUpdateForm
 from functools import wraps
 from django.shortcuts import redirect
+import json
 # 1. CARREGUEM CONFIGURACIÓ
 load_dotenv()
 
@@ -64,6 +66,7 @@ def cap_manager_permes(view_func):
 # --- 2. FUNCIONS AUXILIARS I MAPEIG ---
 
 def mapejar_dades(item, port):
+    port_net = str(port).replace('/','')
     plataformes = {"8080": "CinePlus", "8081": "StreamHub", "8082": "PlayMax"}
 
     # Unificació de claus bàsiques
@@ -286,7 +289,8 @@ def detall_contingut(request, tipus, content_id):
             "any": item['any'],
             "valoracio": float(item.get('rating', 0)),
             "imatge": item.get('imatge'),
-            "tipus": tipus
+            "tipus": tipus,
+            "plataforma": item.get('plataforma')
         }
     )
 
@@ -678,18 +682,57 @@ def dashboard_manager(request, plataforma_nom):
 
         # --- DADES GENERALS ---
         total_views = Views.objects.filter(pelicula__in=contingut).aggregate(total=Sum('count'))['total'] or 0
-        top_contingut = contingut.annotate(vistes_totals=Sum('views__count')).order_by('-vistes_totals')[:5]
+        top_contingut_db = contingut.annotate(vistes_totals=Sum('views__count')).order_by('-vistes_totals')[:5]
+        top_contingut = []
+        for p in top_contingut_db:
+            top_contingut.append({
+                'id': p.id,
+                'titol': p.titol,
+                'imatge': p.imatge,
+                'any': p.any,
+                'tipus': p.tipus,
+                'rating': p.valoracio,
+                'vistes_totals': p.vistes_totals,
+                'genre_id': '',  # Enganyem al HTML perquè no doni error
+                'age_rating_id': '',  # AÑADIMOS ESTO
+                'genere_nom': '',
+                'edat_nom': '',
+                'director_nom': ''
+            })
 
-        # --- GRAFIC 1 i 2 (Dona i Barres) ---
-        vistes_pelis = Views.objects.filter(pelicula__in=contingut, pelicula__tipus='movie').aggregate(t=Sum('count'))[
-                           't'] or 0
+        # --- GRAFIC 1 i 2 (Donut i Barres) ---
+        vistes_pelis = \
+        Views.objects.filter(pelicula__in=contingut, pelicula__tipus='movie').aggregate(t=Sum('count'))['t'] or 0
         vistes_series = \
         Views.objects.filter(pelicula__in=contingut, pelicula__tipus='series').aggregate(t=Sum('count'))['t'] or 0
 
-        vistes_generes = Views.objects.filter(pelicula__in=contingut).values('pelicula__generes__nom').annotate(
-            total=Sum('count')).order_by('-total')[:6]
-        noms_generes = [v['pelicula__generes__nom'] or 'Altres' for v in vistes_generes]
-        valors_generes = [v['total'] for v in vistes_generes]
+            # 1. Descarreguem l'API en segon pla per saber els gèneres reals
+        totes_api = get_all_movies() + get_all_series()
+        genres_api = get_genres_from_api()
+        mapa_genres = {str(g['id']): g['name'] for g in genres_api}
+
+            # 2. Creem un diccionari per agrupar i sumar les visites manualment
+        visites_per_genere = {}
+        vistes_cineplus = Views.objects.filter(pelicula__in=contingut)
+
+        for v in vistes_cineplus:
+                # Creuem la visita local amb la peli de l'API per l'ID
+            item_api = next((x for x in totes_api if x['id'] == v.pelicula.id), None)
+
+            if item_api:
+                gid = str(item_api.get('genre_id'))
+                nom_genere = mapa_genres.get(gid, "Altres")
+            else:
+                nom_genere = "Altres"
+
+                # Sumem les visites (v.count) al gènere corresponent
+            visites_per_genere[nom_genere] = visites_per_genere.get(nom_genere, 0) + v.count
+
+            # 3. Ordenem els gèneres de més a menys visites i agafem els 6 primers
+        generes_ordenats = sorted(visites_per_genere.items(), key=lambda x: x[1], reverse=True)[:6]
+
+        noms_generes = [g[0] for g in generes_ordenats] if generes_ordenats else ["Altres"]
+        valors_generes = [g[1] for g in generes_ordenats] if generes_ordenats else [0]
 
         # --- GRAFIC 3 (Evolucio Línies - Ultims 4 mesos) ---
         mesos_cat = ['Gen', 'Feb', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Oct', 'Nov', 'Des']
@@ -711,33 +754,54 @@ def dashboard_manager(request, plataforma_nom):
             evolucio_vistes.append(v)
             evolucio_usuaris.append(u)
 
-        # --- GRAFIC 4 (Classificacio Edat - Progress Bars) ---
-        vistes_edat = Views.objects.filter(pelicula__in=contingut).values('pelicula__classificacio_edat').annotate(
-            total=Sum('count'))
-        total_vistes_edat = sum(v['total'] for v in vistes_edat) if vistes_edat else 1
+            # --- GRAFIC 4 (Classificacio Edat - Progress Bars) ---
+            # 1. Obtenim les definicions d'edat de l'API
+            ratings_api = get_age_ratings_from_api()
+            # Creem un mapa d'IDs a noms (ex: {"1": "18+", "2": "Tots"})
+            mapa_edats = {str(r['id']): (r.get('name') or r.get('title') or r.get('description') or "Tots") for r in
+                          ratings_api}
 
-        edats_dist = {'Tots': 0, '7+': 0, '13+': 0, '16+': 0, '18+': 0}
-        for v in vistes_edat:
-            edat = str(v['pelicula__classificacio_edat']).upper()
-            count = v['total']
-            if edat in ['G', 'PG']:
-                edats_dist['Tots'] += count
-            elif edat in ['7+', '10+', 'PG-13', 'TEEN']:
-                edats_dist['13+'] += count  # Agrupem comum
-            elif edat in ['16+', 'PG-14']:
-                edats_dist['16+'] += count
-            elif edat in ['R', 'NC-17', 'MATURE', '18+']:
-                edats_dist['18+'] += count
-            else:
-                edats_dist['Tots'] += count
+            # 2. Inicialitzem el comptador per a les categories del teu HTML
+            edats_dist = {'Tots': 0, '7+': 0, '13+': 0, '16+': 0, '18+': 0}
+            total_vistes_calculades = 0
 
-        edats_pct = {
-            'tots': round((edats_dist['Tots'] / total_vistes_edat) * 100),
-            'm7': round((edats_dist['7+'] / total_vistes_edat) * 100),
-            'm13': round((edats_dist['13+'] / total_vistes_edat) * 100),
-            'm16': round((edats_dist['16+'] / total_vistes_edat) * 100),
-            'm18': round((edats_dist['18+'] / total_vistes_edat) * 100),
-        }
+            # 3. Recuperem totes les visualitzacions de la plataforma
+            vistes_plataforma = Views.objects.filter(pelicula__in=contingut)
+
+            for v in vistes_plataforma:
+                # Busquem la peli a l'API per saber el seu age_rating_id real
+                # (Ja que a la DB local potser no el tens actualitzat)
+                item_api = next((x for x in totes_api if x['id'] == v.pelicula.id), None)
+
+                if item_api:
+                    eid = str(item_api.get('age_rating_id'))
+                    nom_edat = mapa_edats.get(eid, "Tots").upper()
+                else:
+                    nom_edat = "TOTS"
+
+                # Sumem les visites a la categoria corresponent
+                if "18" in nom_edat:
+                    edats_dist['18+'] += v.count
+                elif "16" in nom_edat:
+                    edats_dist['16+'] += v.count
+                elif "13" in nom_edat:
+                    edats_dist['13+'] += v.count
+                elif "7" in nom_edat:
+                    edats_dist['7+'] += v.count
+                else:
+                    edats_dist['Tots'] += v.count
+
+                total_vistes_calculades += v.count
+
+            # 4. Calculem els percentatges reals per a l'HTML
+            divisor = total_vistes_calculades if total_vistes_calculades > 0 else 1
+            edats_pct = {
+                'tots': round((edats_dist['Tots'] / divisor) * 100),
+                'm7': round((edats_dist['7+'] / divisor) * 100),
+                'm13': round((edats_dist['13+'] / divisor) * 100),
+                'm16': round((edats_dist['16+'] / divisor) * 100),
+                'm18': round((edats_dist['18+'] / divisor) * 100),
+            }
 
     except Exception as e:
         print(f"Error cargando estadisticas: {e}")
@@ -773,28 +837,40 @@ def dashboard_manager(request, plataforma_nom):
     }
 
     return render(request, 'registration/dashboard_manager.html', context)
+
 @login_required
-@api_view(['POST'])
 def register_view(request):
-    film_id = request.data.get("film")
+    if request.method == "POST":
+        try:
+            # Llegim les dades que ens envia el Javascript
+            data = json.loads(request.body)
+            film_id = data.get("film")
 
-    # comprobar que llega film_id
-    if not film_id:
-        return HttpResponse({"error": "film_id requerido"}, status=400)#
+            if not film_id:
+                return JsonResponse({"error": "Falta l'ID de la pel·lícula"}, status=400)
 
-    # obtener película
-    film = get_object_or_404(Pelicula, id=film_id)
+            # Busquem la pel·lícula a la base de dades local
+            film = get_object_or_404(Pelicula, id=film_id)
 
-    # crear o actualizar view
-    view_reg, created = Views.objects.get_or_create(
-        usuari=request.user,
-        pelicula=film,
-        defaults={"count": 0}
-    )
+            # Obtenim el registre d'aquest usuari i aquesta peli, o el creem a 0
+            view_reg, created = Views.objects.get_or_create(
+                usuari=request.user,
+                pelicula=film,
+                defaults={"count": 0}
+            )
 
-    view_reg.count += 1
-    view_reg.save()
+            # Li sumem 1 visita
+            view_reg.count += 1
+            view_reg.save()
 
-    return HttpResponse({"ok": True, "count": view_reg.count})
+            print(f"Visita registrada! {film.titol} ara té {view_reg.count} visites d'aquest usuari.")
+
+            return JsonResponse({"ok": True, "count": view_reg.count})
+
+        except Exception as e:
+            print("Error al registrar la visita:", str(e))
+            return JsonResponse({"error": str(e)}, status=500)
+
+    return JsonResponse({"error": "Mètode no permès"}, status=405)
 
 

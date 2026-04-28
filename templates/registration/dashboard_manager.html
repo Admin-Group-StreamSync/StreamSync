@@ -84,9 +84,12 @@
         background-color: #f1f5f9;
         border-radius: 10px;
         overflow: hidden;
+        display: flex; /* Ajuda a posicionar la barra interior */
     }
     .progress-custom .progress-bar {
+        height: 100%; /* AQUESTA ÉS LA CLAU: fa que el color ocupi els 10px d'alçada */
         border-radius: 10px;
+        transition: width 0.8s ease-in-out; /* Animació fluida a l'omplir-se */
     }
 </style>
 {% endblock %}

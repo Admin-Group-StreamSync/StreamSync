@@ -252,19 +252,61 @@
     </div>
 
     <script>
-        const token = document.querySelector('meta[name="csrf-token"]').content;
+        document.getElementById("submit_view").addEventListener("click", function (e) {
+            e.preventDefault(); // Bloquea cualquier acción por defecto (no recarga, no abre nada)
 
-        document.getElementById("submit_view").addEventListener("click", function () {
+            // 1. Obtenemos el Token de Seguridad (CSRF)
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, 10) === ('csrftoken=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(10));
+                        break;
+                    }
+                }
+            }
+
+            // 2. Efecto visual en el botón (feedback sin alertas)
+            const btn = this;
+            const originalHTML = btn.innerHTML;
+
+            // Cambiamos el diseño a un check de éxito temporalmente
+            btn.innerHTML = '<i class="bi bi-check-circle-fill fs-3"></i> VISITA REGISTRADA';
+            btn.style.background = '#10b981'; // Color verde éxito
+            btn.disabled = true; // Desactivamos para evitar doble clic rápido
+
+            // 3. Enviamos la visita al servidor en secreto
             fetch("{% url 'register_view' %}", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
-                    "X-CSRFToken": token
+                    "X-CSRFToken": cookieValue
                 },
-                body: JSON.stringify({ film: "{{ item.id }}" })
+                body: JSON.stringify({ "film": "{{ item.id }}" })
             })
             .then(res => res.json())
-            .then(data => console.log(data));
+            .then(data => {
+                if(data.ok) {
+                    console.log("ÈXIT! Visita quantificada. Total:", data.count);
+                } else {
+                    console.error("Error del servidor:", data.error);
+                }
+
+                // 4. Devolvemos el botón a la normalidad después de 2 segundos
+                setTimeout(() => {
+                    btn.innerHTML = originalHTML;
+                    btn.style.background = ''; // Restaura el color original (el lila)
+                    btn.disabled = false;
+                }, 2000);
+            })
+            .catch(error => {
+                console.error("Error de connexió:", error);
+                btn.innerHTML = originalHTML;
+                btn.style.background = '';
+                btn.disabled = false;
+            });
         });
     </script>
 </div>
