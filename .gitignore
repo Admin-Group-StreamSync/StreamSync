@@ -1,21 +1,24 @@
 .venv/
-*.pyc
 db.sqlite3
 .env
 .vscode/
-**/__pycache__/**
 venv
 
+#*Docker*
+#*docker*
 
 actions-runner
 
 # Python
 __pycache__/
+*.pyc
 *.py[cod]
 *.egg-info/
 
 # IDE
 .idea/
+.idea
+
 
 # Django
 

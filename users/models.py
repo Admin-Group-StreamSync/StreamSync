@@ -11,15 +11,9 @@ class Profile(models.Model):
     plataformes = models.JSONField(default=list, blank=True)
     generes = models.JSONField(default=list, blank=True)
     edat_rating = models.JSONField(default=list, blank=True)
-    manager_de = models.CharField(
-        max_length=50,
-        choices=[('CinePlus', 'CinePlus'), ('StreamHub', 'StreamHub'), ('PlayMax', 'PlayMax')],
-        null=True,
-        blank=True
-    )
 
     def __str__(self):
-        return f"Perfil de {self.user.username} ({self.manager_de or 'User'})"
+        return f"Perfil de {self.user.username}"
 
 
 class Genere(models.Model):
@@ -99,12 +93,3 @@ class Ressenya(models.Model):
 
     def __str__(self):
         return f"{self.usuari.username} - {self.pelicula.titol} ({self.puntuacio}/10)"
-
-
-class Views(models.Model):
-    usuari = models.ForeignKey(User, on_delete=models.CASCADE, related_name='views')
-    pelicula = models.ForeignKey(Pelicula, on_delete=models.CASCADE, related_name='views')
-    visualization_date = models.DateTimeField(auto_now_add=True)
-    count = models.IntegerField(default=0) # Is recorded the times a person plays the same film.
-
-

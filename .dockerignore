@@ -1,41 +1,10 @@
+# Files that Docker should ignore when building the image
+# (keeps the image small and avoids copying unnecessary files)
 
-# Entornos virtuales
 .venv/
-venv/
-env/
-
-
-__pycache__/
-*.py[cod]
-*.pyo
-*.pyd
-.Python
-
-# Tests y cobertura
-.pytest_cache/
-.coverage
-htmlcov/
-tests/
-
-
-.env
-.env.*
-!.env.*.example
-
-
 .git/
-.gitignore
-
-docker-compose*.yml
-api/Dockerfile
-.dockerignore
-
+__pycache__/
+*.pyc
+db.sqlite3
+.DS_Store
 .idea/
-*.swp
-*.swo
-
-README*
-*.md
-
-
-

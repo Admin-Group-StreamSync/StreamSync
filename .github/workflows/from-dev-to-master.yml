@@ -1,37 +1,28 @@
 
-name: Sync develop -> master
+name: From develop to master
 
 on:
   pull_request: 
     branches: [develop]
     types: [closed]
-  push:
-    branches: [ develop ]
-#  wsorkflow_dispatch:
+  workflow_dispatch: 
       
 
 jobs:
-  create-pr:
+  merge:
     if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
 
-    permissions:
-      contents: write
-      pull-requests: write
-
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@v4
-
-      - name: Create PR
-        id: cpr
-        uses: repo-sync/pull-request@v2
+      - uses: actions/checkout@v4
         with:
-          source_branch: develop
-          destination_branch: master
-          pr_title: "[Auto PR]: develop → master"
-          pr_body: "Actualización automática desde develop"
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-      # DEBUG
-      - name: Show PR number
-        run: echo "PR número ${{ steps.cpr.outputs.pr_number }}"
+          fetch-depth: 0
+      - name: Merge develop into master
+        run: |
+          git config --global user.name "github-actions"
+          git config --global user.email "actions@github.com"
+
+          git fetch origin
+          git checkout master
+          git merge origin/develop
+          git push origin master
