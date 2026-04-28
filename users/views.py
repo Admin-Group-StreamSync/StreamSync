@@ -66,7 +66,7 @@ def get_imatge_tmdb(titol):
             resultats = response.json().get("results", [])
             if resultats and resultats[0].get("poster_path"):
                 return f"https://image.tmdb.org/t/p/w500{resultats[0]['poster_path']}"
-    except:
+    except (requests.RequestException, ValueError):
         pass
     return 'https://via.placeholder.com/300x450'
 
