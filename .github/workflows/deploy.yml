@@ -23,7 +23,7 @@ jobs:
           username: ${{ vars.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_TOKEN }}
 
-      - name: Build and Push Docker image
+      - name: Build and Push Docker image (Release stage)
         run: |
           # Se genera una imagen reusable para optimizar el rendimiento
           docker build -t ${{ vars.DOCKER_USERNAME }}/mi-app:latest .

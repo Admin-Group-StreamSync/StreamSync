@@ -4,6 +4,14 @@ version = "0.1.0"
 description = "Add your description here"
 requires-python = ">=3.14"
 dependencies = [
+    "django-environ>=0.13.0",
+    "djangorestframework>=3.17.1",
+    "djangorestframework-stubs>=3.16.8",
     "matplotlib>=3.10.8",
     "pandas>=3.0.1",
+    "psycopg>=3.3.3",
+    "psycopg2-binary>=2.9.11",
+    "python-dotenv>=1.2.2",
+    "requests>=2.33.1",
+    "thefuzz>=0.22.1",
 ]

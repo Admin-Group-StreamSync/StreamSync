@@ -2,6 +2,7 @@ import os
 import requests
 from concurrent.futures import ThreadPoolExecutor
 from django.core.paginator import Paginator
+from django.http import HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import update_session_auth_hash, login
 from django.contrib.auth.views import LoginView
@@ -9,9 +10,11 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.contrib.auth.forms import PasswordChangeForm
 from dotenv import load_dotenv
+from rest_framework.decorators import api_view
 from thefuzz import process, fuzz
 
-from .models import Pelicula, LlistaPersonal, Carpeta, Profile, Ressenya
+# Importem els teus models i formularis
+from .models import Pelicula, LlistaPersonal, Carpeta, Profile, Ressenya, Views
 from .forms import RegistroUsuarioForm, UserUpdateForm
 
 # 1. CARREGUEM CONFIGURACIÓ
@@ -30,6 +33,15 @@ OPCIONS = {
 
 
 class StreamSyncLoginView(LoginView):
+    def get_success_url(self):
+        user = self.request.user
+
+        if hasattr(user, 'profile') and user.profile.manager_de:
+            return f'/dashboard/{user.profile.manager_de}/'
+
+
+        return '/perfil/'
+
     def form_valid(self, form):
         response = super().form_valid(form)
         messages.success(self.request, f"Benvingut/da de nou, {form.get_user().username}!")
@@ -184,6 +196,7 @@ def get_age_ratings_from_api():
 # --- 5. VISTES PRINCIPALS ---
 
 def pagina_principal(request):
+    # 1. Obtenim i etiquetem les dades
     movies = get_all_movies()
     for m in movies: m['tipus'] = 'movie'
 
@@ -192,6 +205,7 @@ def pagina_principal(request):
 
     totes = movies + series
 
+    # 2. Carreguem diccionaris de traducció de l'API (només per visualització)
     genres_api = get_genres_from_api()
     ratings_api = get_age_ratings_from_api()
 
@@ -206,32 +220,42 @@ def pagina_principal(request):
             item['edat_nom'] = mapa_ratings.get(eid, "N/A")
         return llista
 
+    # 3. Filtrar Recomanacions "Per a tu"
     recomanacions_perfil = []
     if request.user.is_authenticated:
         try:
             p = request.user.profile
             filtrades = totes
 
+            # A. Filtre per Tipus (Pelis/Sèries)
             if p.tipus:
                 filtrades = [x for x in filtrades if x['tipus'] in p.tipus]
+
+            # B. Filtre per Plataformes (CinePlus, PlayMax...)
             if p.plataformes:
                 filtrades = [x for x in filtrades if x.get('plataforma') in p.plataformes]
+
+            # C. Filtre per Gèneres (UNIFICAT: ID amb ID)
             if p.generes:
+                # Comprovem si l'ID del gènere de la peli està dins de la llista d'IDs del perfil
                 filtrades = [x for x in filtrades if str(x.get('genre_id')) in p.generes]
+
+            # D. Filtre per Edat (UNIFICAT: ID amb ID)
             if p.edat_rating:
+                # Comprovem si l'ID de l'edat de la peli està dins de la llista d'IDs del perfil
                 filtrades = [x for x in filtrades if str(x.get('age_rating_id')) in p.edat_rating]
 
-            top4 = sorted(filtrades, key=lambda x: float(x.get('rating', 0)), reverse=True)[:4]
-            recomanacions_perfil = enriquir_imatges_tmdb(enriquir(top4))  # ✅ TMDB en paral·lel
+            # Ordenem per nota i agafem 4
+            recomanacions_perfil = enriquir(
+                sorted(filtrades, key=lambda x: float(x.get('rating', 0)), reverse=True)[:4])
 
         except Exception as e:
             print(f"Error filtrant preferències: {e}")
             recomanacions_perfil = []
 
-    tendencies = enriquir_imatges_tmdb(enriquir(totes[:4]))  # ✅ TMDB en paral·lel
-    millor_valorades = enriquir_imatges_tmdb(
-        enriquir(sorted(totes, key=lambda x: float(x.get('rating', 0)), reverse=True)[:4])
-    )  # ✅ TMDB en paral·lel
+    # 4. Seccions generals
+    tendencies = enriquir(totes[:4])
+    millor_valorades = enriquir(sorted(totes, key=lambda x: float(x.get('rating', 0)), reverse=True)[:4])
 
     return render(request, 'pages/pagina_principal.html', {
         'tendencies': tendencies,
@@ -243,25 +267,30 @@ def pagina_principal(request):
 
 
 def detall_contingut(request, tipus, content_id):
+    # 1. Agafem el contingut mapejat (que només té IDs)
     totes = get_all_series() if tipus == 'series' else get_all_movies()
     item = next((p for p in totes if str(p['id']) == str(content_id)), None)
 
     if not item:
         return render(request, '404.html', status=404)
 
+    # 2. ANEM A BUSCAR ELS NOMS REALS ALS ALTRES ENDPOINTS
+    # Traduïm el Gènere
     genres = get_genres_from_api()
     item['genere_nom'] = next((g['name'] for g in genres if str(g['id']) == str(item['genre_id'])), "General")
 
+    # Traduïm el Director
     directors = get_directors_from_api()
-    item['director_nom'] = next((d['name'] for d in directors if str(d['id']) == str(item['director_id'])), "Desconegut")
+    item['director_nom'] = next((d['name'] for d in directors if str(d['id']) == str(item['director_id'])),
+                                "Desconegut")
 
+    # Traduïm l'Edat
     ratings = get_age_ratings_from_api()
+    # L'API de ratings sol tenir 'title' o 'name'
     item['edat_nom'] = next((r.get('title') or r.get('name') or r.get('description')
                              for r in ratings if str(r['id']) == str(item['age_rating_id'])), "N/A")
 
-    # ✅ Imatge TMDB per al contingut principal
-    item['imatge'] = get_imatge_tmdb(item['titol'])
-
+    # 3. Sincronització DB Local (per a ressenyes i llistes)
     peli_db, _ = Pelicula.objects.update_or_create(
         id=item['id'],
         defaults={
@@ -289,6 +318,7 @@ def detall_contingut(request, tipus, content_id):
 
 
 def catalogo(request, tipus=None):
+    # 1. Obtenim les dades brutes
     if tipus == 'movie':
         totes = get_all_movies()
     elif tipus == 'series':
@@ -296,25 +326,28 @@ def catalogo(request, tipus=None):
     else:
         totes = get_all_movies() + get_all_series()
 
+    # 2. Carreguem totes les traduccions de l'API
     genres_api = get_genres_from_api()
     ratings_api = get_age_ratings_from_api()
     directors_api = get_directors_from_api()
 
     mapa_genres = {str(g['id']): g['name'] for g in genres_api}
     mapa_ratings = {str(r['id']): r.get('description', 'N/A') for r in ratings_api}
+    # Creem un mapa de directors: { "1": "Christopher Nolan" }
     mapa_directors = {str(d['id']): d['name'] for d in directors_api}
 
+    # 3. Recollim filtres (incloent el de director)
     f = {
         'p': request.GET.get('plataforma', ''),
         'g': request.GET.get('genere', ''),
         'e': request.GET.get('edat', ''),
         'v': request.GET.get('valoracio', '0'),
-        'd': request.GET.get('director', '').strip().lower()
+        'd': request.GET.get('director', '').strip().lower()  # Cerca de text en minúscules
     }
 
-    # 1. Traduïm i filtrem tots els resultats
     resultats = []
     for item in totes:
+        # --- TRADUCCIÓ DE NOMS PER A LES CARDS ---
         gid = str(item.get('genre_id'))
         eid = str(item.get('age_rating_id'))
         did = str(item.get('director_id'))
@@ -323,10 +356,14 @@ def catalogo(request, tipus=None):
         item['edat_nom'] = mapa_ratings.get(eid, "N/A")
         item['director_nom'] = mapa_directors.get(did, "Desconegut")
 
+        # --- FILTRATGE ---
         if f['p'] and item.get('plataforma') != f['p']: continue
         if f['g'] and gid != f['g']: continue
         if f['e'] and eid != f['e']: continue
-        if f['d'] and f['d'] not in item['director_nom'].lower(): continue
+
+        # Filtre de Director: Cerca si el text escrit està DINS del nom del director
+        if f['d'] and f['d'] not in item['director_nom'].lower():
+            continue
 
         try:
             if float(item.get('rating', 0)) < float(f['v']): continue
@@ -335,21 +372,8 @@ def catalogo(request, tipus=None):
 
         resultats.append(item)
 
-    # 2. Paginació sobre els resultats filtrats
-    paginator = Paginator(resultats, 12)
-    page_number = request.GET.get('page', 1)
-    page_obj = paginator.get_page(page_number)
-
-    # 3. ✅ TMDB només pels 12 de la pàgina actual (en paral·lel)
-    enriquir_imatges_tmdb(list(page_obj.object_list))
-
-    # 4. Paràmetres de filtre per mantenir-los a la URL de paginació
-    filtres_url = f"&plataforma={f['p']}&genere={f['g']}&edat={f['e']}&valoracio={f['v']}&director={f['d']}"
-
     return render(request, 'cataleg.html', {
-        'contenidos': page_obj.object_list,
-        'page_obj': page_obj,
-        'filtres_url': filtres_url,
+        'contenidos': resultats,
         'tipus_actual': tipus,
         'opcions': OPCIONS,
         'genres_api': genres_api,
@@ -358,7 +382,7 @@ def catalogo(request, tipus=None):
     })
 
 
-# --- 6. GESTIÓ D'USUARI I LLISTES ---
+# --- 5. GESTIÓ D'USUARI I LLISTES ---
 
 @login_required
 def publicar_ressenya(request, tipus, content_id):
@@ -422,7 +446,8 @@ def crear_llista(request):
 def editar_llista(request, carpeta_id):
     carpeta = get_object_or_404(Carpeta, id=carpeta_id, usuari=request.user)
     if request.method == "POST":
-        carpeta.nom, carpeta.icona, carpeta.color = request.POST.get('nom'), request.POST.get('icona'), request.POST.get('color')
+        carpeta.nom, carpeta.icona, carpeta.color = request.POST.get('nom'), request.POST.get(
+            'icona'), request.POST.get('color')
         carpeta.save()
         return redirect('llistes')
     return render(request, 'editar_llista.html', {'carpeta': carpeta, 'opcions': OPCIONS})
@@ -435,13 +460,18 @@ def eliminar_carpeta(request, carpeta_id):
 
 
 @login_required
-def treure_de_llista(request, tipus, content_id):
+def treure_de_llista(request, tipus, content_id):  # Afegim 'tipus' com a paràmetre
+    # Eliminem l'element de la llista personal de l'usuari
     LlistaPersonal.objects.filter(usuari=request.user, pelicula_id=content_id).delete()
+
+    # Missatge de confirmació (opcional, però queda molt bé)
     messages.success(request, "Element eliminat de la llista.")
+
+    # Redirigim a la pàgina de llistes (o pots redirigir a la carpeta si ho prefereixes)
     return redirect('llistes')
 
 
-# --- 7. REGISTRE I PERFIL ---
+# --- 6. REGISTRE I PERFIL ---
 
 def crear_cuenta(request):
     genres_api = get_genres_from_api()
@@ -451,8 +481,9 @@ def crear_cuenta(request):
     if request.method == 'POST':
         form = RegistroUsuarioForm(request.POST)
         if form.is_valid():
-            user = form.save()
+            user = form.save()  # Signal crea Profile buit
 
+            # ✅ Guardem preferències ABANS del login per evitar interferències
             perfil = user.profile
             perfil.tipus = request.POST.getlist('tipus')
             perfil.plataformes = request.POST.getlist('plataformes')
@@ -480,7 +511,6 @@ def crear_cuenta(request):
     }
     return render(request, 'registration/registre.html', context)
 
-
 @login_required
 def pagina_perfil1(request):
     form = UserUpdateForm(request.POST or None, instance=request.user)
@@ -492,21 +522,30 @@ def pagina_perfil1(request):
 
 @login_required
 def profile2(request):
+    # Accedim al perfil directament a través de la relació OneToOne
     try:
         perfil = request.user.profile
     except Profile.DoesNotExist:
         perfil = Profile.objects.create(user=request.user)
 
     if request.method == 'POST':
+        # DEBUG: Mira la terminal per veure si arriben dades
+        print("--- POST DETECTAT A PREFERÈNCIES ---")
+        print(f"Dades enviades: {request.POST}")
+
+        # Guardem el que arriba del formulari (plural 'generos')
         perfil.tipus = request.POST.getlist('tipus')
         perfil.plataformes = request.POST.getlist('plataformes')
         perfil.generes = request.POST.getlist('generos')
         perfil.edat_rating = request.POST.getlist('edats')
+
         perfil.save()
 
+        print(f"Perfil de {request.user.username} guardat correctament.")
         messages.success(request, "Preferències actualitzades!")
         return redirect('profile2')
 
+    # GET: Carreguem dades
     genres = get_genres_from_api()
     ratings = get_age_ratings_from_api()
 
@@ -543,6 +582,7 @@ def esborrar_compte(request):
 def cerca_contingut(request):
     query = request.GET.get('q', '').strip()
 
+    # 1. Carreguem dades i assignem tipus
     movies = get_all_movies()
     for m in movies: m['tipus'] = 'movie'
     series = get_all_series()
@@ -553,35 +593,80 @@ def cerca_contingut(request):
     recomanacions = []
 
     if query:
+        # 2. Motor Fuzz per trobar la millor coincidència
         titols = [p['titol'] for p in totes]
         matches = process.extract(query, titols, scorer=fuzz.token_set_ratio, limit=1)
 
         if matches and matches[0][1] > 65:
+            # Trobem l'objecte de la millor coincidència
             resultat_principal = next(p for p in totes if p['titol'] == matches[0][0])
 
-            # ✅ TMDB per al resultat principal
-            resultat_principal['imatge'] = get_imatge_tmdb(resultat_principal['titol'])
-
+            # 3. SISTEMA DE RECOMANACIONS (Similitud)
+            # Filtrem per no recomanar la mateixa pel·lícula que ja estem mostrant
             altres = [p for p in totes if p['id'] != resultat_principal['id']]
 
             def calcular_puntuacio(item):
                 score = 0
+                # Mateix Director: +10 punts
                 if item.get('director_id') == resultat_principal.get('director_id'):
                     score += 10
+                # Mateix Gènere: +5 punts
                 if item.get('genre_id') == resultat_principal.get('genre_id'):
                     score += 5
+                # Mateix Age Rating: +2 punts
                 if item.get('age_rating_id') == resultat_principal.get('age_rating_id'):
                     score += 2
                 return score
 
+            # Ordenem la llista segons la puntuació (de més gran a més petita)
             recomanacions = sorted(altres, key=calcular_puntuacio, reverse=True)
-            recomanacions = [p for p in recomanacions if calcular_puntuacio(p) > 0][:5]
 
-            # ✅ TMDB per a les recomanacions en paral·lel
-            enriquir_imatges_tmdb(recomanacions)
+            # Només ens quedem amb aquelles que tinguin alguna similitud (score > 0)
+            # i limitem a les 5 millors
+            recomanacions = [p for p in recomanacions if calcular_puntuacio(p) > 0][:5]
 
     return render(request, 'cerca_contingut.html', {
         'query': query,
         'resultat': resultat_principal,
-        'resultats': recomanacions
+        'resultats': recomanacions  # Ara 'resultats' són les recomanacions ordenades
     })
+
+
+@login_required
+def dashboard_manager(request, plataforma_nom):
+    if request.user.profile.manager_de != plataforma_nom:
+        messages.error(request, "No tens permís per gestionar aquesta plataforma.")
+        return redirect('pagina_principal')
+
+    contingut = Pelicula.objects.filter(plataforma=plataforma_nom)
+
+    # CAMBIO AQUÍ: indicamos la subcarpeta registration
+    return render(request, 'registration/dashboard_manager.html', {
+        'plataforma': plataforma_nom,
+        'pelicules': contingut
+    })
+@login_required
+@api_view(['POST'])
+def register_view(request):
+    film_id = request.data.get("film")
+
+    # comprobar que llega film_id
+    if not film_id:
+        return HttpResponse({"error": "film_id requerido"}, status=400)#
+
+    # obtener película
+    film = get_object_or_404(Pelicula, id=film_id)
+
+    # crear o actualizar view
+    view_reg, created = Views.objects.get_or_create(
+        usuari=request.user,
+        pelicula=film,
+        defaults={"count": 0}
+    )
+
+    view_reg.count += 1
+    view_reg.save()
+
+    return HttpResponse({"ok": True, "count": view_reg.count})
+
+
