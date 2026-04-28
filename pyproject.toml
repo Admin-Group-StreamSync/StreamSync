@@ -6,4 +6,12 @@ requires-python = ">=3.14"
 dependencies = [
     "matplotlib>=3.10.8",
     "pandas>=3.0.1",
+<<<<<<< HEAD
+=======
+    "psycopg>=3.3.3",
+    "psycopg2-binary>=2.9.11",
+    "python-dotenv>=1.2.2",
+    "requests>=2.33.1",
+    "thefuzz>=0.22.1",
+>>>>>>> d1bf954d5a58a408b3538466b85fa609b769175a
 ]

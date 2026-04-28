@@ -2,6 +2,7 @@ import os
 import requests
 from concurrent.futures import ThreadPoolExecutor
 from django.core.paginator import Paginator
+from django.http import HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import update_session_auth_hash, login
 from django.contrib.auth.views import LoginView
