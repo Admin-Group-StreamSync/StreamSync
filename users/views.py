@@ -10,9 +10,11 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.contrib.auth.forms import PasswordChangeForm
 from dotenv import load_dotenv
+from rest_framework.decorators import api_view
 from thefuzz import process, fuzz
 
-from .models import Pelicula, LlistaPersonal, Carpeta, Profile, Ressenya
+# Importem els teus models i formularis
+from .models import Pelicula, LlistaPersonal, Carpeta, Profile, Ressenya, Views
 from .forms import RegistroUsuarioForm, UserUpdateForm
 
 # 1. CARREGUEM CONFIGURACIÓ
@@ -182,9 +184,10 @@ def get_age_ratings_from_api():
     return []
 
 
-# --- 5. VISTES PRINCIPALS ---
+# --- 4. VISTES PRINCIPALS ---
 
 def pagina_principal(request):
+    # 1. Obtenim i etiquetem les dades
     movies = get_all_movies()
     for m in movies: m['tipus'] = 'movie'
 
@@ -193,6 +196,7 @@ def pagina_principal(request):
 
     totes = movies + series
 
+    # 2. Carreguem diccionaris de traducció de l'API (només per visualització)
     genres_api = get_genres_from_api()
     ratings_api = get_age_ratings_from_api()
 
@@ -359,7 +363,7 @@ def catalogo(request, tipus=None):
     })
 
 
-# --- 6. GESTIÓ D'USUARI I LLISTES ---
+# --- 5. GESTIÓ D'USUARI I LLISTES ---
 
 @login_required
 def publicar_ressenya(request, tipus, content_id):
@@ -586,3 +590,29 @@ def cerca_contingut(request):
         'resultat': resultat_principal,
         'resultats': recomanacions
     })
+
+@login_required
+@api_view(['POST'])
+def register_view(request):
+    film_id = request.data.get("film")
+
+    # comprobar que llega film_id
+    if not film_id:
+        return HttpResponse({"error": "film_id requerido"}, status=400)#
+
+    # obtener película
+    film = get_object_or_404(Pelicula, id=film_id)
+
+    # crear o actualizar view
+    view_reg, created = Views.objects.get_or_create(
+        usuari=request.user,
+        pelicula=film,
+        defaults={"count": 0}
+    )
+
+    view_reg.count += 1
+    view_reg.save()
+
+    return HttpResponse({"ok": True, "count": view_reg.count})
+
+
