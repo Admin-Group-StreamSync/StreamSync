@@ -385,7 +385,7 @@ jobs:
           FAIL=0
 
           # ── Express / Fastify (Node.js) ──────────────────
-          if find . -name "*.js" -o -name "*.ts" | grep -v node_modules | xargs grep -lE "express\(\)|fastify\(\)" 2>/dev/null | grep -q .; then
+          if find . \( -name "*.js" -o -name "*.ts" \)| grep -v node_modules | xargs -r grep -lE "express\(\)|fastify\(\)" 2>/dev/null | grep -q .; then
             echo "--- Detected: Express/Fastify ---"
             DETECTED=1
 
@@ -405,7 +405,7 @@ jobs:
           fi
 
           # ── Django / Flask (Python) ──────────────────────
-          if find . -name "*.py" | grep -v node_modules | xargs grep -lE "from django|from flask|import flask" 2>/dev/null | grep -q .; then
+          if find . -name "*.py" | grep -v node_modules | xargs -r grep -lE "from django|from flask|import flask" 2>/dev/null | grep -q .; then
             echo "--- Detected: Django/Flask ---"
             DETECTED=1
 
