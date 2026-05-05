@@ -337,7 +337,8 @@ jobs:
           python3 - <<'PYEOF'
           import json, sys
           with open("quality-job4/fog-results.json") as f:
-              d = json.load(f)[0]
+              d = json.load(f)
+              print(d)
           failed = d["summary"]["failed_files"]
           if failed > 0:
               for r in d.get("results", []):
@@ -345,7 +346,7 @@ jobs:
                       avg = r.get("avg_fog") or "N/A"
                       print(f"::error file={r['file']}::Fog index {avg} exceeds threshold {d['threshold']}")
               sys.exit(1)
-          print(f"✅ Fog index OK — {d['summary']['total_files']} file(s) analysed")
+          print(f"✅ Fog index OK — {d['summary']['total_files']} file(s) analysed") ###
           PYEOF
 
       - name: Upload artifact
