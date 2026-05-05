@@ -328,7 +328,7 @@ jobs:
       - name: Run fog index analysis
         run: |
           mkdir -p quality-job4
-          python .github/scripts/fog_comments_indexGP.py src/ \
+          python .github/scripts/fog_comments_indexGP.py ./ \
             > quality-job4/fog-results.json
           cat quality-job4/fog-results.json
 
@@ -337,8 +337,7 @@ jobs:
           python3 - <<'PYEOF'
           import json, sys
           with open("quality-job4/fog-results.json") as f:
-              d = json.load(f)
-              print(d)
+              d = json.load(f) 
           failed = d["summary"]["failed_files"]
           if failed > 0:
               for r in d.get("results", []):
