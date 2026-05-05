@@ -29,3 +29,8 @@ __pycache__/
 
 # Docker
 db.sqlite3-journal
+
+
+*_initial.py
+
+**/reports/*.json
