@@ -126,6 +126,7 @@ jobs:
           import json, sys
           with open("quality-job1/complexity-results.json") as f:
               d = json.load(f)[0]
+              print("checking: ", d)
           failed = d["summary"]["failed_files"]
           if failed > 0:
               print(f"::error::Cyclomatic complexity: {failed} file(s) exceed threshold {d['threshold']}")
