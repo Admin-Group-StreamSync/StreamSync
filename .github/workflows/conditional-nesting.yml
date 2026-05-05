@@ -1,0 +1,33 @@
+name: Code Depth of Conditional Nesting Analysis
+
+jobs:
+  quality-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Find All Python Files
+        id: find-files
+        run: |
+          FILES=$(find . -name "*.py" -not -path "./.git/*" | tr '\n' ' ')
+          echo "files=$FILES" >> $GITHUB_OUTPUT
+
+      - name: Execute Nesting Calculation
+        if: steps.find-files.outputs.files != ''
+        run: |
+          python .github/scripts/depth_conditional_nesting.py ${{ steps.find-files.outputs.files }}
+
+      - name: Archive Quality Report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: nesting-quality-report
+          path: .github/scripts/reports/nesting_metrics.json
