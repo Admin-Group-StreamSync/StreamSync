@@ -112,6 +112,14 @@ def print_json(results, total, failed):
 
     print(json.dumps(output, indent=2))
 
+    directory_path = ".github/scripts/reports"
+
+    Path(directory_path).mkdir(parents=True, exist_ok=True)
+
+    # ✅ guardar en fichero
+    with open(f"{directory_path}/fog_index_report.json", "w", encoding="utf-8") as file:
+        file.write(json.dumps(output, indent=2, ensure_ascii=False))
+
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
