@@ -12,8 +12,6 @@ on:
     branches: ["develop"]
   workflow_dispatch:
 
-
-
 jobs:
   build:
 
@@ -30,10 +28,17 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
 
+
+    - name: Install libraries
+      run: |
+        python3 -m pip install --upgrade pip
+        pip install -r requirements.txt
+
     - name: Fog Index Metric
       working-directory: .
       run: |
           python3 ./.github/scripts/metrics/fog_comments_index.py . 
+          python3 ./.github/scripts/metrics/cyclomatic_complexity_metric.py .
           python .github/scripts/depth_conditional_nesting.py . 
     
 
