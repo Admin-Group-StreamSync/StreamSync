@@ -1,0 +1,190 @@
+{
+    "analysis_type": "Identifier Length",
+    "threshold": 6,
+    "summary": {
+        "total_files": 36,
+        "failed_files": 16
+    },
+    "results": [
+        {
+            "file": "manage.py",
+            "avg_length": 6.57,
+            "status_code": "OK!"
+        },
+        {
+            "file": "users/models.py",
+            "avg_length": 7.05,
+            "status_code": "OK!"
+        },
+        {
+            "file": "users/apps.py",
+            "avg_length": 6.86,
+            "status_code": "OK!"
+        },
+        {
+            "file": "users/__init__.py",
+            "avg_length": 0,
+            "status_code": "⚠️ IMPROVE NAMING"
+        },
+        {
+            "file": "users/admin.py",
+            "avg_length": 5.71,
+            "status_code": "⚠️ IMPROVE NAMING"
+        },
+        {
+            "file": "users/urls.py",
+            "avg_length": 6.8,
+            "status_code": "OK!"
+        },
+        {
+            "file": "users/forms.py",
+            "avg_length": 6.63,
+            "status_code": "OK!"
+        },
+        {
+            "file": "users/tests.py",
+            "avg_length": 5.29,
+            "status_code": "⚠️ IMPROVE NAMING"
+        },
+        {
+            "file": "users/views.py",
+            "avg_length": 6.74,
+            "status_code": "OK!"
+        },
+        {
+            "file": "IshikawaTools/histogram.py",
+            "avg_length": 5.55,
+            "status_code": "⚠️ IMPROVE NAMING"
+        },
+        {
+            "file": "IshikawaTools/chart.py",
+            "avg_length": 5.31,
+            "status_code": "⚠️ IMPROVE NAMING"
+        },
+        {
+            "file": "IshikawaTools/runchart_prova.py",
+            "avg_length": 5.85,
+            "status_code": "⚠️ IMPROVE NAMING"
+        },
+        {
+            "file": "api/server.js",
+            "avg_length": 6.21,
+            "status_code": "OK!"
+        },
+        {
+            "file": "StreamSync/wsgi.py",
+            "avg_length": 6.81,
+            "status_code": "OK!"
+        },
+        {
+            "file": "StreamSync/asgi.py",
+            "avg_length": 6.81,
+            "status_code": "OK!"
+        },
+        {
+            "file": "StreamSync/settings.py",
+            "avg_length": 7.09,
+            "status_code": "OK!"
+        },
+        {
+            "file": "StreamSync/__init__.py",
+            "avg_length": 0,
+            "status_code": "⚠️ IMPROVE NAMING"
+        },
+        {
+            "file": "StreamSync/urls.py",
+            "avg_length": 6.03,
+            "status_code": "OK!"
+        },
+        {
+            "file": "StreamSync/views.py",
+            "avg_length": 7.55,
+            "status_code": "OK!"
+        },
+        {
+            "file": ".github/scripts/CyclomaticMetricGP.py",
+            "avg_length": 6.48,
+            "status_code": "OK!"
+        },
+        {
+            "file": ".github/scripts/depth_conditional_nesting_GP.py",
+            "avg_length": 6.11,
+            "status_code": "OK!"
+        },
+        {
+            "file": ".github/scripts/len_identifiersGP.py",
+            "avg_length": 5.98,
+            "status_code": "⚠️ IMPROVE NAMING"
+        },
+        {
+            "file": ".github/scripts/generate-integrity-report.js",
+            "avg_length": 6.5,
+            "status_code": "OK!"
+        },
+        {
+            "file": ".github/scripts/fog_comments_indexGP.py",
+            "avg_length": 5.49,
+            "status_code": "⚠️ IMPROVE NAMING"
+        },
+        {
+            "file": ".github/scripts/route-auth-audit.js",
+            "avg_length": 6.06,
+            "status_code": "OK!"
+        },
+        {
+            "file": ".github/scripts/render-integrity-html.js",
+            "avg_length": 5.35,
+            "status_code": "⚠️ IMPROVE NAMING"
+        },
+        {
+            "file": ".github/scripts/metrics/cyclomatic_complexity_metric.py",
+            "avg_length": 7.13,
+            "status_code": "OK!"
+        },
+        {
+            "file": ".github/scripts/metrics/len_identifiersGP.py",
+            "avg_length": 5.93,
+            "status_code": "⚠️ IMPROVE NAMING"
+        },
+        {
+            "file": ".github/scripts/metrics/depth_conditional_nesting.py",
+            "avg_length": 6.35,
+            "status_code": "OK!"
+        },
+        {
+            "file": ".github/scripts/metrics/fog_comments_index.py",
+            "avg_length": 5.59,
+            "status_code": "⚠️ IMPROVE NAMING"
+        },
+        {
+            "file": "users/migrations/__init__.py",
+            "avg_length": 0,
+            "status_code": "⚠️ IMPROVE NAMING"
+        },
+        {
+            "file": "users/migrations/0001_initial.py",
+            "avg_length": 7.34,
+            "status_code": "OK!"
+        },
+        {
+            "file": "api/repositories/index.js",
+            "avg_length": 6.52,
+            "status_code": "OK!"
+        },
+        {
+            "file": "api/utils/token_validator.js",
+            "avg_length": 5.35,
+            "status_code": "⚠️ IMPROVE NAMING"
+        },
+        {
+            "file": "api/routes/index.js",
+            "avg_length": 5.83,
+            "status_code": "⚠️ IMPROVE NAMING"
+        },
+        {
+            "file": "api/db/index.js",
+            "avg_length": 5.33,
+            "status_code": "⚠️ IMPROVE NAMING"
+        }
+    ]
+}
