@@ -1,15 +1,15 @@
 name: Metrics Action
 
 on:
-#  push:
-#    branches: [
-#      "master",
-#     "develop",
-#     "features/*",
-#      "111-feat-implement-a-metric-action"
-#    ]
-#  pull_request:
-#    branches: ["develop"]
+  push:
+    branches: [
+      "master",
+     "develop",
+     "features/*",
+      "111-feat-implement-a-metric-action"
+    ]
+  pull_request:
+    branches: ["develop"]
   workflow_dispatch:
 
 jobs:
