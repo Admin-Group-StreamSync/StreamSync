@@ -114,7 +114,7 @@ def main() -> None:
     }
 
     output_file = Path(".github/scripts/reports/nesting_metrics.json")
-    output_file.parent.mkdir(parents=True, exist_ok=True)
+    # output_file.parent.mkdir(parents=True, exist_ok=True)
     output_file.write_text(json.dumps(json_data, indent=4, ensure_ascii=False), encoding="utf-8")
 
     print(f"Analysis report saved to {output_file}")
