@@ -8,8 +8,8 @@ on:
      "features/*",
       "111-feat-implement-a-metric-action"
     ]
-#  pull_request:
-#    branches: ["master"]
+  pull_request:
+    branches: ["develop"]
   workflow_dispatch:
 
 
