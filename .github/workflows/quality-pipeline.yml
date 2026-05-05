@@ -125,8 +125,7 @@ jobs:
           python3 - <<'PYEOF'
           import json, sys
           with open("quality-job1/complexity-results.json") as f:
-              d = json.load(f)[0]
-              print("checking: ", d)
+              d = json.load(f)
           failed = d["summary"]["failed_files"]
           if failed > 0:
               print(f"::error::Cyclomatic complexity: {failed} file(s) exceed threshold {d['threshold']}")
@@ -339,6 +338,8 @@ jobs:
           import json, sys
           with open("quality-job4/fog-results.json") as f:
               d = json.load(f)
+              print("checking: ", d)
+              d = d[0]
           failed = d["summary"]["failed_files"]
           if failed > 0:
               for r in d.get("results", []):
