@@ -105,7 +105,7 @@ def main(paths):
     Path(directory_path).mkdir(parents=True, exist_ok=True)
 
     # ✅ guardar en fichero
-    with open(f"{directory_path}/fog_index_report.json", "w", encoding="utf-8") as file:
+    with open(f"{directory_path}/identifier_report.json", "w", encoding="utf-8") as file:
         file.write(json.dumps(report, indent=2, ensure_ascii=False))
 
     print("JSON report generated: identifier_report.json")
