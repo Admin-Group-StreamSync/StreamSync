@@ -14,7 +14,7 @@ from rest_framework.decorators import api_view
 from thefuzz import process, fuzz
 
 # Importem els teus models i formularis
-from .models import Pelicula, LlistaPersonal, Carpeta, Profile, Ressenya, Views
+from .models import Pelicula, LlistaPersonal, Carpeta, Profile, Ressenya, Views, Feedback
 from .forms import RegistroUsuarioForm, UserUpdateForm
 
 # 1. CARREGUEM CONFIGURACIÓ
@@ -362,6 +362,25 @@ def catalogo(request, tipus=None):
         'filtros_sel': f
     })
 
+def feedback_view(request):
+    if request.method == "POST":
+        tipus = request.POST.get("tipus")
+        titol = request.POST.get("titol")
+        descripcio = request.POST.get("descripcio")
+        rating = request.POST.get("rating")
+
+        Feedback.objects.create(
+            tipus=tipus,
+            titol=titol,
+            descripcio=descripcio,
+            rating=rating if rating else None
+        )
+
+        messages.success(request, "Gràcies per la teva opinió!")
+
+        return redirect("feedback")
+
+    return render(request, "pages/feedback.html")
 
 # --- 5. GESTIÓ D'USUARI I LLISTES ---
 

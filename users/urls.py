@@ -42,4 +42,8 @@ urlpatterns = [
 
     # STATISTICS DATA MANAGEMENT (Always use POST for those)
     path("statistics/views", views.register_view ,name="register_view"), ##
+
+    # FEEDBACK PAGE
+    path('feedback/', views.feedback_view, name='feedback'),
+
 ]
