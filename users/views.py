@@ -100,6 +100,17 @@ def mapejar_dades(item, port):
         'edat_nom': "N/A"
     }
 
+def deduplicate_content(llista):
+    vistos = {}
+    for item in llista:
+        titol = item['titol'].strip().lower()
+        if titol not in vistos:
+            item['plataformes_disponibles'] = [item['plataforma']]
+            vistos[titol] = item
+        else:
+            if item['plataforma'] not in vistos[titol]['plataformes_disponibles']:
+                vistos[titol]['plataformes_disponibles'].append(item['plataforma'])
+    return list(vistos.values())
 
 # --- 4. CRIDES API STREAMSYNC ---
 
@@ -118,7 +129,7 @@ def get_all_movies(query=None):
                     resultats.append(obj)
         except:
             pass
-    return resultats
+    return deduplicate_content(resultats)  # ✅ Deduplicació
 
 
 def enriquir_dades_api(llista_contingut):
@@ -154,7 +165,7 @@ def get_all_series(query=None):
                     resultats.append(obj)
         except:
             pass
-    return resultats
+    return deduplicate_content(resultats)  # ✅ Deduplicació
 
 
 def get_genres_from_api():
@@ -254,17 +265,22 @@ def detall_contingut(request, tipus, content_id):
     if not item:
         return render(request, '404.html', status=404)
 
+    if 'plataformes_disponibles' not in item:
+        item['plataformes_disponibles'] = [item.get('plataforma', 'N/A')]
+
+    # ✅ Carreguem traduccions una sola vegada
     genres = get_genres_from_api()
-    item['genere_nom'] = next((g['name'] for g in genres if str(g['id']) == str(item['genre_id'])), "General")
-
     directors = get_directors_from_api()
-    item['director_nom'] = next((d['name'] for d in directors if str(d['id']) == str(item['director_id'])), "Desconegut")
-
     ratings = get_age_ratings_from_api()
-    item['edat_nom'] = next((r.get('title') or r.get('name') or r.get('description')
-                             for r in ratings if str(r['id']) == str(item['age_rating_id'])), "N/A")
 
-    # ✅ Imatge TMDB per al contingut principal
+    mapa_genres = {str(g['id']): g['name'] for g in genres}
+    mapa_ratings = {str(r['id']): r.get('description') or r.get('title') or r.get('name') or 'N/A' for r in ratings}
+    mapa_directors = {str(d['id']): d['name'] for d in directors}
+
+    # ✅ Enriquim l'item principal
+    item['genere_nom'] = mapa_genres.get(str(item.get('genre_id')), 'General')
+    item['director_nom'] = mapa_directors.get(str(item.get('director_id')), 'Desconegut')
+    item['edat_nom'] = mapa_ratings.get(str(item.get('age_rating_id')), 'N/A')
     item['imatge'] = get_imatge_tmdb(item['titol'])
 
     peli_db, _ = Pelicula.objects.update_or_create(
@@ -278,8 +294,12 @@ def detall_contingut(request, tipus, content_id):
         }
     )
 
-    # ✅ Recomanacions amb imatges TMDB en paral·lel
+    # ✅ Enriquim les recomanacions amb gènere i edat
     recomanacions_raw = [p for p in totes if str(p['id']) != str(content_id)][:5]
+    for r in recomanacions_raw:
+        r['genere_nom'] = mapa_genres.get(str(r.get('genre_id')), 'General')
+        r['edat_nom'] = mapa_ratings.get(str(r.get('age_rating_id')), 'N/A')
+
     recomanacions = enriquir_imatges_tmdb(recomanacions_raw)
 
     return render(request, 'pagina_contingut.html', {
@@ -289,7 +309,7 @@ def detall_contingut(request, tipus, content_id):
                                                      pelicula=peli_db).exists() if request.user.is_authenticated else False,
         'carpetes': request.user.les_meves_carpetes.all() if request.user.is_authenticated else [],
         'ressenyes': Ressenya.objects.filter(pelicula=peli_db).order_by('-data_publicacio'),
-        'recomanacions': recomanacions,  # ✅ Ara amb imatges
+        'recomanacions': recomanacions,
     })
 
 
@@ -328,7 +348,7 @@ def catalogo(request, tipus=None):
         item['edat_nom'] = mapa_ratings.get(eid, "N/A")
         item['director_nom'] = mapa_directors.get(did, "Desconegut")
 
-        if f['p'] and item.get('plataforma') != f['p']: continue
+        if f['p'] and f['p'] not in item.get('plataformes_disponibles', [item.get('plataforma', '')]): continue
         if f['g'] and gid != f['g']: continue
         if f['e'] and eid != f['e']: continue
         if f['d'] and f['d'] not in item['director_nom'].lower(): continue
@@ -576,6 +596,12 @@ def cerca_contingut(request):
     resultat_principal = None
     recomanacions = []
 
+    # ✅ Carreguem traduccions una sola vegada
+    genres_api = get_genres_from_api()
+    ratings_api = get_age_ratings_from_api()
+    mapa_genres = {str(g['id']): g['name'] for g in genres_api}
+    mapa_ratings = {str(r['id']): r.get('description', 'N/A') for r in ratings_api}
+
     if query:
         titols = [p['titol'] for p in totes]
         matches = process.extract(query, titols, scorer=fuzz.token_set_ratio, limit=1)
@@ -583,25 +609,25 @@ def cerca_contingut(request):
         if matches and matches[0][1] > 65:
             resultat_principal = next(p for p in totes if p['titol'] == matches[0][0])
 
-            # ✅ TMDB per al resultat principal
+            # ✅ Enriquim el resultat principal
+            resultat_principal['genere_nom'] = mapa_genres.get(str(resultat_principal.get('genre_id')), 'General')
+            resultat_principal['edat_nom'] = mapa_ratings.get(str(resultat_principal.get('age_rating_id')), 'N/A')
             resultat_principal['imatge'] = get_imatge_tmdb(resultat_principal['titol'])
 
             altres = [p for p in totes if p['id'] != resultat_principal['id']]
 
-            def calcular_puntuacio(item):
-                score = 0
-                if item.get('director_id') == resultat_principal.get('director_id'):
-                    score += 10
-                if item.get('genre_id') == resultat_principal.get('genre_id'):
-                    score += 5
-                if item.get('age_rating_id') == resultat_principal.get('age_rating_id'):
-                    score += 2
-                return score
+            # ✅ Només continguts del mateix gènere
+            recomanacions = [
+                p for p in altres
+                if p.get('genre_id') == resultat_principal.get('genre_id')
+            ][:5]
 
-            recomanacions = sorted(altres, key=calcular_puntuacio, reverse=True)
-            recomanacions = [p for p in recomanacions if calcular_puntuacio(p) > 0][:5]
+            # ✅ Enriquim gènere i edat de les recomanacions
+            for item in recomanacions:
+                item['genere_nom'] = mapa_genres.get(str(item.get('genre_id')), 'General')
+                item['edat_nom'] = mapa_ratings.get(str(item.get('age_rating_id')), 'N/A')
 
-            # ✅ TMDB per a les recomanacions en paral·lel
+            # ✅ Imatges TMDB en paral·lel
             enriquir_imatges_tmdb(recomanacions)
 
     return render(request, 'cerca_contingut.html', {
