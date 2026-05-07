@@ -191,6 +191,20 @@
         {% endblock %}
     </main>
 
+    <footer class="mt-auto py-4" style="border-top: 1px solid var(--figma-border); background: var(--figma-gray);">
+        <div class="container d-flex justify-content-between align-items-center">
+            <div>
+                <strong>StreamSync</strong> © 2026
+            </div>
+
+            <div class="text-muted small">
+                <a href="{% url 'feedback' %}" class="text-decoration-none">
+                    Valorem la vostra opinió!
+                </a>
+            </div>
+        </div>
+    </footer>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
     {% block extra_js %}{% endblock %}

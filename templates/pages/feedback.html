@@ -1,0 +1,195 @@
+{% extends "base.html" %}
+
+{% block title %}Feedback{% endblock %}
+
+{% block extra_css %}
+<style>
+    body {
+        background: linear-gradient(
+            180deg,
+            #ffffff 0%,
+            #f1ecff 35%,
+            #fbe7f2 100%
+        );
+        background-attachment: fixed;
+    }
+
+    .feedback-white-box {
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 20px 50px rgba(0,0,0,0.08);
+    }
+
+    .feedback-card {
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+    .feedback-card:hover {
+        border-color: #8a2be2;
+        transform: translateY(-3px);
+    }
+
+    .btn-check:checked + .feedback-card {
+        border: 2px solid #8a2be2;
+        background-color: #f3e8ff;
+        color: #6b21a8;
+    }
+
+    .rating {
+        display: flex;
+        justify-content: center;
+        flex-direction: row-reverse;
+        gap: 5px;
+    }
+
+    .rating input {
+        display: none;
+    }
+
+    .rating label {
+        font-size: 2rem;
+        color: #ddd;
+        cursor: pointer;
+        transition: color 0.2s;
+    }
+
+    .rating label:hover,
+    .rating label:hover ~ label {
+        color: #ffc107;
+    }
+
+    .rating input:checked ~ label {
+        color: #ffc107;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+
+    <div class="row justify-content-center">
+        <div class="col-md-7">
+
+            <div class="feedback-white-box p-5">
+
+                <form method="POST">
+                    {% csrf_token %}
+
+                    <!-- HEADER -->
+                    <div class="text-center mb-5">
+                        <div class="mb-4">
+                            <span class="badge rounded-circle p-3"
+                                  style="background: linear-gradient(90deg,#8a2be2,#d40078);">
+                                <i class="bi bi-chat-dots text-white fs-2"></i>
+                            </span>
+                        </div>
+
+                        <h1 class="fw-bold">La teva opinió compta</h1>
+                        <p class="text-muted">
+                            Ajuda'ns a millorar StreamSync amb comentaris, suggeriments i errors
+                        </p>
+                    </div>
+
+                    <!-- TIPUS FEEDBACK -->
+                    <h5 class="fw-bold mb-3">Envia el teu feedback</h5>
+
+                    <div class="row g-3">
+
+                        <div class="col-6">
+                            <input type="radio" name="tipus" id="general" value="general" class="btn-check">
+                            <label class="p-3 border rounded-4 text-center w-100 feedback-card" for="general">
+                                <i class="bi bi-star fs-4"></i>
+                                <div class="fw-semibold mt-2">Valoració general</div>
+                            </label>
+                        </div>
+
+                        <div class="col-6">
+                            <input type="radio" name="tipus" id="error" value="error" class="btn-check">
+                            <label class="p-3 border rounded-4 text-center w-100 feedback-card" for="error">
+                                <i class="bi bi-bug fs-4"></i>
+                                <div class="fw-semibold mt-2">Reportar error</div>
+                            </label>
+                        </div>
+
+                        <div class="col-6">
+                            <input type="radio" name="tipus" id="suggeriment" value="suggeriment" class="btn-check">
+                            <label class="p-3 border rounded-4 text-center w-100 feedback-card" for="suggeriment">
+                                <i class="bi bi-lightbulb fs-4"></i>
+                                <div class="fw-semibold mt-2">Suggeriment</div>
+                            </label>
+                        </div>
+
+                        <div class="col-6">
+                            <input type="radio" name="tipus" id="altres" value="altres" class="btn-check">
+                            <label class="p-3 border rounded-4 text-center w-100 feedback-card" for="altres">
+                                <i class="bi bi-chat-left-text fs-4"></i>
+                                <div class="fw-semibold mt-2">Altres comentaris</div>
+                            </label>
+                        </div>
+
+                    </div>
+
+                    <!-- RATING -->
+                    <div class="mt-5 text-center">
+
+                        <h5 class="fw-bold mb-2">Com valores la teva experiència?</h5>
+                        <p class="text-muted mb-4">Selecciona una puntuació</p>
+
+                        <div class="rating">
+
+                            <input type="radio" name="rating" id="star5" value="5">
+                            <label for="star5"><i class="bi bi-star-fill"></i></label>
+
+                            <input type="radio" name="rating" id="star4" value="4">
+                            <label for="star4"><i class="bi bi-star-fill"></i></label>
+
+                            <input type="radio" name="rating" id="star3" value="3">
+                            <label for="star3"><i class="bi bi-star-fill"></i></label>
+
+                            <input type="radio" name="rating" id="star2" value="2">
+                            <label for="star2"><i class="bi bi-star-fill"></i></label>
+
+                            <input type="radio" name="rating" id="star1" value="1">
+                            <label for="star1"><i class="bi bi-star-fill"></i></label>
+
+                        </div>
+
+                    </div>
+
+                    <!-- INPUTS -->
+                    <div class="mt-5">
+
+                        <h6 class="fw-bold mb-3">Detalls del feedback</h6>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Títol</label>
+                            <input type="text" name="titol" class="form-control rounded-3"
+                                   placeholder="Resum de la teva opinió" required>
+                        </div>
+
+                        <div>
+                            <label class="form-label fw-semibold">Descripció</label>
+                            <textarea name="descripcio" class="form-control rounded-3"
+                                      rows="4" placeholder="Explica'ns amb més detall..." required></textarea>
+                        </div>
+
+                    </div>
+
+                    <!-- SUBMIT -->
+                    <div class="mt-4 text-end">
+                        <button type="submit" class="btn btn-lg px-4 text-white"
+                                style="background: linear-gradient(90deg,#8a2be2,#d40078); border: none;">
+                            Enviar feedback
+                        </button>
+                    </div>
+
+                </form>
+
+            </div>
+
+        </div>
+    </div>
+
+</div>
+{% endblock %}

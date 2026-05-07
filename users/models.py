@@ -11,15 +11,9 @@ class Profile(models.Model):
     plataformes = models.JSONField(default=list, blank=True)
     generes = models.JSONField(default=list, blank=True)
     edat_rating = models.JSONField(default=list, blank=True)
-    manager_de = models.CharField(
-        max_length=50,
-        choices=[('CinePlus', 'CinePlus'), ('StreamHub', 'StreamHub'), ('PlayMax', 'PlayMax')],
-        null=True,
-        blank=True
-    )
 
     def __str__(self):
-        return f"Perfil de {self.user.username} ({self.manager_de or 'User'})"
+        return f"Perfil de {self.user.username}"
 
 
 class Genere(models.Model):
@@ -108,3 +102,20 @@ class Views(models.Model):
     count = models.IntegerField(default=0) # Is recorded the times a person plays the same film.
 
 
+class Feedback(models.Model):
+    TIPUS_CHOICES = [
+        ('general', 'Valoració general'),
+        ('error', 'Reportar error'),
+        ('suggeriment', 'Suggeriment'),
+        ('altres', 'Altres comentaris'),
+    ]
+
+    titol = models.CharField(max_length=200)
+    descripcio = models.TextField()
+    tipus = models.CharField(max_length=20, choices=TIPUS_CHOICES)
+    rating = models.IntegerField(null=True, blank=True)
+
+    data_creacio = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.tipus} - {self.titol}"
