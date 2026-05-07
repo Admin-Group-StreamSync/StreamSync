@@ -4,15 +4,29 @@
             <div class="position-relative" style="aspect-ratio: 2/3; background-color: #222;">
                 <img src="{{ item.imatge }}" class="card-img-top w-100 h-100" alt="{{ item.titol }}" style="object-fit: cover;">
 
-                <div class="position-absolute top-0 start-0 m-2">
-                    <span class="badge rounded-pill shadow-sm
-                        {% if item.plataforma == 'CinePlus' %} bg-cineplus
-                        {% elif item.plataforma == 'StreamHub' %} bg-streamhub
-                        {% elif item.plataforma == 'PlayMax' %} bg-playmax
-                        {% else %} bg-secondary {% endif %}"
-                        style="font-size: 0.7rem; padding: 5px 10px;">
-                        {{ item.plataforma }}
-                    </span>
+                <!-- ✅ PLATAFORMES — mostra totes si hi ha plataformes_disponibles, si no mostra la singular -->
+                <div class="position-absolute top-0 start-0 m-2 d-flex flex-column gap-1">
+                    {% if item.plataformes_disponibles %}
+                        {% for plat in item.plataformes_disponibles %}
+                            <span class="badge rounded-pill shadow-sm
+                                {% if plat == 'CinePlus' %}bg-cineplus
+                                {% elif plat == 'StreamHub' %}bg-streamhub
+                                {% elif plat == 'PlayMax' %}bg-playmax
+                                {% else %}bg-secondary{% endif %}"
+                                style="font-size: 0.7rem; padding: 5px 10px;">
+                                {{ plat }}
+                            </span>
+                        {% endfor %}
+                    {% else %}
+                        <span class="badge rounded-pill shadow-sm
+                            {% if item.plataforma == 'CinePlus' %}bg-cineplus
+                            {% elif item.plataforma == 'StreamHub' %}bg-streamhub
+                            {% elif item.plataforma == 'PlayMax' %}bg-playmax
+                            {% else %}bg-secondary{% endif %}"
+                            style="font-size: 0.7rem; padding: 5px 10px;">
+                            {{ item.plataforma }}
+                        </span>
+                    {% endif %}
                 </div>
 
                 <div class="position-absolute top-0 end-0 m-2">
@@ -34,16 +48,9 @@
 </div>
 
 <style>
-    /* Nous Colors Corporatius */
     .bg-cineplus { background-color: #ff5722 !important; color: white; }
     .bg-streamhub { background-color: #00bcd4 !important; color: white; }
     .bg-playmax { background-color: #8e44ad !important; color: white; }
-
-    .card-hover-effect {
-        transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
-    }
-    .card-hover-effect:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important;
-    }
+    .card-hover-effect { transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out; }
+    .card-hover-effect:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important; }
 </style>
