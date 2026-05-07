@@ -14,11 +14,10 @@ from dotenv import load_dotenv
 from rest_framework.decorators import api_view
 from thefuzz import process, fuzz
 from django.db.models import Count, Avg, Sum
-
+from django.http import JsonResponse
 import json
 from django.utils import timezone
 from datetime import timedelta
-from .models import Pelicula, LlistaPersonal, Carpeta, Profile, Ressenya, Views
 # Importem els teus models i formularis
 from .models import Pelicula, LlistaPersonal, Carpeta, Profile, Ressenya, Views, Feedback
 from .forms import RegistroUsuarioForm, UserUpdateForm
@@ -41,6 +40,15 @@ OPCIONS = {
 
 
 class StreamSyncLoginView(LoginView):
+    def get_success_url(self):
+        user = self.request.user
+
+        if hasattr(user, 'profile') and user.profile.manager_de:
+            return f'/dashboard/{user.profile.manager_de}/'
+
+
+        return '/perfil/'
+
     def form_valid(self, form):
         response = super().form_valid(form)
         messages.success(self.request, f"Benvingut/da de nou, {form.get_user().username}!")
@@ -643,6 +651,19 @@ def cerca_contingut(request):
 
             altres = [p for p in totes if p['id'] != resultat_principal['id']]
 
+            def calcular_puntuacio(item):
+                score = 0
+                # Mateix Director: +10 punts
+                if item.get('director_id') == resultat_principal.get('director_id'):
+                    score += 10
+                # Mateix Gènere: +5 punts
+                if item.get('genre_id') == resultat_principal.get('genre_id'):
+                    score += 5
+                # Mateix Age Rating: +2 punts
+                if item.get('age_rating_id') == resultat_principal.get('age_rating_id'):
+                    score += 2
+                return score
+
             # ✅ Només continguts del mateix gènere
             recomanacions = [
                 p for p in altres
@@ -914,5 +935,3 @@ def register_view(request):
             return JsonResponse({"error": str(e)}, status=500)
 
     return JsonResponse({"error": "Mètode no permès"}, status=405)
-
-
