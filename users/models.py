@@ -26,8 +26,7 @@ class Genere(models.Model):
     nom = models.CharField(max_length=100, unique=True)
 
     def __str__(self):
-        return self.nom
-
+        return self.nom ### comment
 
 class Pelicula(models.Model):
     id = models.CharField(max_length=50, primary_key=True)
