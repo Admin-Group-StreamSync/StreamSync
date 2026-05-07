@@ -2,42 +2,42 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
-    # PÀGINA PRINCIPAL
-    path('', views.pagina_principal, name='pagina_principal'),
+    # HOME PAGE
+    path('', views.home_page, name='pagina_principal'),
 
-    # REGISTRE I GESTIÓ D'USUARIS
+    # REGISTRATION AND USER MANAGEMENT
     path('registre/', views.crear_cuenta, name='registre'),
-    path('perfil/', views.pagina_perfil1, name='pagina_perfil1'),
+    path('perfil/', views.profile_page1, name='pagina_perfil1'),
     path('perfil/preferencies/', views.profile2, name='profile2'),
     path('perfil/password/', views.cambiar_password, name='cambiar_password'),
-    path('esborrar-compte/', views.esborrar_compte, name='esborrar_compte'),
+    path('esborrar-compte/', views.delete_account, name='esborrar_compte'),
 
-    # CERCA INTEL·LIGENT
-    path('cerca/', views.cerca_contingut, name='cerca_contingut'),
+    # SMART SEARCH
+    path('cerca/', views.search_content, name='cerca_contingut'),
 
-    # CATÀLEG
+    # CATALOG
     path('cataleg/', views.catalogo, name='catalogo'),
     path('cataleg/peliculas/', views.catalogo, {'tipus': 'movie'}, name='cataleg_pelis'),
     path('cataleg/series/', views.catalogo, {'tipus': 'series'}, name='cataleg_series'),
 
-    # DETALL DEL CONTINGUT (Actualitzat amb <str:tipus>)
-    path('cataleg/detall/<str:tipus>/<str:content_id>/', views.detall_contingut, name='pagina_contingut'),
+    # CONTENT DETAIL (Updated with <str:tipus>)
+    path('cataleg/detall/<str:tipus>/<str:content_id>/', views.content_detail, name='pagina_contingut'),
 
-    # RESSENYES (Actualitzat per mantenir la coherència amb el detall)
-    path('cataleg/detall/<str:tipus>/<str:content_id>/opinar/', views.publicar_ressenya, name='publicar_ressenya'),
-    path('ressenya/eliminar/<int:ressenya_id>/', views.eliminar_ressenya, name='eliminar_ressenya'),
+    # REVIEWS (Updated to keep consistency with detail)
+    path('cataleg/detall/<str:tipus>/<str:content_id>/opinar/', views.publish_review, name='publicar_ressenya'),
+    path('ressenya/eliminar/<int:ressenya_id>/', views.delete_review, name='eliminar_ressenya'),
 
-    # GESTIÓ DE LLISTES I CARPETES
-    path('llistes/', views.llistes, name='llistes'),
-    path('llistes/crear/', views.crear_llista, name='crear_llista'),
-    path('llistes/eliminar/<int:carpeta_id>/', views.eliminar_carpeta, name='eliminar_carpeta'),
+    # LISTS AND FOLDERS MANAGEMENT
+    path('llistes/', views.lists, name='llistes'),
+    path('llistes/crear/', views.create_list, name='crear_llista'),
+    path('llistes/eliminar/<int:carpeta_id>/', views.delete_folder, name='eliminar_carpeta'),
 
-    # AFEGIR/TREURE (També recomano passar el tipus si la vista ho requereix per a la DB local)
-    path('llistes/afegir/<str:tipus>/<str:content_id>/', views.afegir_a_llista, name='afegir_a_llista'),
-    path('llistes/treure/<str:tipus>/<str:content_id>/', views.treure_de_llista, name='treure_de_llista'),
+    # ADD/REMOVE (Passing tipus is recommended if the view needs it for local DB)
+    path('llistes/afegir/<str:tipus>/<str:content_id>/', views.add_to_list, name='afegir_a_llista'),
+    path('llistes/treure/<str:tipus>/<str:content_id>/', views.remove_from_list, name='treure_de_llista'),
 
-    path('llistes/carpeta/<int:carpeta_id>/', views.detall_carpeta, name='detall_carpeta'),
-    path('llistes/editar/<int:carpeta_id>/', views.editar_llista, name='editar_llista'),
+    path('llistes/carpeta/<int:carpeta_id>/', views.folder_detail, name='detall_carpeta'),
+    path('llistes/editar/<int:carpeta_id>/', views.edit_list, name='editar_llista'),
 
 
     # STATISTICS DATA MANAGEMENT (Always use POST for those)
