@@ -1,4 +1,4 @@
-## Database NAT
+## Database
 
 ```mermaid
 erDiagram

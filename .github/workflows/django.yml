@@ -14,7 +14,6 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
-    environment: testing
     strategy:
       max-parallel: 4
       matrix:
@@ -39,20 +38,14 @@ jobs:
         password: ${{ secrets.DOCKER_TOKEN }}
 
 
-    - name: Docker build and push (Build stage)
+    - name: Docker build and push
       run: |
          docker build -t ${{ vars.DOCKER_USERNAME }}/streamsync-group-c:latest .
          docker save ${{ vars.DOCKER_USERNAME }}/streamsync-group-c:latest -o StreamSync.tar
          
-#         docker push ${{ vars.DOCKER_USERNAME }}/streamsync-group-c:latest
+         docker push ${{ vars.DOCKER_USERNAME }}/streamsync-group-c:latest 
         
-    - name: Docker of the api (Build stage)
-      run:
-        |
-        docker compose -f ./api/docker-compose.yaml build
-        docker images
-        docker save -o StreamSync.tar api-movies-api:latest api-movies-api-2:latest api-movies-api-3:latest
-#        docker save api-movies.api:latest api-movies.api-2:latest api-movies.api-3:latest -o StreamSync.tar
+
       # Para Usar la imagen:
       #   - Extraer del artifact.
       #   - Usar los siguiente comando:
@@ -65,11 +58,5 @@ jobs:
         path: StreamSync.tar
 
     - name: Run Tests
-      env:
-        DATABASE_URL: ${{ secrets.DATABASE_URL }}
-        API_BASE_URLS: ${{ secrets.PI_BASE_URLS }}
-
-        SECRET_KEY: ${{ secrets.SECRET_KEY }}
-        DEBUG: ${{ secrets.DEBUG }}
       run: |
         python3 manage.py test

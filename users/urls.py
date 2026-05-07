@@ -39,12 +39,13 @@ urlpatterns = [
     path('llistes/carpeta/<int:carpeta_id>/', views.detall_carpeta, name='detall_carpeta'),
     path('llistes/editar/<int:carpeta_id>/', views.editar_llista, name='editar_llista'),
 
-    path('login-admin/', views.StreamSyncLoginView.as_view(template_name='registration/login_admin.html'), name='login_admin'),
-
 
     # STATISTICS DATA MANAGEMENT (Always use POST for those)
     path("statistics/views", views.register_view ,name="register_view"), ##
 
     # DASHBOARD SPM
     path('dashboard/<str:plataforma_nom>/', views.dashboard_manager, name='dashboard_manager'),
+    # FEEDBACK PAGE
+    path('feedback/', views.feedback_view, name='feedback'),
+
 ]
