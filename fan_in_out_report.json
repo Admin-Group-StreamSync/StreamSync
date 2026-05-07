@@ -1,0 +1,884 @@
+{
+    "analysis_type": "Fan-In / Fan-Out",
+    "summary": {
+        "total_functions": 125,
+        "high_risk": 2
+    },
+    "results": [
+        {
+            "file": "/home/denis/Escritorio/python_project/StreamSync/manage.py",
+            "function": "main",
+            "fan_in": 0,
+            "fan_out": 2,
+            "status_code": "OK"
+        },
+        {
+            "file": "/home/denis/Escritorio/python_project/StreamSync/users/models.py",
+            "function": "__str__",
+            "fan_in": 0,
+            "fan_out": 0,
+            "status_code": "OK"
+        },
+        {
+            "file": "/home/denis/Escritorio/python_project/StreamSync/users/models.py",
+            "function": "manage_user_profile",
+            "fan_in": 0,
+            "fan_out": 1,
+            "status_code": "OK"
+        },
+        {
+            "file": "/home/denis/Escritorio/python_project/StreamSync/users/forms.py",
+            "function": "clean_email",
+            "fan_in": 0,
+            "fan_out": 0,
+            "status_code": "OK"
+        },
+        {
+            "file": "/home/denis/Escritorio/python_project/StreamSync/users/views.py",
+            "function": "form_valid",
+            "fan_in": 0,
+            "fan_out": 1,
+            "status_code": "OK"
+        },
+        {
+            "file": "/home/denis/Escritorio/python_project/StreamSync/users/views.py",
+            "function": "get_imatge_tmdb",
+            "fan_in": 3,
+            "fan_out": 0,
+            "status_code": "OK"
+        },
+        {
+            "file": "/home/denis/Escritorio/python_project/StreamSync/users/views.py",
+            "function": "enriquir_imatges_tmdb",
+            "fan_in": 2,
+            "fan_out": 0,
+            "status_code": "OK"
+        },
+        {
+            "file": "/home/denis/Escritorio/python_project/StreamSync/users/views.py",
+            "function": "carregar_imatge",
+            "fan_in": 0,
+            "fan_out": 1,
+            "status_code": "OK"
+        },
+        {
+            "file": "/home/denis/Escritorio/python_project/StreamSync/users/views.py",
+            "function": "mapejar_dades",
+            "fan_in": 2,
+            "fan_out": 0,
+            "status_code": "OK"
+        },
+        {
+            "file": "/home/denis/Escritorio/python_project/StreamSync/users/views.py",
+            "function": "get_all_movies",
+            "fan_in": 4,
+            "fan_out": 1,
+            "status_code": "OK"
+        },
+        {
+            "file": "/home/denis/Escritorio/python_project/StreamSync/users/views.py",
+            "function": "enriquir_dades_api",
+            "fan_in": 0,
+            "fan_out": 3,
+            "status_code": "OK"
+        },
+        {
+            "file": "/home/denis/Escritorio/python_project/StreamSync/users/views.py",
+            "function": "get_all_series",
+            "fan_in": 4,
+            "fan_out": 1,
+            "status_code": "OK"
+        },
+        {
+            "file": "/home/denis/Escritorio/python_project/StreamSync/users/views.py",
+            "function": "get_genres_from_api",
+            "fan_in": 6,
+            "fan_out": 0,
+            "status_code": "OK"
+        },
+        {
+            "file": "/home/denis/Escritorio/python_project/StreamSync/users/views.py",
+            "function": "get_directors_from_api",
+            "fan_in": 2,
+            "fan_out": 0,
+            "status_code": "OK"
+        },
+        {
+            "file": "/home/denis/Escritorio/python_project/StreamSync/users/views.py",
+            "function": "get_age_ratings_from_api",
+            "fan_in": 6,
+            "fan_out": 0,
+            "status_code": "OK"
+        },
+        {
+            "file": "/home/denis/Escritorio/python_project/StreamSync/users/views.py",
+            "function": "pagina_principal",
+            "fan_in": 0,
+            "fan_out": 5,
+            "status_code": "OK"
+        },
+        {
+            "file": "/home/denis/Escritorio/python_project/StreamSync/users/views.py",
+            "function": "enriquir",
+            "fan_in": 0,
+            "fan_out": 1,
+            "status_code": "OK"
+        },
+        {
+            "file": "/home/denis/Escritorio/python_project/StreamSync/users/views.py",
+            "function": "detall_contingut",
+            "fan_in": 0,
+            "fan_out": 11,
+            "status_code": "HIGH FAN-OUT ⚠️"
+        },
+        {
+            "file": "/home/denis/Escritorio/python_project/StreamSync/users/views.py",
+            "function": "catalogo",
+            "fan_in": 0,
+            "fan_out": 11,
+            "status_code": "HIGH FAN-OUT ⚠️"
+        },
+        {
+            "file": "/home/denis/Escritorio/python_project/StreamSync/users/views.py",
+            "function": "publicar_ressenya",
+            "fan_in": 0,
+            "fan_out": 2,
+            "status_code": "OK"
+        },
+        {
+            "file": "/home/denis/Escritorio/python_project/StreamSync/users/views.py",
+            "function": "afegir_a_llista",
+            "fan_in": 0,
+            "fan_out": 2,
+            "status_code": "OK"
+        },
+        {
+            "file": "/home/denis/Escritorio/python_project/StreamSync/users/views.py",
+            "function": "eliminar_ressenya",
+            "fan_in": 0,
+            "fan_out": 2,
+            "status_code": "OK"
+        },
+        {
+            "file": "/home/denis/Escritorio/python_project/StreamSync/users/views.py",
+            "function": "llistes",
+            "fan_in": 0,
+            "fan_out": 1,
+            "status_code": "OK"
+        },
+        {
+            "file": "/home/denis/Escritorio/python_project/StreamSync/users/views.py",
+            "function": "detall_carpeta",
+            "fan_in": 0,
+            "fan_out": 2,
+            "status_code": "OK"
+        },
+        {
+            "file": "/home/denis/Escritorio/python_project/StreamSync/users/views.py",
+            "function": "crear_llista",
+            "fan_in": 0,
+            "fan_out": 2,
+            "status_code": "OK"
+        },
+        {
+            "file": "/home/denis/Escritorio/python_project/StreamSync/users/views.py",
+            "function": "editar_llista",
+            "fan_in": 0,
+            "fan_out": 3,
+            "status_code": "OK"
+        },
+        {
+            "file": "/home/denis/Escritorio/python_project/StreamSync/users/views.py",
+            "function": "eliminar_carpeta",
+            "fan_in": 0,
+            "fan_out": 2,
+            "status_code": "OK"
+        },
+        {
+            "file": "/home/denis/Escritorio/python_project/StreamSync/users/views.py",
+            "function": "treure_de_llista",
+            "fan_in": 0,
+            "fan_out": 1,
+            "status_code": "OK"
+        },
+        {
+            "file": "/home/denis/Escritorio/python_project/StreamSync/users/views.py",
+            "function": "crear_cuenta",
+            "fan_in": 0,
+            "fan_out": 7,
+            "status_code": "OK"
+        },
+        {
+            "file": "/home/denis/Escritorio/python_project/StreamSync/users/views.py",
+            "function": "pagina_perfil1",
+            "fan_in": 0,
+            "fan_out": 2,
+            "status_code": "OK"
+        },
+        {
+            "file": "/home/denis/Escritorio/python_project/StreamSync/users/views.py",
+            "function": "profile2",
+            "fan_in": 0,
+            "fan_out": 4,
+            "status_code": "OK"
+        },
+        {
+            "file": "/home/denis/Escritorio/python_project/StreamSync/users/views.py",
+            "function": "cambiar_password",
+            "fan_in": 0,
+            "fan_out": 4,
+            "status_code": "OK"
+        },
+        {
+            "file": "/home/denis/Escritorio/python_project/StreamSync/users/views.py",
+            "function": "esborrar_compte",
+            "fan_in": 0,
+            "fan_out": 2,
+            "status_code": "OK"
+        },
+        {
+            "file": "/home/denis/Escritorio/python_project/StreamSync/users/views.py",
+            "function": "cerca_contingut",
+            "fan_in": 0,
+            "fan_out": 4,
+            "status_code": "OK"
+        },
+        {
+            "file": "/home/denis/Escritorio/python_project/StreamSync/users/views.py",
+            "function": "calcular_puntuacio",
+            "fan_in": 0,
+            "fan_out": 0,
+            "status_code": "OK"
+        },
+        {
+            "file": "/home/denis/Escritorio/python_project/StreamSync/users/views.py",
+            "function": "register_view",
+            "fan_in": 0,
+            "fan_out": 3,
+            "status_code": "OK"
+        },
+        {
+            "file": "/home/denis/Escritorio/python_project/StreamSync/IshikawaTools/histogram.py",
+            "function": "fetch_all_issues",
+            "fan_in": 1,
+            "fan_out": 0,
+            "status_code": "OK"
+        },
+        {
+            "file": "/home/denis/Escritorio/python_project/StreamSync/IshikawaTools/histogram.py",
+            "function": "parse_dates",
+            "fan_in": 1,
+            "fan_out": 0,
+            "status_code": "OK"
+        },
+        {
+            "file": "/home/denis/Escritorio/python_project/StreamSync/IshikawaTools/histogram.py",
+            "function": "build_weeks",
+            "fan_in": 1,
+            "fan_out": 2,
+            "status_code": "OK"
+        },
+        {
+            "file": "/home/denis/Escritorio/python_project/StreamSync/IshikawaTools/histogram.py",
+            "function": "count_open_per_week",
+            "fan_in": 1,
+            "fan_out": 1,
+            "status_code": "OK"
+        },
+        {
+            "file": "/home/denis/Escritorio/python_project/StreamSync/IshikawaTools/histogram.py",
+            "function": "main",
+            "fan_in": 0,
+            "fan_out": 10,
+            "status_code": "OK"
+        },
+        {
+            "file": "/home/denis/Escritorio/python_project/StreamSync/IshikawaTools/chart.py",
+            "function": "generate_diagram",
+            "fan_in": 0,
+            "fan_out": 3,
+            "status_code": "OK"
+        },
+        {
+            "file": "/home/denis/Escritorio/python_project/StreamSync/IshikawaTools/runchart_prova.py",
+            "function": "main",
+            "fan_in": 0,
+            "fan_out": 7,
+            "status_code": "OK"
+        },
+        {
+            "file": "/home/denis/Escritorio/python_project/StreamSync/StreamSync/views.py",
+            "function": "home",
+            "fan_in": 0,
+            "fan_out": 1,
+            "status_code": "OK"
+        },
+        {
+            "file": "/home/denis/Escritorio/python_project/StreamSync/StreamSync/views.py",
+            "function": "vista_nueva_cuenta",
+            "fan_in": 0,
+            "fan_out": 1,
+            "status_code": "OK"
+        },
+        {
+            "file": "/home/denis/Escritorio/python_project/StreamSync/StreamSync/views.py",
+            "function": "pagina_perfil1",
+            "fan_in": 0,
+            "fan_out": 1,
+            "status_code": "OK"
+        },
+        {
+            "file": "/home/denis/Escritorio/python_project/StreamSync/StreamSync/views.py",
+            "function": "perfil_principal",
+            "fan_in": 0,
+            "fan_out": 1,
+            "status_code": "OK"
+        },
+        {
+            "file": "/home/denis/Escritorio/python_project/StreamSync/StreamSync/views.py",
+            "function": "pagina_principal",
+            "fan_in": 0,
+            "fan_out": 1,
+            "status_code": "OK"
+        },
+        {
+            "file": "/home/denis/Escritorio/python_project/StreamSync/StreamSync/views.py",
+            "function": "profile2",
+            "fan_in": 0,
+            "fan_out": 1,
+            "status_code": "OK"
+        },
+        {
+            "file": "/home/denis/Escritorio/python_project/StreamSync/StreamSync/views.py",
+            "function": "llistes",
+            "fan_in": 0,
+            "fan_out": 1,
+            "status_code": "OK"
+        },
+        {
+            "file": "/home/denis/Escritorio/python_project/StreamSync/StreamSync/views.py",
+            "function": "login",
+            "fan_in": 0,
+            "fan_out": 2,
+            "status_code": "OK"
+        },
+        {
+            "file": "/home/denis/Escritorio/python_project/StreamSync/.github/scripts/CyclomaticMetricGP.py",
+            "function": "_strip_js_noise",
+            "fan_in": 1,
+            "fan_out": 0,
+            "status_code": "OK"
+        },
+        {
+            "file": "/home/denis/Escritorio/python_project/StreamSync/.github/scripts/CyclomaticMetricGP.py",
+            "function": "calcular_js",
+            "fan_in": 1,
+            "fan_out": 3,
+            "status_code": "OK"
+        },
+        {
+            "file": "/home/denis/Escritorio/python_project/StreamSync/.github/scripts/CyclomaticMetricGP.py",
+            "function": "__init__",
+            "fan_in": 0,
+            "fan_out": 0,
+            "status_code": "OK"
+        },
+        {
+            "file": "/home/denis/Escritorio/python_project/StreamSync/.github/scripts/CyclomaticMetricGP.py",
+            "function": "visit_FunctionDef",
+            "fan_in": 0,
+            "fan_out": 0,
+            "status_code": "OK"
+        },
+        {
+            "file": "/home/denis/Escritorio/python_project/StreamSync/.github/scripts/CyclomaticMetricGP.py",
+            "function": "visit_AsyncFunctionDef",
+            "fan_in": 0,
+            "fan_out": 0,
+            "status_code": "OK"
+        },
+        {
+            "file": "/home/denis/Escritorio/python_project/StreamSync/.github/scripts/CyclomaticMetricGP.py",
+            "function": "visit_If",
+            "fan_in": 0,
+            "fan_out": 0,
+            "status_code": "OK"
+        },
+        {
+            "file": "/home/denis/Escritorio/python_project/StreamSync/.github/scripts/CyclomaticMetricGP.py",
+            "function": "visit_For",
+            "fan_in": 0,
+            "fan_out": 0,
+            "status_code": "OK"
+        },
+        {
+            "file": "/home/denis/Escritorio/python_project/StreamSync/.github/scripts/CyclomaticMetricGP.py",
+            "function": "visit_While",
+            "fan_in": 0,
+            "fan_out": 0,
+            "status_code": "OK"
+        },
+        {
+            "file": "/home/denis/Escritorio/python_project/StreamSync/.github/scripts/CyclomaticMetricGP.py",
+            "function": "visit_BoolOp",
+            "fan_in": 0,
+            "fan_out": 1,
+            "status_code": "OK"
+        },
+        {
+            "file": "/home/denis/Escritorio/python_project/StreamSync/.github/scripts/CyclomaticMetricGP.py",
+            "function": "visit_ExceptHandler",
+            "fan_in": 0,
+            "fan_out": 0,
+            "status_code": "OK"
+        },
+        {
+            "file": "/home/denis/Escritorio/python_project/StreamSync/.github/scripts/CyclomaticMetricGP.py",
+            "function": "visit_match_case",
+            "fan_in": 0,
+            "fan_out": 0,
+            "status_code": "OK"
+        },
+        {
+            "file": "/home/denis/Escritorio/python_project/StreamSync/.github/scripts/CyclomaticMetricGP.py",
+            "function": "visit_ListComp",
+            "fan_in": 0,
+            "fan_out": 0,
+            "status_code": "OK"
+        },
+        {
+            "file": "/home/denis/Escritorio/python_project/StreamSync/.github/scripts/CyclomaticMetricGP.py",
+            "function": "visit_DictComp",
+            "fan_in": 0,
+            "fan_out": 0,
+            "status_code": "OK"
+        },
+        {
+            "file": "/home/denis/Escritorio/python_project/StreamSync/.github/scripts/CyclomaticMetricGP.py",
+            "function": "visit_SetComp",
+            "fan_in": 0,
+            "fan_out": 0,
+            "status_code": "OK"
+        },
+        {
+            "file": "/home/denis/Escritorio/python_project/StreamSync/.github/scripts/CyclomaticMetricGP.py",
+            "function": "visit_GeneratorExp",
+            "fan_in": 0,
+            "fan_out": 0,
+            "status_code": "OK"
+        },
+        {
+            "file": "/home/denis/Escritorio/python_project/StreamSync/.github/scripts/CyclomaticMetricGP.py",
+            "function": "calcular",
+            "fan_in": 1,
+            "fan_out": 3,
+            "status_code": "OK"
+        },
+        {
+            "file": "/home/denis/Escritorio/python_project/StreamSync/.github/scripts/CyclomaticMetricGP.py",
+            "function": "es_archivo_valido",
+            "fan_in": 1,
+            "fan_out": 0,
+            "status_code": "OK"
+        },
+        {
+            "file": "/home/denis/Escritorio/python_project/StreamSync/.github/scripts/CyclomaticMetricGP.py",
+            "function": "analizar_archivos",
+            "fan_in": 0,
+            "fan_out": 4,
+            "status_code": "OK"
+        },
+        {
+            "file": "/home/denis/Escritorio/python_project/StreamSync/.github/scripts/depth_conditional_nesting_GP.py",
+            "function": "_strip_js_noise",
+            "fan_in": 1,
+            "fan_out": 0,
+            "status_code": "OK"
+        },
+        {
+            "file": "/home/denis/Escritorio/python_project/StreamSync/.github/scripts/depth_conditional_nesting_GP.py",
+            "function": "get_metrics_js",
+            "fan_in": 1,
+            "fan_out": 8,
+            "status_code": "OK"
+        },
+        {
+            "file": "/home/denis/Escritorio/python_project/StreamSync/.github/scripts/depth_conditional_nesting_GP.py",
+            "function": "__init__",
+            "fan_in": 0,
+            "fan_out": 0,
+            "status_code": "OK"
+        },
+        {
+            "file": "/home/denis/Escritorio/python_project/StreamSync/.github/scripts/depth_conditional_nesting_GP.py",
+            "function": "visit_If",
+            "fan_in": 0,
+            "fan_out": 2,
+            "status_code": "OK"
+        },
+        {
+            "file": "/home/denis/Escritorio/python_project/StreamSync/.github/scripts/depth_conditional_nesting_GP.py",
+            "function": "get_status_code",
+            "fan_in": 2,
+            "fan_out": 0,
+            "status_code": "OK"
+        },
+        {
+            "file": "/home/denis/Escritorio/python_project/StreamSync/.github/scripts/depth_conditional_nesting_GP.py",
+            "function": "get_metrics",
+            "fan_in": 1,
+            "fan_out": 7,
+            "status_code": "OK"
+        },
+        {
+            "file": "/home/denis/Escritorio/python_project/StreamSync/.github/scripts/depth_conditional_nesting_GP.py",
+            "function": "main",
+            "fan_in": 0,
+            "fan_out": 6,
+            "status_code": "OK"
+        },
+        {
+            "file": "/home/denis/Escritorio/python_project/StreamSync/.github/scripts/len_identifiersGP.py",
+            "function": "extract_identifiers",
+            "fan_in": 1,
+            "fan_out": 0,
+            "status_code": "OK"
+        },
+        {
+            "file": "/home/denis/Escritorio/python_project/StreamSync/.github/scripts/len_identifiersGP.py",
+            "function": "filter_identifiers",
+            "fan_in": 1,
+            "fan_out": 0,
+            "status_code": "OK"
+        },
+        {
+            "file": "/home/denis/Escritorio/python_project/StreamSync/.github/scripts/len_identifiersGP.py",
+            "function": "average_length",
+            "fan_in": 1,
+            "fan_out": 2,
+            "status_code": "OK"
+        },
+        {
+            "file": "/home/denis/Escritorio/python_project/StreamSync/.github/scripts/len_identifiersGP.py",
+            "function": "analyze_file",
+            "fan_in": 1,
+            "fan_out": 5,
+            "status_code": "OK"
+        },
+        {
+            "file": "/home/denis/Escritorio/python_project/StreamSync/.github/scripts/len_identifiersGP.py",
+            "function": "main",
+            "fan_in": 0,
+            "fan_out": 6,
+            "status_code": "OK"
+        },
+        {
+            "file": "/home/denis/Escritorio/python_project/StreamSync/.github/scripts/fog_comments_indexGP.py",
+            "function": "extract_comments",
+            "fan_in": 1,
+            "fan_out": 2,
+            "status_code": "OK"
+        },
+        {
+            "file": "/home/denis/Escritorio/python_project/StreamSync/.github/scripts/fog_comments_indexGP.py",
+            "function": "compute_fog",
+            "fan_in": 1,
+            "fan_out": 3,
+            "status_code": "OK"
+        },
+        {
+            "file": "/home/denis/Escritorio/python_project/StreamSync/.github/scripts/fog_comments_indexGP.py",
+            "function": "classify",
+            "fan_in": 1,
+            "fan_out": 0,
+            "status_code": "OK"
+        },
+        {
+            "file": "/home/denis/Escritorio/python_project/StreamSync/.github/scripts/fog_comments_indexGP.py",
+            "function": "scan",
+            "fan_in": 0,
+            "fan_out": 7,
+            "status_code": "OK"
+        },
+        {
+            "file": "/home/denis/Escritorio/python_project/StreamSync/.github/scripts/fog_comments_indexGP.py",
+            "function": "print_json",
+            "fan_in": 0,
+            "fan_out": 1,
+            "status_code": "OK"
+        },
+        {
+            "file": "/home/denis/Escritorio/python_project/StreamSync/.github/scripts/metrics/cyclomatic_complexity_metric.py",
+            "function": "__init__",
+            "fan_in": 0,
+            "fan_out": 0,
+            "status_code": "OK"
+        },
+        {
+            "file": "/home/denis/Escritorio/python_project/StreamSync/.github/scripts/metrics/cyclomatic_complexity_metric.py",
+            "function": "visit_If",
+            "fan_in": 0,
+            "fan_out": 0,
+            "status_code": "OK"
+        },
+        {
+            "file": "/home/denis/Escritorio/python_project/StreamSync/.github/scripts/metrics/cyclomatic_complexity_metric.py",
+            "function": "visit_For",
+            "fan_in": 0,
+            "fan_out": 0,
+            "status_code": "OK"
+        },
+        {
+            "file": "/home/denis/Escritorio/python_project/StreamSync/.github/scripts/metrics/cyclomatic_complexity_metric.py",
+            "function": "visit_While",
+            "fan_in": 0,
+            "fan_out": 0,
+            "status_code": "OK"
+        },
+        {
+            "file": "/home/denis/Escritorio/python_project/StreamSync/.github/scripts/metrics/cyclomatic_complexity_metric.py",
+            "function": "visit_BoolOp",
+            "fan_in": 0,
+            "fan_out": 1,
+            "status_code": "OK"
+        },
+        {
+            "file": "/home/denis/Escritorio/python_project/StreamSync/.github/scripts/metrics/cyclomatic_complexity_metric.py",
+            "function": "visit_ExceptHandler",
+            "fan_in": 0,
+            "fan_out": 0,
+            "status_code": "OK"
+        },
+        {
+            "file": "/home/denis/Escritorio/python_project/StreamSync/.github/scripts/metrics/cyclomatic_complexity_metric.py",
+            "function": "visit_match_case",
+            "fan_in": 0,
+            "fan_out": 0,
+            "status_code": "OK"
+        },
+        {
+            "file": "/home/denis/Escritorio/python_project/StreamSync/.github/scripts/metrics/cyclomatic_complexity_metric.py",
+            "function": "visit_ListComp",
+            "fan_in": 0,
+            "fan_out": 0,
+            "status_code": "OK"
+        },
+        {
+            "file": "/home/denis/Escritorio/python_project/StreamSync/.github/scripts/metrics/cyclomatic_complexity_metric.py",
+            "function": "visit_DictComp",
+            "fan_in": 0,
+            "fan_out": 0,
+            "status_code": "OK"
+        },
+        {
+            "file": "/home/denis/Escritorio/python_project/StreamSync/.github/scripts/metrics/cyclomatic_complexity_metric.py",
+            "function": "visit_SetComp",
+            "fan_in": 0,
+            "fan_out": 0,
+            "status_code": "OK"
+        },
+        {
+            "file": "/home/denis/Escritorio/python_project/StreamSync/.github/scripts/metrics/cyclomatic_complexity_metric.py",
+            "function": "visit_GeneratorExp",
+            "fan_in": 0,
+            "fan_out": 0,
+            "status_code": "OK"
+        },
+        {
+            "file": "/home/denis/Escritorio/python_project/StreamSync/.github/scripts/metrics/cyclomatic_complexity_metric.py",
+            "function": "calcular",
+            "fan_in": 1,
+            "fan_out": 1,
+            "status_code": "OK"
+        },
+        {
+            "file": "/home/denis/Escritorio/python_project/StreamSync/.github/scripts/metrics/cyclomatic_complexity_metric.py",
+            "function": "es_archivo_valido",
+            "fan_in": 1,
+            "fan_out": 0,
+            "status_code": "OK"
+        },
+        {
+            "file": "/home/denis/Escritorio/python_project/StreamSync/.github/scripts/metrics/cyclomatic_complexity_metric.py",
+            "function": "obtener_archivos_python",
+            "fan_in": 1,
+            "fan_out": 1,
+            "status_code": "OK"
+        },
+        {
+            "file": "/home/denis/Escritorio/python_project/StreamSync/.github/scripts/metrics/cyclomatic_complexity_metric.py",
+            "function": "analizar_directorio",
+            "fan_in": 0,
+            "fan_out": 5,
+            "status_code": "OK"
+        },
+        {
+            "file": "/home/denis/Escritorio/python_project/StreamSync/.github/scripts/metrics/len_identifiersGP.py",
+            "function": "extract_identifiers",
+            "fan_in": 1,
+            "fan_out": 0,
+            "status_code": "OK"
+        },
+        {
+            "file": "/home/denis/Escritorio/python_project/StreamSync/.github/scripts/metrics/len_identifiersGP.py",
+            "function": "filter_identifiers",
+            "fan_in": 1,
+            "fan_out": 0,
+            "status_code": "OK"
+        },
+        {
+            "file": "/home/denis/Escritorio/python_project/StreamSync/.github/scripts/metrics/len_identifiersGP.py",
+            "function": "average_length",
+            "fan_in": 1,
+            "fan_out": 2,
+            "status_code": "OK"
+        },
+        {
+            "file": "/home/denis/Escritorio/python_project/StreamSync/.github/scripts/metrics/len_identifiersGP.py",
+            "function": "analyze_file",
+            "fan_in": 1,
+            "fan_out": 6,
+            "status_code": "OK"
+        },
+        {
+            "file": "/home/denis/Escritorio/python_project/StreamSync/.github/scripts/metrics/len_identifiersGP.py",
+            "function": "collect_files",
+            "fan_in": 1,
+            "fan_out": 2,
+            "status_code": "OK"
+        },
+        {
+            "file": "/home/denis/Escritorio/python_project/StreamSync/.github/scripts/metrics/len_identifiersGP.py",
+            "function": "main",
+            "fan_in": 0,
+            "fan_out": 7,
+            "status_code": "OK"
+        },
+        {
+            "file": "/home/denis/Escritorio/python_project/StreamSync/.github/scripts/metrics/depth_conditional_nesting.py",
+            "function": "__init__",
+            "fan_in": 0,
+            "fan_out": 0,
+            "status_code": "OK"
+        },
+        {
+            "file": "/home/denis/Escritorio/python_project/StreamSync/.github/scripts/metrics/depth_conditional_nesting.py",
+            "function": "visit_If",
+            "fan_in": 0,
+            "fan_out": 2,
+            "status_code": "OK"
+        },
+        {
+            "file": "/home/denis/Escritorio/python_project/StreamSync/.github/scripts/metrics/depth_conditional_nesting.py",
+            "function": "get_status_code",
+            "fan_in": 1,
+            "fan_out": 0,
+            "status_code": "OK"
+        },
+        {
+            "file": "/home/denis/Escritorio/python_project/StreamSync/.github/scripts/metrics/depth_conditional_nesting.py",
+            "function": "get_metrics",
+            "fan_in": 1,
+            "fan_out": 7,
+            "status_code": "OK"
+        },
+        {
+            "file": "/home/denis/Escritorio/python_project/StreamSync/.github/scripts/metrics/depth_conditional_nesting.py",
+            "function": "collect_python_files",
+            "fan_in": 1,
+            "fan_out": 1,
+            "status_code": "OK"
+        },
+        {
+            "file": "/home/denis/Escritorio/python_project/StreamSync/.github/scripts/metrics/depth_conditional_nesting.py",
+            "function": "main",
+            "fan_in": 0,
+            "fan_out": 6,
+            "status_code": "OK"
+        },
+        {
+            "file": "/home/denis/Escritorio/python_project/StreamSync/.github/scripts/metrics/fog_comments_index.py",
+            "function": "extract_comments",
+            "fan_in": 1,
+            "fan_out": 2,
+            "status_code": "OK"
+        },
+        {
+            "file": "/home/denis/Escritorio/python_project/StreamSync/.github/scripts/metrics/fog_comments_index.py",
+            "function": "compute_fog",
+            "fan_in": 1,
+            "fan_out": 3,
+            "status_code": "OK"
+        },
+        {
+            "file": "/home/denis/Escritorio/python_project/StreamSync/.github/scripts/metrics/fog_comments_index.py",
+            "function": "classify",
+            "fan_in": 1,
+            "fan_out": 0,
+            "status_code": "OK"
+        },
+        {
+            "file": "/home/denis/Escritorio/python_project/StreamSync/.github/scripts/metrics/fog_comments_index.py",
+            "function": "scan",
+            "fan_in": 0,
+            "fan_out": 7,
+            "status_code": "OK"
+        },
+        {
+            "file": "/home/denis/Escritorio/python_project/StreamSync/.github/scripts/metrics/fog_comments_index.py",
+            "function": "print_json",
+            "fan_in": 0,
+            "fan_out": 3,
+            "status_code": "OK"
+        },
+        {
+            "file": "/home/denis/Escritorio/python_project/StreamSync/.github/scripts/metrics/fan_in_fan_out_metric.py",
+            "function": "__init__",
+            "fan_in": 0,
+            "fan_out": 0,
+            "status_code": "OK"
+        },
+        {
+            "file": "/home/denis/Escritorio/python_project/StreamSync/.github/scripts/metrics/fan_in_fan_out_metric.py",
+            "function": "visit_FunctionDef",
+            "fan_in": 0,
+            "fan_out": 1,
+            "status_code": "OK"
+        },
+        {
+            "file": "/home/denis/Escritorio/python_project/StreamSync/.github/scripts/metrics/fan_in_fan_out_metric.py",
+            "function": "visit_Call",
+            "fan_in": 0,
+            "fan_out": 2,
+            "status_code": "OK"
+        },
+        {
+            "file": "/home/denis/Escritorio/python_project/StreamSync/.github/scripts/metrics/fan_in_fan_out_metric.py",
+            "function": "analyze_file",
+            "fan_in": 1,
+            "fan_out": 2,
+            "status_code": "OK"
+        },
+        {
+            "file": "/home/denis/Escritorio/python_project/StreamSync/.github/scripts/metrics/fan_in_fan_out_metric.py",
+            "function": "collect_python_files",
+            "fan_in": 1,
+            "fan_out": 3,
+            "status_code": "OK"
+        },
+        {
+            "file": "/home/denis/Escritorio/python_project/StreamSync/.github/scripts/metrics/fan_in_fan_out_metric.py",
+            "function": "classify",
+            "fan_in": 1,
+            "fan_out": 0,
+            "status_code": "OK"
+        },
+        {
+            "file": "/home/denis/Escritorio/python_project/StreamSync/.github/scripts/metrics/fan_in_fan_out_metric.py",
+            "function": "main",
+            "fan_in": 0,
+            "fan_out": 8,
+            "status_code": "OK"
+        }
+    ]
+}
