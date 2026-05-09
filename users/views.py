@@ -335,14 +335,26 @@ def detall_contingut(request, tipus, content_id):
 
     recomanacions = enriquir_imatges_tmdb(recomanacions_raw)
 
+    # CHECK IF THERE'S ALREADY A REVIEW
+    ressenya_usuari = None
+
+    if request.user.is_authenticated:
+        ressenya_usuari = Ressenya.objects.filter(
+            usuari=request.user,
+            pelicula=peli_db
+        ).first()
+
     return render(request, 'pagina_contingut.html', {
         'item': item,
         'tipus': tipus,
-        'ja_guardada': LlistaPersonal.objects.filter(usuari=request.user,
-                                                     pelicula=peli_db).exists() if request.user.is_authenticated else False,
+        'ja_guardada': LlistaPersonal.objects.filter(
+            usuari=request.user,
+            pelicula=peli_db
+        ).exists() if request.user.is_authenticated else False,
         'carpetes': request.user.les_meves_carpetes.all() if request.user.is_authenticated else [],
         'ressenyes': Ressenya.objects.filter(pelicula=peli_db).order_by('-data_publicacio'),
         'recomanacions': recomanacions,
+        'ressenya_usuari': ressenya_usuari,
     })
 
 @cap_manager_permes

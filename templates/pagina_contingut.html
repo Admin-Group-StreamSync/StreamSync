@@ -212,9 +212,13 @@
                         <textarea name="comentari" class="form-control border-0 bg-light rounded-4 p-3"
                                   rows="4" placeholder="Què t'ha semblat la trama, els personatges..."></textarea>
                     </div>
-                    <button type="submit" class="btn-play w-100 py-3 fw-bold rounded-4 border-0">
-                        PUBLICAR RESSENYA
-                    </button>
+
+                    {% if ressenya_usuari %}
+                        <button type="submit" class="btn-play w-100 py-3 fw-bold rounded-4 border-0">ACTUALITZAR RESSENYA</button>
+                    {% else %}
+                        <button type="submit" class="btn-play w-100 py-3 fw-bold rounded-4 border-0">PUBLICAR RESSENYA</button>
+                    {% endif %}
+
                 </form>
                 {% else %}
                 <div class="text-center py-4 bg-light rounded-4">
