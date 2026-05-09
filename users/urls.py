@@ -50,5 +50,9 @@ urlpatterns = [
 
     # COOKIES AND LEGAL
     path("cookies/", include("cookie_consent.urls")),
+    path('legal/terms', views.termsofuse_view, name="legal_terms"),
+    path('legal/privacy', views.privacy_view, name="legal_privacy"),
+    path('legal/cookies', views.cookies_view, name="legal_cookies"),
+    path('legal/content_disclaimer', views.content_disclaimer_view, name="legal_content_disclaimer"),
 
 ]

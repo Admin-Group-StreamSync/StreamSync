@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block title %}Política de Cookies{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+
+    <h1 class="fw-bold mb-4">Política de Cookies</h1>
+
+    <h4>1. Què són les cookies i per què s’utilitzen</h4>
+    <p>
+        Les cookies són petits fitxers de text que s’emmagatzemen al dispositiu de l’usuari quan visita aquesta plataforma.
+        S’utilitzen per garantir el correcte funcionament del servei, millorar l’experiència d’usuari i analitzar l’ús de la plataforma.
+    </p>
+
+    <h4>2. Tipus de cookies utilitzades</h4>
+    <p>En aquesta plataforma es poden utilitzar els següents tipus de cookies:</p>
+
+    <ul>
+        <li>
+            <strong>Cookies de sessió:</strong> Són temporals i s’eliminen automàticament quan l’usuari tanca el navegador.
+            S’utilitzen per mantenir la sessió activa durant la navegació.
+        </li>
+        <li>
+            <strong>Cookies persistents:</strong> Es mantenen durant un període de temps determinat i permeten recordar preferències
+            o configuracions de l’usuari en visites futures.
+        </li>
+    </ul>
+
+    <h4>3. Gestió i desactivació de cookies</h4>
+    <p>
+        L’usuari pot configurar el seu navegador per acceptar, rebutjar o eliminar cookies en qualsevol moment.
+        La desactivació de cookies pot afectar el funcionament correcte d’algunes funcionalitats de la plataforma.
+    </p>
+
+    <ul>
+        <li>Chrome: Configuració → Privacitat i seguretat → Cookies</li>
+        <li>Firefox: Opcions → Privacitat i seguretat</li>
+        <li>Safari: Preferències → Privacitat</li>
+    </ul>
+
+    <h4>4. Relació amb la Política de Privacitat</h4>
+    <p>
+        Per a més informació sobre el tractament de dades personals, consulta la
+        <a href="{% url 'legal_privacy' %}">Política de Privacitat</a>.
+    </p>
+
+    <p class="mt-4 text-muted small">
+        Última actualització: 2026
+    </p>
+
+</div>
+{% endblock %}

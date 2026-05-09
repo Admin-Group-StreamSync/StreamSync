@@ -441,6 +441,17 @@ def feedback_view(request):
 
     return render(request, "pages/feedback.html")
 
+# Legal pages
+def termsofuse_view(request):
+    return render(request, "legal/terms.html")
+def privacy_view(request):
+    return render(request, "legal/privacy.html")
+def cookies_view(request):
+    return render(request, "legal/cookies.html")
+def content_disclaimer_view(request):
+    return render(request, "legal/content_disclaimer.html")
+
+
 # --- 5. USER MANAGEMENT AND LISTS ---
 
 @login_required
@@ -670,8 +681,8 @@ def search_content(request):
                 if item.get('age_rating_id') == main_result.get('age_rating_id'):
                     score += 2
                 return score
-             
-            
+
+
 
             # ✅ Només continguts del mateix gènere
             recommendations = [

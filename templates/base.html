@@ -238,11 +238,32 @@
                 <strong>StreamSync</strong> © 2026
             </div>
 
-            <div class="text-muted small">
+            <div class="text-muted">
                 <a href="{% url 'feedback' %}" class="text-decoration-none">
                     We value your feedback!
                 </a>
             </div>
+
+            <div class="text-muted small d-flex flex-wrap gap-3">
+
+                <a href="{% url 'legal_privacy' %}" class="text-decoration-none text-muted">
+                    Privacitat
+                </a>
+
+                <a href="{% url 'legal_cookies' %}" class="text-decoration-none text-muted">
+                    Cookies
+                </a>
+
+                <a href="{% url 'legal_terms' %}" class="text-decoration-none text-muted">
+                    Termes d'ús
+                </a>
+
+                <a href="{% url 'legal_content_disclaimer' %}" class="text-decoration-none text-muted">
+                    Avís legal
+                </a>
+
+            </div>
+
         </div>
     </footer>
 
