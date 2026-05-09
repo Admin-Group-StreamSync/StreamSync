@@ -186,11 +186,9 @@
         {% endfor %}
     </div>
 
-    <!-- ✅ PAGINACIÓ -->
     {% if page_obj.has_other_pages %}
     <div class="d-flex justify-content-center align-items-center gap-2 mt-5">
 
-        <!-- Botó Anterior -->
         {% if page_obj.has_previous %}
         <a href="?page={{ page_obj.previous_page_number }}{{ filtres_url }}" class="pagination-btn">
             <i class="bi bi-chevron-left"></i>
@@ -199,7 +197,6 @@
         <span class="pagination-btn disabled"><i class="bi bi-chevron-left"></i></span>
         {% endif %}
 
-        <!-- Números de pàgina -->
         {% for num in page_obj.paginator.page_range %}
             {% if page_obj.number == num %}
                 <span class="pagination-btn active">{{ num }}</span>
@@ -208,7 +205,6 @@
             {% endif %}
         {% endfor %}
 
-        <!-- Botó Següent -->
         {% if page_obj.has_next %}
         <a href="?page={{ page_obj.next_page_number }}{{ filtres_url }}" class="pagination-btn">
             <i class="bi bi-chevron-right"></i>
@@ -219,7 +215,6 @@
 
     </div>
 
-    <!-- Info de pàgina -->
     <p class="text-center text-muted small mt-3">
         Pàgina {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}
         &nbsp;·&nbsp;
