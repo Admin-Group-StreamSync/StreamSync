@@ -18,7 +18,7 @@ from django.db.models import Count, Avg, Sum
 from django.utils import timezone
 
 from .models import Pelicula, LlistaPersonal, Carpeta, Profile, Ressenya, Views, Feedback
-from .forms import RegistroUsuarioForm, UserUpdateForm
+from .forms import UserRegistrationForm, UserUpdateForm
 
 # 1. LOAD CONFIGURATION
 from functools import wraps
@@ -496,7 +496,7 @@ def crear_cuenta(request):
     platforms_api = OPTIONS.get('plataformas', [])
 
     if request.method == 'POST':
-        form = RegistroUsuarioForm(request.POST)
+        form = UserRegistrationForm(request.POST)
         if form.is_valid():
             user = form.save()
 
@@ -514,7 +514,7 @@ def crear_cuenta(request):
             print("Form errors:", form.errors)
             messages.error(request, "Error in the form.")
     else:
-        form = RegistroUsuarioForm()
+        form = UserRegistrationForm()
 
     context = {
         'form': form,
@@ -894,4 +894,3 @@ def register_view(request):
             return JsonResponse({"error": str(e)}, status=500)
 
     return JsonResponse({"error": "Mètode no permès"}, status=405)
-
