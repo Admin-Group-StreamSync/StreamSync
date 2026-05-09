@@ -6,9 +6,8 @@ from users.views import StreamSyncLoginView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include('users.urls')),  # Les teves rutes d'usuari
+    path('', include('users.urls')),
 
-    # LOGIN: Utilitzem la vista de Django però el TEU template
     path('login/', StreamSyncLoginView.as_view(template_name='registration/login.html'), name='login'),
 
     # LOGOUT
