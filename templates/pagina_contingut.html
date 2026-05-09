@@ -28,7 +28,7 @@
     .btn-delete-review:hover { background: #fff5f5; color: #c53030; }
     .badge-series-info { background-color: #00bcd4; color: white; }
 
-    /* ✅ Plataforma badge */
+    /* Platform badge */
     .plataforma-cineplus { background: #fff0f0; border-color: #e50914 !important; }
     .plataforma-cineplus i { color: #e50914 !important; }
     .plataforma-streamhub { background: #f0f4ff; border-color: #0071eb !important; }
@@ -43,14 +43,14 @@
 
     <div class="mb-4">
         <a href="javascript:history.back()" class="btn-back">
-            <i class="bi bi-arrow-left-circle-fill fs-5 me-2"></i> Tornar
+            <i class="bi bi-arrow-left-circle-fill fs-5 me-2"></i> Back
         </a>
     </div>
 
     <div class="row g-5">
         <div class="col-md-5 col-lg-4">
             <div class="poster-container mx-auto">
-                <img src="{{ item.imatge|default:'https://via.placeholder.com/400x600?text=Sense+Imatge' }}" alt="{{ item.titol }}">
+                <img src="{{ item.imatge|default:'https://via.placeholder.com/400x600?text=No+Image' }}" alt="{{ item.titol }}">
             </div>
         </div>
 
@@ -63,7 +63,7 @@
                 <span class="text-muted fw-bold small">
                     <i class="bi bi-calendar3 me-1"></i>
                     {% if tipus == 'series' %}
-                        {{ item.start_year|default:item.any }} - {{ item.end_year|default:"Actualitat" }}
+                        {{ item.start_year|default:item.any }} - {{ item.end_year|default:"Present" }}
                     {% else %}
                         {{ item.any }}
                     {% endif %}
@@ -76,10 +76,10 @@
                 <div class="meta-item shadow-sm">
                     <i class="bi bi-megaphone"></i>
                     <span class="label">Director</span>
-                    <span class="value text-truncate w-100">{{ item.director_nom|default:"Desconegut" }}</span>
+                    <span class="value text-truncate w-100">{{ item.director_nom|default:"Unknown" }}</span>
                 </div>
 
-                <!-- ✅ PLATAFORMA -->
+                <!-- Platform -->
                 <div class="meta-item shadow-sm
                     {% if item.plataforma == 'CinePlus' %}plataforma-cineplus
                     {% elif item.plataforma == 'StreamHub' %}plataforma-streamhub
@@ -94,34 +94,34 @@
                     {% else %}
                         <i class="bi bi-tv"></i>
                     {% endif %}
-                    <span class="label">Plataforma</span>
+                    <span class="label">Platform</span>
                     <span class="value">{{ item.plataforma|default:"N/A" }}</span>
                 </div>
 
                 {% if tipus == 'series' %}
                 <div class="meta-item shadow-sm" style="border: 1px solid #00bcd4;">
                     <i class="bi bi-layers-half" style="color: #00bcd4;"></i>
-                    <span class="label">Temporades</span>
+                    <span class="label">Seasons</span>
                     <span class="value text-dark">{{ item.total_seasons|default:"1" }}</span>
                 </div>
                 {% endif %}
 
                 <div class="meta-item shadow-sm">
                     <i class="bi bi-grid-1x2"></i>
-                    <span class="label">Gènere</span>
+                    <span class="label">Genre</span>
                     <span class="value">{{ item.genere_nom|default:"N/A" }}</span>
                 </div>
 
                 <div class="meta-item shadow-sm">
                     <i class="bi bi-shield-lock"></i>
-                    <span class="label">Edat</span>
+                    <span class="label">Age</span>
                     <span class="value">{{ item.edat_nom|default:"N/A" }}</span>
                 </div>
             </div>
 
             <div class="mb-5">
                 <h5 class="fw-bold text-dark mb-3 d-flex align-items-center">
-                    <i class="bi bi-text-left me-2 text-purple"></i> Sinopsi
+                    <i class="bi bi-text-left me-2 text-purple"></i> Synopsis
                 </h5>
                 <p class="text-secondary fs-5 lh-base" style="max-width: 800px;">
                     {{ item.sinopsi }}
@@ -130,37 +130,37 @@
 
             <div class="d-flex flex-wrap gap-3 mb-5">
                 <button id="submit_view" class="btn-play d-flex align-items-center gap-2">
-                    <i class="bi bi-play-fill fs-3"></i> REPRODUIR ARA
+                    <i class="bi bi-play-fill fs-3"></i> PLAY NOW
                 </button>
 
                 {% if user.is_authenticated %}
                     {% if ja_guardada %}
                         <button class="btn btn-light border rounded-4 px-4 d-flex align-items-center gap-2 text-success fw-bold" disabled>
-                            <i class="bi bi-check-all fs-4"></i> A LA TEVA LLISTA
+                            <i class="bi bi-check-all fs-4"></i> IN YOUR LIST
                         </button>
                     {% else %}
                         <div class="dropdown">
                             <button class="btn-add gap-2 dropdown-toggle" type="button" data-bs-toggle="dropdown">
-                                <i class="bi bi-plus-lg"></i> GUARDAR
+                                <i class="bi bi-plus-lg"></i> SAVE
                             </button>
                             <ul class="dropdown-menu shadow-lg border-0 p-2 mt-2">
-                                <li><h6 class="dropdown-header small text-uppercase fw-bold">Tria una carpeta</h6></li>
-                                {% for llista in carpetes %}
+                                <li><h6 class="dropdown-header small text-uppercase fw-bold">Choose a folder</h6></li>
+                                {% for folder in carpetes %}
                                 <li>
                                     <form action="{% url 'afegir_a_llista' tipus=tipus content_id=item.id %}" method="POST">
                                         {% csrf_token %}
-                                        <input type="hidden" name="carpeta_id" value="{{ llista.id }}">
+                                        <input type="hidden" name="carpeta_id" value="{{ folder.id }}">
                                         <button type="submit" class="dropdown-item rounded-3 py-2 d-flex align-items-center gap-2">
-                                            <i class="bi {{ llista.icona }}" style="color: {{ llista.color }};"></i>
-                                            {{ llista.nom }}
+                                            <i class="bi {{ folder.icona }}" style="color: {{ folder.color }};"></i>
+                                            {{ folder.nom }}
                                         </button>
                                     </form>
                                 </li>
                                 {% empty %}
-                                <li class="p-3 text-center small text-muted">No tens carpetes</li>
+                                <li class="p-3 text-center small text-muted">You have no folders</li>
                                 {% endfor %}
                                 <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item text-purple fw-bold" href="{% url 'crear_llista' %}">+ Nova llista</a></li>
+                                <li><a class="dropdown-item text-purple fw-bold" href="{% url 'crear_llista' %}">+ New list</a></li>
                             </ul>
                         </div>
                     {% endif %}
@@ -172,7 +172,7 @@
                     <i class="bi bi-star-fill me-2"></i> {{ item.rating|default:"0.0" }}
                 </div>
                 <div>
-                    <div class="small fw-bold text-uppercase text-muted" style="font-size: 0.6rem;">Puntuació Global</div>
+                    <div class="small fw-bold text-uppercase text-muted" style="font-size: 0.6rem;">Global Score</div>
                     <div class="fw-bold text-dark">StreamSync Community</div>
                 </div>
             </div>
@@ -184,78 +184,78 @@
     <div class="row g-5">
         <div class="col-lg-5">
             <div class="review-form-card">
-                <h4 class="fw-bold mb-4">Escriu la teva opinió</h4>
+                <h4 class="fw-bold mb-4">Write your review</h4>
                 {% if user.is_authenticated %}
                 <form action="{% url 'publicar_ressenya' tipus=tipus content_id=item.id %}" method="POST">
                     {% csrf_token %}
                     <div class="mb-4">
-                        <label class="form-label small fw-bold text-muted">LA TEVA NOTA (0-10)</label>
+                        <label class="form-label small fw-bold text-muted">YOUR SCORE (0-10)</label>
                         <input type="number" name="puntuacio" class="form-control form-control-lg rating-input"
                                min="0" max="10" step="1" value="7" required>
                     </div>
                     <div class="mb-4">
-                        <label class="form-label small fw-bold text-muted">EL TEU COMENTARI</label>
+                        <label class="form-label small fw-bold text-muted">YOUR COMMENT</label>
                         <textarea name="comentari" class="form-control border-0 bg-light rounded-4 p-3"
-                                  rows="4" placeholder="Què t'ha semblat la trama, els personatges..."></textarea>
+                                  rows="4" placeholder="What did you think of the plot, characters..."></textarea>
                     </div>
                     <button type="submit" class="btn-play w-100 py-3 fw-bold rounded-4 border-0">
-                        PUBLICAR RESSENYA
+                        PUBLISH REVIEW
                     </button>
                 </form>
                 {% else %}
                 <div class="text-center py-4 bg-light rounded-4">
                     <i class="bi bi-lock fs-2 text-muted"></i>
-                    <p class="mt-2 text-muted">Inicia sessió per comentar</p>
-                    <a href="{% url 'login' %}" class="btn btn-sm btn-outline-purple px-4">ENTRAR</a>
+                    <p class="mt-2 text-muted">Sign in to comment</p>
+                    <a href="{% url 'login' %}" class="btn btn-sm btn-outline-purple px-4">SIGN IN</a>
                 </div>
                 {% endif %}
             </div>
         </div>
 
         <div class="col-lg-7">
-            <h4 class="fw-bold mb-4">Comentaris dels usuaris <span class="badge bg-light text-purple rounded-pill">{{ ressenyes|length }}</span></h4>
+            <h4 class="fw-bold mb-4">User comments <span class="badge bg-light text-purple rounded-pill">{{ ressenyes|length }}</span></h4>
             <div class="d-flex flex-column gap-3">
-                {% for r in ressenyes %}
+                {% for review in ressenyes %}
                 <div class="comment-bubble shadow-sm position-relative">
                     <div class="d-flex align-items-center gap-3 mb-3">
                         <div class="user-avatar">
-                            {{ r.usuari.username|first|upper }}
+                            {{ review.usuari.username|first|upper }}
                         </div>
                         <div class="flex-grow-1">
-                            <h6 class="m-0 fw-bold">{{ r.usuari.username }}</h6>
-                            <small class="text-muted">{{ r.data_publicacio|date:"d F, Y" }}</small>
+                            <h6 class="m-0 fw-bold">{{ review.usuari.username }}</h6>
+                            <small class="text-muted">{{ review.data_publicacio|date:"d F, Y" }}</small>
                         </div>
 
                         <div class="d-flex align-items-center gap-2">
                             <div class="badge bg-warning text-dark fs-6 rounded-3 px-3 py-2">
-                                <i class="bi bi-star-fill me-1"></i> {{ r.puntuacio }}
+                                <i class="bi bi-star-fill me-1"></i> {{ review.puntuacio }}
                             </div>
 
-                            {% if r.usuari == user %}
-                            <form action="{% url 'eliminar_ressenya' r.id %}" method="POST" onsubmit="return confirm('Segur que vols eliminar la teva ressenya?');">
+                            {% if review.usuari == user %}
+                            <form action="{% url 'eliminar_ressenya' review.id %}" method="POST" onsubmit="return confirm('Are you sure you want to delete your review?');">
                                 {% csrf_token %}
-                                <button type="submit" class="btn-delete-review" title="Eliminar comentari">
+                                <button type="submit" class="btn-delete-review" title="Delete comment">
                                     <i class="bi bi-trash3-fill fs-5"></i>
                                 </button>
                             </form>
                             {% endif %}
                         </div>
                     </div>
-                    <p class="text-secondary m-0 lh-base">"{{ r.comentari }}"</p>
+                    <p class="text-secondary m-0 lh-base">"{{ review.comentari }}"</p>
                 </div>
                 {% empty %}
                 <div class="text-center py-5">
                     <i class="bi bi-chat-dots fs-1 text-light"></i>
-                    <p class="text-muted mt-3">Encara no hi ha cap comentari. Sigues el primer en dir la teva!</p>
+                    <p class="text-muted mt-3">There are no comments yet. Be the first to share yours!</p>
                 </div>
                 {% endfor %}
             </div>
         </div>
     </div>
 
-    <!-- TAMBÉ ET PODRIA AGRADAR -->
+    <!-- You may also like -->
     <div class="mt-5 pt-5">
-        <h4 class="fw-bold mb-4"><i class="bi bi-stars text-purple me-2"></i> També et podria agradar</h4>
+        <h4 class="fw-bold mb-4"><i class="bi bi-stars text-purple me-2"></i> You may also like</h4>
         <div class="row row-cols-2 row-cols-md-4 row-cols-lg-5 g-4">
             {% for reco in recomanacions %}
             <div class="col">
@@ -267,7 +267,7 @@
                             <h6 class="fw-bold text-dark text-truncate m-0" style="font-size: 0.9rem;">{{ reco.titol }}</h6>
                             <div class="d-flex justify-content-between align-items-center mt-1">
                                 <small class="text-muted">{{ reco.any }}</small>
-                                <!-- ✅ Plataforma a les recomanacions -->
+                                <!-- Platform in recommendations -->
                                 <span class="badge border fw-normal"
                                     style="font-size: 0.6rem;
                                     {% if reco.plataforma == 'CinePlus' %}background:#fff0f0; color:#e50914; border-color:#e50914!important;
@@ -287,9 +287,9 @@
 
     <script>
         document.getElementById("submit_view").addEventListener("click", function (e) {
-            e.preventDefault(); // Bloquea cualquier acción por defecto (no recarga, no abre nada)
+            e.preventDefault(); // Blocks default action (no reload, no open)
 
-            // 1. Obtenemos el Token de Seguridad (CSRF)
+            // 1. Read CSRF security token
             let cookieValue = null;
             if (document.cookie && document.cookie !== '') {
                 const cookies = document.cookie.split(';');
@@ -302,16 +302,16 @@
                 }
             }
 
-            // 2. Efecto visual en el botón (feedback sin alertas)
+            // 2. Visual button feedback (no alerts)
             const btn = this;
             const originalHTML = btn.innerHTML;
 
-            // Cambiamos el diseño a un check de éxito temporalmente
-            btn.innerHTML = '<i class="bi bi-check-circle-fill fs-3"></i> VISITA REGISTRADA';
-            btn.style.background = '#10b981'; // Color verde éxito
-            btn.disabled = true; // Desactivamos para evitar doble clic rápido
+            // Temporarily switch to success check style
+            btn.innerHTML = '<i class="bi bi-check-circle-fill fs-3"></i> VIEW REGISTERED';
+            btn.style.background = '#10b981'; // Success green
+            btn.disabled = true; // Disable to avoid fast double click
 
-            // 3. Enviamos la visita al servidor en secreto
+            // 3. Send view event to server silently
             fetch("{% url 'register_view' %}", {
                 method: "POST",
                 headers: {
@@ -323,20 +323,20 @@
             .then(res => res.json())
             .then(data => {
                 if(data.ok) {
-                    console.log("ÈXIT! Visita quantificada. Total:", data.count);
+                    console.log("SUCCESS! View tracked. Total:", data.count);
                 } else {
-                    console.error("Error del servidor:", data.error);
+                    console.error("Server error:", data.error);
                 }
 
-                // 4. Devolvemos el botón a la normalidad después de 2 segundos
+                // 4. Restore button state after 2 seconds
                 setTimeout(() => {
                     btn.innerHTML = originalHTML;
-                    btn.style.background = ''; // Restaura el color original (el lila)
+                    btn.style.background = ''; // Restore original color (purple)
                     btn.disabled = false;
                 }, 2000);
             })
             .catch(error => {
-                console.error("Error de connexió:", error);
+                console.error("Connection error:", error);
                 btn.innerHTML = originalHTML;
                 btn.style.background = '';
                 btn.disabled = false;

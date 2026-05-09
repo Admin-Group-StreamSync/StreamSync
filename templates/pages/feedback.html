@@ -76,7 +76,7 @@
                 <form method="POST">
                     {% csrf_token %}
 
-                    <!-- HEADER -->
+                    <!-- Header -->
                     <div class="text-center mb-5">
                         <div class="mb-4">
                             <span class="badge rounded-circle p-3"
@@ -85,14 +85,14 @@
                             </span>
                         </div>
 
-                        <h1 class="fw-bold">La teva opinió compta</h1>
+                        <h1 class="fw-bold">Your opinion matters</h1>
                         <p class="text-muted">
-                            Ajuda'ns a millorar StreamSync amb comentaris, suggeriments i errors
+                            Help us improve StreamSync with comments, suggestions, and bug reports
                         </p>
                     </div>
 
-                    <!-- TIPUS FEEDBACK -->
-                    <h5 class="fw-bold mb-3">Envia el teu feedback</h5>
+                    <!-- Feedback type -->
+                    <h5 class="fw-bold mb-3">Send your feedback</h5>
 
                     <div class="row g-3">
 
@@ -100,7 +100,7 @@
                             <input type="radio" name="tipus" id="general" value="general" class="btn-check">
                             <label class="p-3 border rounded-4 text-center w-100 feedback-card" for="general">
                                 <i class="bi bi-star fs-4"></i>
-                                <div class="fw-semibold mt-2">Valoració general</div>
+                                <div class="fw-semibold mt-2">General rating</div>
                             </label>
                         </div>
 
@@ -108,7 +108,7 @@
                             <input type="radio" name="tipus" id="error" value="error" class="btn-check">
                             <label class="p-3 border rounded-4 text-center w-100 feedback-card" for="error">
                                 <i class="bi bi-bug fs-4"></i>
-                                <div class="fw-semibold mt-2">Reportar error</div>
+                                <div class="fw-semibold mt-2">Report error</div>
                             </label>
                         </div>
 
@@ -116,7 +116,7 @@
                             <input type="radio" name="tipus" id="suggeriment" value="suggeriment" class="btn-check">
                             <label class="p-3 border rounded-4 text-center w-100 feedback-card" for="suggeriment">
                                 <i class="bi bi-lightbulb fs-4"></i>
-                                <div class="fw-semibold mt-2">Suggeriment</div>
+                                <div class="fw-semibold mt-2">Suggestion</div>
                             </label>
                         </div>
 
@@ -124,17 +124,17 @@
                             <input type="radio" name="tipus" id="altres" value="altres" class="btn-check">
                             <label class="p-3 border rounded-4 text-center w-100 feedback-card" for="altres">
                                 <i class="bi bi-chat-left-text fs-4"></i>
-                                <div class="fw-semibold mt-2">Altres comentaris</div>
+                                <div class="fw-semibold mt-2">Other comments</div>
                             </label>
                         </div>
 
                     </div>
 
-                    <!-- RATING -->
+                    <!-- Rating -->
                     <div class="mt-5 text-center">
 
-                        <h5 class="fw-bold mb-2">Com valores la teva experiència?</h5>
-                        <p class="text-muted mb-4">Selecciona una puntuació</p>
+                        <h5 class="fw-bold mb-2">How do you rate your experience?</h5>
+                        <p class="text-muted mb-4">Select a score</p>
 
                         <div class="rating">
 
@@ -157,30 +157,28 @@
 
                     </div>
 
-                    <!-- INPUTS -->
                     <div class="mt-5">
 
-                        <h6 class="fw-bold mb-3">Detalls del feedback</h6>
+                        <h6 class="fw-bold mb-3">Feedback details</h6>
 
                         <div class="mb-3">
-                            <label class="form-label fw-semibold">Títol</label>
+                            <label class="form-label fw-semibold">Title</label>
                             <input type="text" name="titol" class="form-control rounded-3"
-                                   placeholder="Resum de la teva opinió" required>
+                                   placeholder="Summary of your feedback" required>
                         </div>
 
                         <div>
-                            <label class="form-label fw-semibold">Descripció</label>
+                            <label class="form-label fw-semibold">Description</label>
                             <textarea name="descripcio" class="form-control rounded-3"
-                                      rows="4" placeholder="Explica'ns amb més detall..." required></textarea>
+                                      rows="4" placeholder="Tell us more details..." required></textarea>
                         </div>
 
                     </div>
 
-                    <!-- SUBMIT -->
                     <div class="mt-4 text-end">
                         <button type="submit" class="btn btn-lg px-4 text-white"
                                 style="background: linear-gradient(90deg,#8a2be2,#d40078); border: none;">
-                            Enviar feedback
+                            Send feedback
                         </button>
                     </div>
 
