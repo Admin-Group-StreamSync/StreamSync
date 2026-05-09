@@ -3,7 +3,6 @@ from .models import Profile
 
 @admin.register(Profile)
 class ProfileAdmin(admin.ModelAdmin):
-    list_display = ('user', 'manager_de')
-    list_filter = ('manager_de',)
+    list_display = ('user',)
+    list_filter = ('user',)
     search_fields = ('user__username',)
-
