@@ -335,6 +335,15 @@ def content_detail(request, tipus, content_id):
 
     recommendations = enrich_tmdb_images(raw_recommendations)
 
+    # CHECK IF THERE'S ALREADY A REVIEW
+    ressenya_usuari = None
+
+    if request.user.is_authenticated:
+        ressenya_usuari = Ressenya.objects.filter(
+            usuari=request.user,
+            pelicula=peli_db
+        ).first()
+
     return render(request, 'pagina_contingut.html', {
         'item': item,
         'tipus': tipus,
@@ -343,6 +352,7 @@ def content_detail(request, tipus, content_id):
         'carpetes': request.user.les_meves_carpetes.all() if request.user.is_authenticated else [],
         'ressenyes': Ressenya.objects.filter(pelicula=movie_db).order_by('-data_publicacio'),
         'recomanacions': recommendations,
+        'ressenya_usuari': ressenya_usuari,
     })
 
 @cap_manager_permes

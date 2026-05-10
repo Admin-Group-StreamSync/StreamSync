@@ -238,9 +238,13 @@
                         <textarea name="comentari" class="form-control border-0 bg-light rounded-4 p-3"
                                   rows="4" placeholder="What did you think of the plot, characters..."></textarea>
                     </div>
-                    <button type="submit" class="btn-play w-100 py-3 fw-bold rounded-4 border-0">
-                        PUBLISH REVIEW
-                    </button>
+
+                    {% if ressenya_usuari %}
+                        <button type="submit" class="btn-play w-100 py-3 fw-bold rounded-4 border-0">UPDATE REVIEW</button>
+                    {% else %}
+                        <button type="submit" class="btn-play w-100 py-3 fw-bold rounded-4 border-0">PUBLISH REVIEW</button>
+                    {% endif %}
+
                 </form>
                 {% else %}
                 <div class="text-center py-4 bg-light rounded-4">
