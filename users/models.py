@@ -12,7 +12,12 @@ class Profile(models.Model):
     plataformes = models.JSONField(default=list, blank=True)
     generes = models.JSONField(default=list, blank=True)
     edat_rating = models.JSONField(default=list, blank=True)
-
+    manager_de = models.CharField(
+        max_length=50,
+        choices=[('CinePlus', 'CinePlus'), ('StreamHub', 'StreamHub'), ('PlayMax', 'PlayMax')],
+        null=True,
+        blank=True
+    )
     def __str__(self):
         return f"Profile of {self.user.username}"
 
@@ -22,7 +27,6 @@ class Genere(models.Model):
 
     def __str__(self):
         return self.nom
-
 
 class Pelicula(models.Model):
     id = models.CharField(max_length=50, primary_key=True)

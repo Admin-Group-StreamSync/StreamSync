@@ -36,6 +36,25 @@
                     <span class="text-warning fw-bold fs-4">★ {{ resultat.rating }}</span>
                 </div>
 
+                <!-- ✅ Plataformes del resultat principal -->
+                <div class="d-flex flex-wrap gap-2 mb-4">
+                    {% for plat in resultat.plataformes_disponibles %}
+                        {% if plat == 'CinePlus' %}
+                            <span class="badge" style="background:#fff0f0; color:#e50914; border:1px solid #e50914; font-size:0.8rem; padding: 6px 12px;">
+                                <i class="bi bi-camera-reels me-1"></i>{{ plat }}
+                            </span>
+                        {% elif plat == 'StreamHub' %}
+                            <span class="badge" style="background:#f0f4ff; color:#0071eb; border:1px solid #0071eb; font-size:0.8rem; padding: 6px 12px;">
+                                <i class="bi bi-broadcast me-1"></i>{{ plat }}
+                            </span>
+                        {% elif plat == 'PlayMax' %}
+                            <span class="badge" style="background:#f0fff4; color:#00b300; border:1px solid #00b300; font-size:0.8rem; padding: 6px 12px;">
+                                <i class="bi bi-play-circle me-1"></i>{{ plat }}
+                            </span>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+
                 <p style="font-size: 1.25rem !important; color: #555 !important; line-height: 1.6 !important; margin-bottom: 35px !important; max-width: 600px !important;">
                     {{ resultat.sinopsi|default:"No description available." }}
                 </p>
@@ -69,23 +88,15 @@
         {% endif %}
     </div>
 
-    {% if resultats or recomanacions %}
+    <!-- ✅ RECOMANACIONS — usa el component card_contingut.html -->
+    {% if resultats %}
     <div class="mt-5 pt-5 border-top">
         <h3 class="fw-bold mb-4">
             {% if resultat %}Other similar results...{% else %}Titles you may like...{% endif %}
         </h3>
         <div class="row row-cols-2 row-cols-md-4 row-cols-lg-5 g-4">
-            {% for movie in resultats|slice:"1:" %} <div class="col">
-                <a href="{% url 'pagina_contingut' tipus=movie.tipus content_id=movie.id %}" class="text-decoration-none">
-                    <div class="card h-100 border-0 shadow-sm rounded-4 overflow-hidden card-hover" style="transition: 0.3s;">
-                        <img src="{{ movie.imatge }}" class="card-img-top" style="aspect-ratio: 2/3; object-fit: cover;" alt="{{ movie.titol }}">
-                        <div class="card-body p-3 text-center">
-                            <h6 class="fw-bold mb-1 text-dark text-truncate">{{ movie.titol }}</h6>
-                            <small class="text-muted">{{ movie.any }}</small>
-                        </div>
-                    </div>
-                </a>
-            </div>
+            {% for item in resultats %}
+                {% include "components/card_contingut.html" with item=item %}
             {% endfor %}
         </div>
     </div>
@@ -94,11 +105,6 @@
 </div>
 
 <style>
-    .card-hover:hover {
-        transform: translateY(-10px);
-        box-shadow: 0 15px 30px rgba(138, 43, 226, 0.2) !important;
-    }
-
     @media (max-width: 992px) {
         div[style*="flex-direction: row"] { flex-direction: column !important; }
         div[style*="flex: 0 0 350px"] { flex: 0 0 300px !important; width: 100% !important; }

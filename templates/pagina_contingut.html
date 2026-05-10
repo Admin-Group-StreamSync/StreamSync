@@ -35,6 +35,11 @@
     .plataforma-streamhub i { color: #0071eb !important; }
     .plataforma-playmax { background: #f0fff4; border-color: #00b300 !important; }
     .plataforma-playmax i { color: #00b300 !important; }
+    .plat-badge { font-size: 0.7rem; font-weight: 600; padding: 4px 10px; border-radius: 8px; border: 1px solid; }
+    .plat-cineplus { background: #fff0f0; color: #e50914; border-color: #e50914; }
+    .plat-streamhub { background: #f0f4ff; color: #0071eb; border-color: #0071eb; }
+    .plat-playmax { background: #f0fff4; color: #00b300; border-color: #00b300; }
+    .plat-altres { background: #f5f5f5; color: #666; border-color: #ccc; }
 </style>
 {% endblock %}
 
@@ -59,7 +64,6 @@
                 <span class="badge rounded-pill {% if tipus == 'movie' %}bg-primary{% else %}bg-info{% endif %} text-uppercase px-3">
                     {{ tipus }}
                 </span>
-
                 <span class="text-muted fw-bold small">
                     <i class="bi bi-calendar3 me-1"></i>
                     {% if tipus == 'series' %}
@@ -73,6 +77,7 @@
             <h1 class="display-3 fw-bold text-dark mb-4" style="letter-spacing: -2px;">{{ item.titol }}</h1>
 
             <div class="meta-info-grid">
+
                 <div class="meta-item shadow-sm">
                     <i class="bi bi-megaphone"></i>
                     <span class="label">Director</span>
@@ -80,7 +85,7 @@
                 </div>
 
                 <!-- Platform -->
-                <div class="meta-item shadow-sm
+              <!--  <div class="meta-item shadow-sm
                     {% if item.plataforma == 'CinePlus' %}plataforma-cineplus
                     {% elif item.plataforma == 'StreamHub' %}plataforma-streamhub
                     {% elif item.plataforma == 'PlayMax' %}plataforma-playmax
@@ -94,8 +99,26 @@
                     {% else %}
                         <i class="bi bi-tv"></i>
                     {% endif %}
-                    <span class="label">Platform</span>
-                    <span class="value">{{ item.plataforma|default:"N/A" }}</span>
+                    <span class="label">Platform</span> 
+                    <span class="value">{{ item.plataforma|default:"N/A" }}</span> -->
+                <div class="meta-item shadow-sm">
+                    <i class="bi bi-tv"></i>
+                    <span class="label">Disponible a</span>
+                    <div class="d-flex flex-wrap gap-1 justify-content-center mt-2">
+                        {% for plat in item.plataformes_disponibles %}
+                            {% if plat == 'CinePlus' %}
+                                <span class="plat-badge plat-cineplus"><i class="bi bi-camera-reels me-1"></i>{{ plat }}</span>
+                            {% elif plat == 'StreamHub' %}
+                                <span class="plat-badge plat-streamhub"><i class="bi bi-broadcast me-1"></i>{{ plat }}</span>
+                            {% elif plat == 'PlayMax' %}
+                                <span class="plat-badge plat-playmax"><i class="bi bi-play-circle me-1"></i>{{ plat }}</span>
+                            {% else %}
+                                <span class="plat-badge plat-altres">{{ plat }}</span>
+                            {% endif %}
+                        {% empty %}
+                            <span class="plat-badge plat-altres">N/A</span>
+                        {% endfor %}
+                    </div>
                 </div>
 
                 {% if tipus == 'series' %}
@@ -117,6 +140,7 @@
                     <span class="label">Age</span>
                     <span class="value">{{ item.edat_nom|default:"N/A" }}</span>
                 </div>
+
             </div>
 
             <div class="mb-5">
@@ -129,9 +153,25 @@
             </div>
 
             <div class="d-flex flex-wrap gap-3 mb-5">
-                <button id="submit_view" class="btn-play d-flex align-items-center gap-2">
-                    <i class="bi bi-play-fill fs-3"></i> PLAY NOW
-                </button>
+                {% if user.is_authenticated %}
+                    <button id="submit_view" class="btn-play d-flex align-items-center gap-2">
+                        <i class="bi bi-play-fill fs-3"></i> PLAY NOW
+                    </button>
+                {% else %}
+                    <div class="d-flex flex-column gap-2">
+                        <button class="btn-play d-flex align-items-center gap-2" disabled style="opacity:0.5; cursor:not-allowed;">
+                            <i class="bi bi-lock-fill fs-3"></i> RESTRICTED CONTENT
+                        </button>
+                        <p class="text-muted small mb-0">
+                            <i class="bi bi-info-circle me-1"></i>
+                            You must be logged in to play this content.
+                        </p>
+                        <div class="d-flex gap-2 mt-1">
+                            <a href="{% url 'login' %}" class="btn btn-outline-secondary fw-bold px-4 rounded-3">Login</a>
+                            <a href="{% url 'registre' %}" class="btn fw-bold px-4 rounded-3 text-white" style="background:#8a2be2;">Sign up</a>
+                        </div>
+                    </div>
+                {% endif %}
 
                 {% if user.is_authenticated %}
                     {% if ja_guardada %}
@@ -218,14 +258,11 @@
                 {% for review in ressenyes %}
                 <div class="comment-bubble shadow-sm position-relative">
                     <div class="d-flex align-items-center gap-3 mb-3">
-                        <div class="user-avatar">
-                            {{ review.usuari.username|first|upper }}
-                        </div>
+                        <div class="user-avatar">{{ r.usuari.username|first|upper }}</div>
                         <div class="flex-grow-1">
                             <h6 class="m-0 fw-bold">{{ review.usuari.username }}</h6>
                             <small class="text-muted">{{ review.data_publicacio|date:"d F, Y" }}</small>
                         </div>
-
                         <div class="d-flex align-items-center gap-2">
                             <div class="badge bg-warning text-dark fs-6 rounded-3 px-3 py-2">
                                 <i class="bi bi-star-fill me-1"></i> {{ review.puntuacio }}
@@ -257,30 +294,8 @@
     <div class="mt-5 pt-5">
         <h4 class="fw-bold mb-4"><i class="bi bi-stars text-purple me-2"></i> You may also like</h4>
         <div class="row row-cols-2 row-cols-md-4 row-cols-lg-5 g-4">
-            {% for reco in recomanacions %}
-            <div class="col">
-                <a href="{% url 'pagina_contingut' tipus=reco.tipus content_id=reco.id %}" class="text-decoration-none">
-                    <div class="card h-100 border-0 shadow-sm rounded-4 overflow-hidden" style="transition: 0.3s;">
-                        <img src="{{ reco.imatge|default:'https://via.placeholder.com/300x450' }}"
-                             class="card-img-top" style="aspect-ratio: 2/3; object-fit: cover;">
-                        <div class="card-body p-3">
-                            <h6 class="fw-bold text-dark text-truncate m-0" style="font-size: 0.9rem;">{{ reco.titol }}</h6>
-                            <div class="d-flex justify-content-between align-items-center mt-1">
-                                <small class="text-muted">{{ reco.any }}</small>
-                                <!-- Platform in recommendations -->
-                                <span class="badge border fw-normal"
-                                    style="font-size: 0.6rem;
-                                    {% if reco.plataforma == 'CinePlus' %}background:#fff0f0; color:#e50914; border-color:#e50914!important;
-                                    {% elif reco.plataforma == 'StreamHub' %}background:#f0f4ff; color:#0071eb; border-color:#0071eb!important;
-                                    {% elif reco.plataforma == 'PlayMax' %}background:#f0fff4; color:#00b300; border-color:#00b300!important;
-                                    {% else %}background:#f5f5f5; color:#666;{% endif %}">
-                                    {{ reco.plataforma|default:reco.tipus|upper }}
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-                </a>
-            </div>
+            {% for item in recomanacions %}
+                {% include "components/card_contingut.html" with item=item %}
             {% endfor %}
         </div>
     </div>
@@ -344,4 +359,23 @@
         });
     </script>
 </div>
+
+{% if user.is_authenticated %}
+<script>
+    const token = document.querySelector('meta[name="csrf-token"]').content;
+    document.getElementById("submit_view").addEventListener("click", function () {
+        fetch("{% url 'register_view' %}", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": token
+            },
+            body: JSON.stringify({ film: "{{ item.id }}" })
+        })
+        .then(res => res.json())
+        .then(data => console.log(data));
+    });
+</script>
+{% endif %}
+
 {% endblock %}

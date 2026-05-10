@@ -40,6 +40,15 @@ OPTIONS = {
 
 
 class StreamSyncLoginView(LoginView):
+    def get_success_url(self):
+        user = self.request.user
+
+        if hasattr(user, 'profile') and user.profile.manager_de:
+            return f'/dashboard/{user.profile.manager_de}/'
+
+
+        return '/perfil/'
+
     def form_valid(self, form):
         response = super().form_valid(form)
         messages.success(self.request, f"Benvingut/da de nou, {form.get_user().username}!")
@@ -122,6 +131,17 @@ def map_data(item, port):
         'edat_nom': "N/A"
     }
 
+def deduplicate_content(llista):
+    vistos = {}
+    for item in llista:
+        titol = item['titol'].strip().lower()
+        if titol not in vistos:
+            item['plataformes_disponibles'] = [item['plataforma']]
+            vistos[titol] = item
+        else:
+            if item['plataforma'] not in vistos[titol]['plataformes_disponibles']:
+                vistos[titol]['plataformes_disponibles'].append(item['plataforma'])
+    return list(vistos.values())
 
 # --- 4. STREAMSYNC API CALLS ---
 
@@ -140,7 +160,7 @@ def get_all_movies(query=None):
                     results.append(obj)
         except:
             pass
-    return results
+    return deduplicate_content(results)  # ✅ Deduplicació
 
 
 def enrich_api_data(content_list):
@@ -176,7 +196,7 @@ def get_all_series(query=None):
                     results.append(obj)
         except:
             pass
-    return results
+    return deduplicate_content(results)  # ✅ Deduplicació
 
 
 def get_genres_from_api():
@@ -277,17 +297,23 @@ def content_detail(request, tipus, content_id):
     if not item:
         return render(request, '404.html', status=404)
 
+    if 'plataformes_disponibles' not in item:
+        item['plataformes_disponibles'] = [item.get('plataforma', 'N/A')]
+
+    # ✅ Carreguem traduccions una sola vegada
     genres = get_genres_from_api()
-    item['genere_nom'] = next((g['name'] for g in genres if str(g['id']) == str(item['genre_id'])), "General")
-
     directors = get_directors_from_api()
-    item['director_nom'] = next((d['name'] for d in directors if str(d['id']) == str(item['director_id'])), "Desconegut")
-
     ratings = get_age_ratings_from_api()
-    item['edat_nom'] = next((r.get('title') or r.get('name') or r.get('description')
-                             for r in ratings if str(r['id']) == str(item['age_rating_id'])), "N/A")
 
-    item['imatge'] = get_tmdb_image(item['titol'])
+    mapa_genres = {str(g['id']): g['name'] for g in genres}
+    mapa_ratings = {str(r['id']): r.get('description') or r.get('title') or r.get('name') or 'N/A' for r in ratings}
+    mapa_directors = {str(d['id']): d['name'] for d in directors}
+
+    # ✅ Enriquim l'item principal
+    item['genere_nom'] = mapa_genres.get(str(item.get('genre_id')), 'General')
+    item['director_nom'] = mapa_directors.get(str(item.get('director_id')), 'Desconegut')
+    item['edat_nom'] = mapa_ratings.get(str(item.get('age_rating_id')), 'N/A')
+    item['imatge'] = get_imatge_tmdb(item['titol'])
 
     movie_db, _ = Pelicula.objects.update_or_create(
         id=item['id'],
@@ -301,7 +327,12 @@ def content_detail(request, tipus, content_id):
         }
     )
 
-    raw_recommendations = [p for p in all_content if str(p['id']) != str(content_id)][:5]
+    # ✅ Enriquim les recomanacions amb gènere i edat
+    raw_recommendations = [p for p in totes if str(p['id']) != str(content_id)][:5]
+    for r in raw_recommendations:
+        r['genere_nom'] = mapa_genres.get(str(r.get('genre_id')), 'General')
+        r['edat_nom'] = mapa_ratings.get(str(r.get('age_rating_id')), 'N/A')
+
     recommendations = enrich_tmdb_images(raw_recommendations)
 
     return render(request, 'pagina_contingut.html', {
@@ -349,10 +380,10 @@ def catalogo(request, tipus=None):
         item['edat_nom'] = rating_map.get(eid, "N/A")
         item['director_nom'] = director_map.get(did, "Desconegut")
 
-        if filters['p'] and item.get('plataforma') != filters['p']: continue
-        if filters['g'] and gid != filters['g']: continue
-        if filters['e'] and eid != filters['e']: continue
-        if filters['d'] and filters['d'] not in item['director_nom'].lower(): continue
+        if f['p'] and f['p'] not in item.get('plataformes_disponibles', [item.get('plataforma', '')]): continue
+        if f['g'] and gid != f['g']: continue
+        if f['e'] and eid != f['e']: continue
+        if f['d'] and f['d'] not in item['director_nom'].lower(): continue
 
         try:
             if float(item.get('rating', 0)) < float(filters['v']): continue
@@ -600,6 +631,12 @@ def search_content(request):
     main_result = None
     recommendations = []
 
+    # ✅ Carreguem traduccions una sola vegada
+    genres_api = get_genres_from_api()
+    ratings_api = get_age_ratings_from_api()
+    mapa_genres = {str(g['id']): g['name'] for g in genres_api}
+    mapa_ratings = {str(r['id']): r.get('description', 'N/A') for r in ratings_api}
+
     if query:
         titles = [p['titol'] for p in all_content]
         matches = process.extract(query, titles, scorer=fuzz.token_set_ratio, limit=1)
@@ -607,7 +644,10 @@ def search_content(request):
         if matches and matches[0][1] > 65:
             main_result = next(p for p in all_content if p['titol'] == matches[0][0])
 
-            main_result['imatge'] = get_tmdb_image(main_result['titol'])
+            # ✅ Enriquim el resultat principal
+            main_result['genere_nom'] = mapa_genres.get(str(main_result.get('genre_id')), 'General')
+            main_result['edat_nom'] = mapa_ratings.get(str(main_result.get('age_rating_id')), 'N/A')
+            main_result['imatge'] = get_imatge_tmdb(main_result['titol'])
 
             others = [p for p in all_content if p['id'] != main_result['id']]
 
@@ -620,9 +660,23 @@ def search_content(request):
                 if item.get('age_rating_id') == main_result.get('age_rating_id'):
                     score += 2
                 return score
+             
+            
 
             recommendations = sorted(others, key=calculate_score, reverse=True)
             recommendations = [p for p in recommendations if calculate_score(p) > 0][:5]
+            
+            # ✅ Només continguts del mateix gènere
+            recommendations = [
+                p for p in others
+                if p.get('genre_id') == main_result.get('genre_id')
+            ][:5]
+
+            # ✅ Enriquim gènere i edat de les recomanacions
+            for item in recommendations:
+                item['genere_nom'] = mapa_genres.get(str(item.get('genre_id')), 'General')
+                item['edat_nom'] = mapa_ratings.get(str(item.get('age_rating_id')), 'N/A')
+
 
             enrich_tmdb_images(recommendations)
 
@@ -890,4 +944,4 @@ def register_view(request):
             print("Error al registrar la visita:", str(e))
             return JsonResponse({"error": str(e)}, status=500)
 
-    return JsonResponse({"error": "Mètode no permès"}, status=405)
+    return JsonResponse({"error": "Method not permited"}, status=405)
