@@ -859,9 +859,6 @@ def register_view(request):
 
             if not film_id:
                 return JsonResponse({"error": "Falta l'ID de la pel·lícula"}, status=400)
-            # Check that film_id is present
-            if not film_id:
-                return HttpResponse({"error": "film_id required"}, status=400)#
 
             # Busquem la pel·lícula a la base de dades local
             film = get_object_or_404(Pelicula, id=film_id)
