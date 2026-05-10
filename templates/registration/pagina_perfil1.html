@@ -1,18 +1,16 @@
 {% extends "base.html" %}
 
-{% block title %}StreamSync - Perfil{% endblock %}
+{% block title %}StreamSync - Profile{% endblock %}
 
 {% block extra_css %}
 <style>
     .profile-container { background: #fff; min-height: 90vh; padding: 40px 0; }
 
-    /* Sidebar */
     .sidebar-nav {
         background: #fff; border-radius: 20px; padding: 30px;
         border: 1px solid #f2f2f2; box-shadow: 0 4px 20px rgba(0,0,0,0.03);
     }
 
-    /* Botó Tornar a l'inici amb efecte dinàmic (com a detalls) */
     .btn-back-sidebar {
         display: inline-flex;
         align-items: center;
@@ -24,14 +22,14 @@
         transition: all 0.3s ease;
         padding: 8px 12px;
         border-radius: 12px;
-        margin-left: -12px; /* Per alinear visualment amb el text de sota */
+        margin-left: -12px;
         margin-bottom: 15px;
     }
 
     .btn-back-sidebar:hover {
         color: #8a2be2;
         background: #f8f0ff;
-        transform: translateX(-5px); /* Efecte de moviment lateral */
+        transform: translateX(-5px); /* Side movement effect */
     }
 
     .sidebar-title { font-weight: 800; font-size: 1.1rem; margin-bottom: 25px; color: #000; }
@@ -44,10 +42,9 @@
     .nav-link-custom.active { background: #f8f0ff; color: #8a2be2; border: 1px solid #8a2be2; }
     .nav-link-custom i { font-size: 1.2rem; margin-right: 12px; }
 
-    /* Card de Contingut */
     .content-card { background: white; border-radius: 24px; padding: 40px; border: 1px solid #f2f2f2; }
 
-    /* Formulari */
+    /* Form */
     .section-label {
         font-weight: 800; font-size: 0.7rem; color: #999;
         text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px; display: block;
@@ -59,7 +56,7 @@
     .form-control-figma:focus { border-color: #8a2be2; }
     .form-control-figma[readonly] { background-color: #f9f9f9; color: #aaa; border-color: #eee; cursor: not-allowed; }
 
-    /* Botons */
+
     .btn-save {
         padding: 12px 35px; border-radius: 10px; border: none;
         background: linear-gradient(90deg, #8a2be2, #d40078);
@@ -81,26 +78,26 @@
                 <div class="sidebar-nav">
                     <div class="mb-2">
                         <a href="{% url 'pagina_principal' %}" class="btn-back-sidebar text-uppercase">
-                            <i class="bi bi-arrow-left me-2"></i> Tornar a l'Inici
+                            <i class="bi bi-arrow-left me-2"></i> Back to Home
                         </a>
                     </div>
 
-                    <div class="sidebar-title">El meu Compte</div>
+                    <div class="sidebar-title">My Account</div>
                     <nav>
                         <a href="{% url 'pagina_perfil1' %}" class="nav-link-custom active">
-                            <i class="bi bi-person"></i> Informació personal
+                            <i class="bi bi-person"></i> Personal information
                         </a>
                         <a href="{% url 'profile2' %}" class="nav-link-custom">
-                            <i class="bi bi-sliders"></i> Preferències
+                            <i class="bi bi-sliders"></i> Preferences
                         </a>
                         <a href="{% url 'llistes' %}" class="nav-link-custom">
-                            <i class="bi bi-bookmark"></i> Les meves llistes
+                            <i class="bi bi-bookmark"></i> My lists
                         </a>
                         <hr class="my-4 opacity-25">
                         <form method="post" action="{% url 'logout' %}">
                             {% csrf_token %}
                             <button type="submit" class="nav-link-custom border-0 bg-transparent w-100 text-danger text-start">
-                                <i class="bi bi-box-arrow-left"></i> Tancar sessió
+                                <i class="bi bi-box-arrow-left"></i> Sign out
                             </button>
                         </form>
                     </nav>
@@ -114,8 +111,8 @@
                             <i class="bi bi-person-fill fs-3"></i>
                         </div>
                         <div>
-                            <h2 class="fw-bold mb-0">Hola, {{ user.username }}!</h2>
-                            <p class="text-muted mb-0 small">Gestiona les teves dades personals i seguretat</p>
+                            <h2 class="fw-bold mb-0">Hi, {{ user.username }}!</h2>
+                            <p class="text-muted mb-0 small">Manage your personal data and security</p>
                         </div>
                     </div>
 
@@ -123,30 +120,30 @@
                         {% csrf_token %}
                         <div class="row mb-4">
                             <div class="col-md-6 mb-3">
-                                <label class="section-label">Nom d'usuari</label>
+                                <label class="section-label">Username</label>
                                 <input type="text" name="username" class="form-control-figma" value="{{ user.username }}">
                             </div>
                             <div class="col-md-6 mb-3">
-                                <label class="section-label">Nom complet</label>
+                                <label class="section-label">Full name</label>
                                 <input type="text" name="first_name" class="form-control-figma" value="{{ user.first_name }}">
                             </div>
                         </div>
 
                         <div class="mb-5">
-                            <label class="section-label">Correu electrònic</label>
+                            <label class="section-label">Email</label>
                             <input type="email" class="form-control-figma" value="{{ user.email }}" readonly>
                             <p class="text-muted mt-2 mb-0" style="font-size: 0.75rem;">
-                                ⓘ Per motius de seguretat, el correu no es pot canviar des d'aquí.
+                                ⓘ For security reasons, email cannot be changed here.
                             </p>
                         </div>
 
                         <div class="pt-4 border-top d-flex align-items-center justify-content-between">
                             <div class="d-flex gap-3 flex-wrap">
-                                <button type="submit" class="btn-save">GUARDAR CANVIS</button>
-                                <a href="{% url 'cambiar_password' %}" class="btn-pass">CANVIAR CONTRASENYA</a>
+                                <button type="submit" class="btn-save">SAVE CHANGES</button>
+                                <a href="{% url 'cambiar_password' %}" class="btn-pass">CHANGE PASSWORD</a>
                             </div>
                             <button type="button" class="btn-delete" data-bs-toggle="modal" data-bs-target="#deleteAccountModal">
-                                Esborrar compte
+                                Delete account
                             </button>
                         </div>
                     </form>
@@ -161,13 +158,13 @@
         <div class="modal-content border-0 shadow" style="border-radius: 20px;">
             <div class="modal-body p-5 text-center">
                 <i class="bi bi-exclamation-triangle text-danger display-4 mb-3"></i>
-                <h4 class="fw-bold">Esborrar compte?</h4>
-                <p class="text-muted">Aquesta acció és permanent i perdràs totes les teves llistes guardades.</p>
+                <h4 class="fw-bold">Delete account?</h4>
+                <p class="text-muted">This action is permanent and all your saved lists will be lost.</p>
                 <div class="d-flex gap-2 justify-content-center mt-4">
-                    <button type="button" class="btn btn-light px-4 fw-bold" data-bs-dismiss="modal" style="border-radius: 12px;">Cancel·lar</button>
+                    <button type="button" class="btn btn-light px-4 fw-bold" data-bs-dismiss="modal" style="border-radius: 12px;">Cancel</button>
                     <form method="post" action="{% url 'esborrar_compte' %}">
                         {% csrf_token %}
-                        <button type="submit" class="btn btn-danger px-4 fw-bold" style="border-radius: 12px;">Sí, esborrar</button>
+                        <button type="submit" class="btn btn-danger px-4 fw-bold" style="border-radius: 12px;">Yes, delete</button>
                     </form>
                 </div>
             </div>

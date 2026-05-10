@@ -1,6 +1,7 @@
 import os
 import requests
 from concurrent.futures import ThreadPoolExecutor
+from datetime import timedelta
 from django.core.paginator import Paginator
 from django.http import HttpResponse
 from django.http import JsonResponse
@@ -14,13 +15,12 @@ from dotenv import load_dotenv
 from rest_framework.decorators import api_view
 from thefuzz import process, fuzz
 from django.db.models import Count, Avg, Sum
-from django.http import JsonResponse
-import json
 from django.utils import timezone
-from datetime import timedelta
-# Importem els teus models i formularis
+
 from .models import Pelicula, LlistaPersonal, Carpeta, Profile, Ressenya, Views, Feedback
-from .forms import RegistroUsuarioForm, UserUpdateForm
+from .forms import UserRegistrationForm, UserUpdateForm
+
+# 1. LOAD CONFIGURATION
 from functools import wraps
 from django.shortcuts import redirect
 import json
@@ -33,7 +33,7 @@ API_CONFIG = dict(zip(urls_list, keys_list))
 
 TMDB_API_KEY = os.getenv('TMDB_API_KEY')
 
-OPCIONS = {
+OPTIONS = {
     'plataformas': ['CinePlus', 'StreamHub', 'PlayMax'],
     'idiomas': ['Català', 'Castellano', 'English', 'Français']
 }
@@ -70,60 +70,59 @@ def cap_manager_permes(view_func):
     return _wrapped_view
 # --- 2. FUNCIONS AUXILIARS I MAPEIG ---
 
-# --- 2. FUNCIONS TMDB ---
+# --- 2. TMDB FUNCTIONS ---
 
-def get_imatge_tmdb(titol):
-    """Busca la imatge d'un contingut a TMDB per títol."""
+def get_tmdb_image(title):
     try:
         response = requests.get(
             "https://api.themoviedb.org/3/search/multi",
             params={
                 "api_key": TMDB_API_KEY,
-                "query": titol,
+                "query": title,
                 "language": "en"
             },
             timeout=2
         )
         if response.status_code == 200:
-            resultats = response.json().get("results", [])
-            if resultats and resultats[0].get("poster_path"):
-                return f"https://image.tmdb.org/t/p/w500{resultats[0]['poster_path']}"
+            results = response.json().get("results", [])
+            if results and results[0].get("poster_path"):
+                return f"https://image.tmdb.org/t/p/w500{results[0]['poster_path']}"
     except (requests.RequestException, ValueError):
         pass
     return 'https://via.placeholder.com/300x450'
 
 
-def enriquir_imatges_tmdb(llista):
-    """Afegeix imatges de TMDB a tota una llista en paral·lel."""
-    def carregar_imatge(item):
-        item['imatge'] = get_imatge_tmdb(item['titol'])
+def enrich_tmdb_images(items):
+    def load_image(item):
+        item['imatge'] = get_tmdb_image(item['titol'])
         return item
 
     with ThreadPoolExecutor(max_workers=10) as executor:
-        llista = list(executor.map(carregar_imatge, llista))
-    return llista
+        items = list(executor.map(load_image, items))
+    return items
 
 
-# --- 3. MAPEIG DE DADES ---
+# --- 3. DATA MAPPING ---
 
-def mapejar_dades(item, port):
+def map_data(item, port):
+    platforms = {"8080": "CinePlus", "8081": "StreamHub", "8082": "PlayMax"}
     port_net = str(port).replace('/','')
-    plataformes = {"8080": "CinePlus", "8081": "StreamHub", "8082": "PlayMax"}
 
-    titol = item.get('title') or item.get('titol') or "Sense títol"
+
+    title = item.get('title') or item.get('titol') or "Sense títol"
     synopsis = item.get('synopsis') or "Sense sinopsi disponible."
-    any_contingut = item.get('year') or item.get('start_year') or 0
+    content_year = item.get('year') or item.get('start_year') or 0
 
     return {
         'id': f"{port}_{item.get('id')}",
-        'titol': titol,
+        'titol': title,
         'sinopsi': synopsis,
-        'any': any_contingut,
+        'any': content_year,
         'any_fi': item.get('end_year'),
         'total_seasons': item.get('total_seasons'),
         'rating': item.get('rating', '0.0'),
         'imatge': item.get('imatge') or 'https://via.placeholder.com/300x450',
-        'plataforma': plataformes.get(port, "Altres"),
+        'plataforma': platforms.get(port, "Altres"),
         'genre_id': item.get('genre_id'),
         'director_id': item.get('director_id'),
         'age_rating_id': item.get('age_rating_id'),
@@ -144,10 +143,10 @@ def deduplicate_content(llista):
                 vistos[titol]['plataformes_disponibles'].append(item['plataforma'])
     return list(vistos.values())
 
-# --- 4. CRIDES API STREAMSYNC ---
+# --- 4. STREAMSYNC API CALLS ---
 
 def get_all_movies(query=None):
-    resultats = []
+    results = []
     for base_url, key in API_CONFIG.items():
         headers = {'x-api-key': key}
         port = base_url.split(':')[-1]
@@ -156,34 +155,34 @@ def get_all_movies(query=None):
             response = requests.get(f"{base_url}/movies", headers=headers, params=params, timeout=2)
             if response.status_code == 200:
                 for item in response.json():
-                    obj = mapejar_dades(item, port)
+                    obj = map_data(item, port)
                     obj['tipus'] = 'movie'
-                    resultats.append(obj)
+                    results.append(obj)
         except:
             pass
-    return deduplicate_content(resultats)  # ✅ Deduplicació
+    return deduplicate_content(results)  # ✅ Deduplicació
 
 
-def enriquir_dades_api(llista_contingut):
+def enrich_api_data(content_list):
     genres_api = get_genres_from_api()
     ratings_api = get_age_ratings_from_api()
 
-    mapa_genres = {str(g['id']): g['name'] for g in genres_api}
-    mapa_ratings = {str(r['id']): r.get('description', 'N/A') for r in ratings_api}
+    genre_map = {str(g['id']): g['name'] for g in genres_api}
+    rating_map = {str(r['id']): r.get('description', 'N/A') for r in ratings_api}
 
-    for item in llista_contingut:
+    for item in content_list:
         gid = str(item.get('genre_id'))
         eid = str(item.get('age_rating_id'))
-        item['genere_nom'] = mapa_genres.get(gid, "General")
-        item['edat_nom'] = mapa_ratings.get(eid, "N/A")
+        item['genere_nom'] = genre_map.get(gid, "General")
+        item['edat_nom'] = rating_map.get(eid, "N/A")
         if 'tipus' not in item:
             item['tipus'] = item.get('media_type', 'movie')
 
-    return llista_contingut
+    return content_list
 
 
 def get_all_series(query=None):
-    resultats = []
+    results = []
     for base_url, key in API_CONFIG.items():
         headers = {'x-api-key': key}
         port = base_url.split(':')[-1]
@@ -192,12 +191,12 @@ def get_all_series(query=None):
             response = requests.get(f"{base_url}/series", headers=headers, params=params, timeout=2)
             if response.status_code == 200:
                 for item in response.json():
-                    obj = mapejar_dades(item, port)
+                    obj = map_data(item, port)
                     obj['tipus'] = 'series'
-                    resultats.append(obj)
+                    results.append(obj)
         except:
             pass
-    return deduplicate_content(resultats)  # ✅ Deduplicació
+    return deduplicate_content(results)  # ✅ Deduplicació
 
 
 def get_genres_from_api():
@@ -227,72 +226,73 @@ def get_age_ratings_from_api():
     return []
 
 
-# --- 4. VISTES PRINCIPALS ---
+# --- 4. MAIN VIEWS ---
+
 @cap_manager_permes
-def pagina_principal(request):
-    # 1. Obtenim i etiquetem les dades
+def home_page(request):
     movies = get_all_movies()
     for m in movies: m['tipus'] = 'movie'
 
     series = get_all_series()
     for s in series: s['tipus'] = 'series'
 
-    totes = movies + series
+    all_content = movies + series
 
-    # 2. Carreguem diccionaris de traducció de l'API (només per visualització)
+    # 2. Load translation dictionaries from the API (display only)
     genres_api = get_genres_from_api()
     ratings_api = get_age_ratings_from_api()
 
-    mapa_genres = {str(g['id']): g['name'] for g in genres_api}
-    mapa_ratings = {str(r['id']): r.get('description', 'N/A') for r in ratings_api}
+    genre_map = {str(g['id']): g['name'] for g in genres_api}
+    rating_map = {str(r['id']): r.get('description', 'N/A') for r in ratings_api}
 
-    def enriquir(llista):
-        for item in llista:
+    def enrich(items):
+        for item in items:
             gid = str(item.get('genre_id'))
             eid = str(item.get('age_rating_id'))
-            item['genere_nom'] = mapa_genres.get(gid, "General")
-            item['edat_nom'] = mapa_ratings.get(eid, "N/A")
-        return llista
+            item['genere_nom'] = genre_map.get(gid, "General")
+            item['edat_nom'] = rating_map.get(eid, "N/A")
+        return items
 
-    recomanacions_perfil = []
+    profile_recommendations = []
     if request.user.is_authenticated:
         try:
-            p = request.user.profile
-            filtrades = totes
+            profile = request.user.profile
+            filtered = all_content
 
-            if p.tipus:
-                filtrades = [x for x in filtrades if x['tipus'] in p.tipus]
-            if p.plataformes:
-                filtrades = [x for x in filtrades if x.get('plataforma') in p.plataformes]
-            if p.generes:
-                filtrades = [x for x in filtrades if str(x.get('genre_id')) in p.generes]
-            if p.edat_rating:
-                filtrades = [x for x in filtrades if str(x.get('age_rating_id')) in p.edat_rating]
+            if profile.tipus:
+                filtered = [x for x in filtered if x['tipus'] in profile.tipus]
+            if profile.plataformes:
+                filtered = [x for x in filtered if x.get('plataforma') in profile.plataformes]
+            if profile.generes:
+                filtered = [x for x in filtered if str(x.get('genre_id')) in profile.generes]
+            if profile.edat_rating:
+                filtered = [x for x in filtered if str(x.get('age_rating_id')) in profile.edat_rating]
 
-            top4 = sorted(filtrades, key=lambda x: float(x.get('rating', 0)), reverse=True)[:4]
-            recomanacions_perfil = enriquir_imatges_tmdb(enriquir(top4))  # ✅ TMDB en paral·lel
+            top4 = sorted(filtered, key=lambda x: float(x.get('rating', 0)), reverse=True)[:4]
+            profile_recommendations = enrich_tmdb_images(enrich(top4))  # ✅ TMDB in parallel
 
         except Exception as e:
-            print(f"Error filtrant preferències: {e}")
-            recomanacions_perfil = []
+            print(f"Error filtering preferences: {e}")
+            profile_recommendations = []
 
-    tendencies = enriquir_imatges_tmdb(enriquir(totes[:4]))  # ✅ TMDB en paral·lel
-    millor_valorades = enriquir_imatges_tmdb(
-        enriquir(sorted(totes, key=lambda x: float(x.get('rating', 0)), reverse=True)[:4])
-    )  # ✅ TMDB en paral·lel
+    tendencies = enrich_tmdb_images(enrich(all_content[:4]))  # ✅ TMDB in parallel
+    top_rated = enrich_tmdb_images(
+        enrich(sorted(all_content, key=lambda x: float(x.get('rating', 0)), reverse=True)[:4])
+    )
 
     return render(request, 'pages/pagina_principal.html', {
         'tendencies': tendencies,
-        'millor_valorades': millor_valorades,
-        'recomanacions_perfil': recomanacions_perfil,
+        'millor_valorades': top_rated,
+        'recomanacions_perfil': profile_recommendations,
         'genres_api': genres_api,
         'ratings': ratings_api
     })
 
+
 @cap_manager_permes
-def detall_contingut(request, tipus, content_id):
-    totes = get_all_series() if tipus == 'series' else get_all_movies()
-    item = next((p for p in totes if str(p['id']) == str(content_id)), None)
+def content_detail(request, tipus, content_id):
+    all_content = get_all_series() if tipus == 'series' else get_all_movies()
+    item = next((p for p in all_content if str(p['id']) == str(content_id)), None)
 
     if not item:
         return render(request, '404.html', status=404)
@@ -315,7 +315,7 @@ def detall_contingut(request, tipus, content_id):
     item['edat_nom'] = mapa_ratings.get(str(item.get('age_rating_id')), 'N/A')
     item['imatge'] = get_imatge_tmdb(item['titol'])
 
-    peli_db, _ = Pelicula.objects.update_or_create(
+    movie_db, _ = Pelicula.objects.update_or_create(
         id=item['id'],
         defaults={
             "titol": item['titol'],
@@ -328,12 +328,12 @@ def detall_contingut(request, tipus, content_id):
     )
 
     # ✅ Enriquim les recomanacions amb gènere i edat
-    recomanacions_raw = [p for p in totes if str(p['id']) != str(content_id)][:5]
-    for r in recomanacions_raw:
+    raw_recommendations = [p for p in totes if str(p['id']) != str(content_id)][:5]
+    for r in raw_recommendations:
         r['genere_nom'] = mapa_genres.get(str(r.get('genre_id')), 'General')
         r['edat_nom'] = mapa_ratings.get(str(r.get('age_rating_id')), 'N/A')
 
-    recomanacions = enriquir_imatges_tmdb(recomanacions_raw)
+    recommendations = enrich_tmdb_images(raw_recommendations)
 
     # CHECK IF THERE'S ALREADY A REVIEW
     ressenya_usuari = None
@@ -347,34 +347,32 @@ def detall_contingut(request, tipus, content_id):
     return render(request, 'pagina_contingut.html', {
         'item': item,
         'tipus': tipus,
-        'ja_guardada': LlistaPersonal.objects.filter(
-            usuari=request.user,
-            pelicula=peli_db
-        ).exists() if request.user.is_authenticated else False,
+        'ja_guardada': LlistaPersonal.objects.filter(usuari=request.user,
+                                                     pelicula=movie_db).exists() if request.user.is_authenticated else False,
         'carpetes': request.user.les_meves_carpetes.all() if request.user.is_authenticated else [],
-        'ressenyes': Ressenya.objects.filter(pelicula=peli_db).order_by('-data_publicacio'),
-        'recomanacions': recomanacions,
+        'ressenyes': Ressenya.objects.filter(pelicula=movie_db).order_by('-data_publicacio'),
+        'recomanacions': recommendations,
         'ressenya_usuari': ressenya_usuari,
     })
 
 @cap_manager_permes
 def catalogo(request, tipus=None):
     if tipus == 'movie':
-        totes = get_all_movies()
+        all_content = get_all_movies()
     elif tipus == 'series':
-        totes = get_all_series()
+        all_content = get_all_series()
     else:
-        totes = get_all_movies() + get_all_series()
+        all_content = get_all_movies() + get_all_series()
 
     genres_api = get_genres_from_api()
     ratings_api = get_age_ratings_from_api()
     directors_api = get_directors_from_api()
 
-    mapa_genres = {str(g['id']): g['name'] for g in genres_api}
-    mapa_ratings = {str(r['id']): r.get('description', 'N/A') for r in ratings_api}
-    mapa_directors = {str(d['id']): d['name'] for d in directors_api}
+    genre_map = {str(g['id']): g['name'] for g in genres_api}
+    rating_map = {str(r['id']): r.get('description', 'N/A') for r in ratings_api}
+    director_map = {str(d['id']): d['name'] for d in directors_api}
 
-    f = {
+    filters = {
         'p': request.GET.get('plataforma', ''),
         'g': request.GET.get('genere', ''),
         'e': request.GET.get('edat', ''),
@@ -382,16 +380,15 @@ def catalogo(request, tipus=None):
         'd': request.GET.get('director', '').strip().lower()
     }
 
-    # 1. Traduïm i filtrem tots els resultats
-    resultats = []
-    for item in totes:
+    results = []
+    for item in all_content:
         gid = str(item.get('genre_id'))
         eid = str(item.get('age_rating_id'))
         did = str(item.get('director_id'))
 
-        item['genere_nom'] = mapa_genres.get(gid, "General")
-        item['edat_nom'] = mapa_ratings.get(eid, "N/A")
-        item['director_nom'] = mapa_directors.get(did, "Desconegut")
+        item['genere_nom'] = genre_map.get(gid, "General")
+        item['edat_nom'] = rating_map.get(eid, "N/A")
+        item['director_nom'] = director_map.get(did, "Desconegut")
 
         if f['p'] and f['p'] not in item.get('plataformes_disponibles', [item.get('plataforma', '')]): continue
         if f['g'] and gid != f['g']: continue
@@ -399,45 +396,42 @@ def catalogo(request, tipus=None):
         if f['d'] and f['d'] not in item['director_nom'].lower(): continue
 
         try:
-            if float(item.get('rating', 0)) < float(f['v']): continue
+            if float(item.get('rating', 0)) < float(filters['v']): continue
         except:
             pass
 
-        resultats.append(item)
+        results.append(item)
 
-    # 2. Paginació sobre els resultats filtrats
-    paginator = Paginator(resultats, 12)
+    paginator = Paginator(results, 12)
     page_number = request.GET.get('page', 1)
     page_obj = paginator.get_page(page_number)
 
-    # 3. ✅ TMDB només pels 12 de la pàgina actual (en paral·lel)
-    enriquir_imatges_tmdb(list(page_obj.object_list))
+    enrich_tmdb_images(list(page_obj.object_list))
 
-    # 4. Paràmetres de filtre per mantenir-los a la URL de paginació
-    filtres_url = f"&plataforma={f['p']}&genere={f['g']}&edat={f['e']}&valoracio={f['v']}&director={f['d']}"
+    filters_url = f"&plataforma={filters['p']}&genere={filters['g']}&edat={filters['e']}&valoracio={filters['v']}&director={filters['d']}"
 
     return render(request, 'cataleg.html', {
         'contenidos': page_obj.object_list,
         'page_obj': page_obj,
-        'filtres_url': filtres_url,
+        'filtres_url': filters_url,
         'tipus_actual': tipus,
-        'opcions': OPCIONS,
+        'opcions': OPTIONS,
         'genres_api': genres_api,
         'ratings': ratings_api,
-        'filtros_sel': f
+        'filtros_sel': filters
     })
 
 def feedback_view(request):
     if request.method == "POST":
         tipus = request.POST.get("tipus")
-        titol = request.POST.get("titol")
-        descripcio = request.POST.get("descripcio")
+        title = request.POST.get("titol")
+        description = request.POST.get("descripcio")
         rating = request.POST.get("rating")
 
         Feedback.objects.create(
             tipus=tipus,
-            titol=titol,
-            descripcio=descripcio,
+            titol=title,
+            descripcio=description,
             rating=rating if rating else None
         )
 
@@ -447,14 +441,14 @@ def feedback_view(request):
 
     return render(request, "pages/feedback.html")
 
-# --- 5. GESTIÓ D'USUARI I LLISTES ---
+# --- 5. USER MANAGEMENT AND LISTS ---
 
 @login_required
-def publicar_ressenya(request, tipus, content_id):
+def publish_review(request, tipus, content_id):
     if request.method == "POST":
-        peli_db = get_object_or_404(Pelicula, id=content_id)
+        movie_db = get_object_or_404(Pelicula, id=content_id)
         Ressenya.objects.update_or_create(
-            usuari=request.user, pelicula=peli_db,
+            usuari=request.user, pelicula=movie_db,
             defaults={'puntuacio': request.POST.get('puntuacio'), 'comentari': request.POST.get('comentari')}
         )
         messages.success(request, "Ressenya publicada!")
@@ -462,24 +456,28 @@ def publicar_ressenya(request, tipus, content_id):
 
 
 @login_required
-def afegir_a_llista(request, tipus, content_id):
-    peli = get_object_or_404(Pelicula, id=content_id)
-    id_c = request.POST.get('carpeta_id')
-    carpeta = get_object_or_404(Carpeta, id=id_c, usuari=request.user) if id_c else None
-    LlistaPersonal.objects.get_or_create(usuari=request.user, pelicula=peli, carpeta=carpeta)
+def add_to_list(request, tipus, content_id):
+    movie = get_object_or_404(Pelicula, id=content_id)
+    folder_id = request.POST.get('carpeta_id')
+    folder = get_object_or_404(Carpeta, id=folder_id, usuari=request.user) if folder_id else None
+    LlistaPersonal.objects.get_or_create(usuari=request.user, pelicula=movie, carpeta=folder)
     messages.success(request, "Afegit a la llista!")
     return redirect('pagina_contingut', tipus=tipus, content_id=content_id)
 
 
 @login_required
-def eliminar_ressenya(request, ressenya_id):
-    ressenya = get_object_or_404(Ressenya, id=ressenya_id, usuari=request.user)
-    p_id, p_tipus = ressenya.pelicula.id, ressenya.pelicula.tipus
-    ressenya.delete()
-    return redirect('pagina_contingut', tipus=p_tipus, content_id=p_id)
+def delete_review(request, ressenya_id):
+    review = get_object_or_404(Ressenya, id=ressenya_id, usuari=request.user)
+    content_id_value, content_type = review.pelicula.id, review.pelicula.tipus
+    review.delete()
+    return redirect('pagina_contingut', tipus=content_type, content_id=content_id_value)
 
 
 @login_required
+def lists(request):
+    pass
+
+
 @cap_manager_permes
 def llistes(request):
     return render(request, 'llistes.html', {
@@ -489,81 +487,81 @@ def llistes(request):
 
 
 @login_required
-def detall_carpeta(request, carpeta_id):
-    carpeta = get_object_or_404(Carpeta, id=carpeta_id, usuari=request.user)
+def folder_detail(request, carpeta_id):
+    folder = get_object_or_404(Carpeta, id=carpeta_id, usuari=request.user)
     return render(request, 'detall_carpeta.html', {
-        'carpeta': carpeta,
-        'elements': LlistaPersonal.objects.filter(carpeta=carpeta)
+        'carpeta': folder,
+        'elements': LlistaPersonal.objects.filter(carpeta=folder)
     })
 
 
 @login_required
-def crear_llista(request):
+def create_list(request):
     if request.method == "POST":
         Carpeta.objects.create(
             usuari=request.user, nom=request.POST.get('nom'),
             icona=request.POST.get('icona'), color=request.POST.get('color')
         )
         return redirect('llistes')
-    return render(request, 'crear_llista.html', {'opcions': OPCIONS})
+    return render(request, 'crear_llista.html', {'opcions': OPTIONS})
 
 
 @login_required
-def editar_llista(request, carpeta_id):
-    carpeta = get_object_or_404(Carpeta, id=carpeta_id, usuari=request.user)
+def edit_list(request, carpeta_id):
+    folder = get_object_or_404(Carpeta, id=carpeta_id, usuari=request.user)
     if request.method == "POST":
-        carpeta.nom, carpeta.icona, carpeta.color = request.POST.get('nom'), request.POST.get('icona'), request.POST.get('color')
-        carpeta.save()
+        folder.nom, folder.icona, folder.color = request.POST.get('nom'), request.POST.get('icona'), request.POST.get('color')
+        folder.save()
         return redirect('llistes')
-    return render(request, 'editar_llista.html', {'carpeta': carpeta, 'opcions': OPCIONS})
+    return render(request, 'editar_llista.html', {'carpeta': folder, 'opcions': OPTIONS})
 
 
 @login_required
-def eliminar_carpeta(request, carpeta_id):
+def delete_folder(request, carpeta_id):
     get_object_or_404(Carpeta, id=carpeta_id, usuari=request.user).delete()
     return redirect('llistes')
 
 
 @login_required
-def treure_de_llista(request, tipus, content_id):
+def remove_from_list(request, tipus, content_id):
     LlistaPersonal.objects.filter(usuari=request.user, pelicula_id=content_id).delete()
     messages.success(request, "Element eliminat de la llista.")
     return redirect('llistes')
 
 
-# --- 7. REGISTRE I PERFIL ---
+# --- 7. REGISTRATION AND PROFILE ---
 
 def crear_cuenta(request):
     genres_api = get_genres_from_api()
     ratings_api = get_age_ratings_from_api()
-    plataformes_api = OPCIONS.get('plataformas', [])
+    platforms_api = OPTIONS.get('plataformas', [])
 
     if request.method == 'POST':
-        form = RegistroUsuarioForm(request.POST)
+        form = UserRegistrationForm(request.POST)
         if form.is_valid():
             user = form.save()
 
-            perfil = user.profile
-            perfil.tipus = request.POST.getlist('tipus')
-            perfil.plataformes = request.POST.getlist('plataformes')
-            perfil.generes = request.POST.getlist('generos')
-            perfil.edat_rating = request.POST.getlist('edats')
-            perfil.save()
+            profile = user.profile
+            profile.tipus = request.POST.getlist('tipus')
+            profile.plataformes = request.POST.getlist('plataformes')
+            profile.generes = request.POST.getlist('generos')
+            profile.edat_rating = request.POST.getlist('edats')
+            profile.save()
 
             login(request, user)
             messages.success(request, f"Benvingut/da, {user.username}!")
             return redirect('pagina_principal')
         else:
-            print("Errors del formulari:", form.errors)
-            messages.error(request, "Error en el formulari.")
+            print("Form errors:", form.errors)
+            messages.error(request, "Error in the form.")
     else:
-        form = RegistroUsuarioForm()
+        form = UserRegistrationForm()
 
     context = {
         'form': form,
         'opcions': {
             'tipus': [('movie', 'Pel·lícules'), ('series', 'Sèries')],
-            'plataformas': plataformes_api,
+            'plataformas': platforms_api,
             'genres_api': genres_api,
             'ratings_api': ratings_api
         }
@@ -572,7 +570,7 @@ def crear_cuenta(request):
 
 
 @login_required
-def pagina_perfil1(request):
+def profile_page1(request):
     form = UserUpdateForm(request.POST or None, instance=request.user)
     if request.method == 'POST' and form.is_valid():
         form.save()
@@ -584,16 +582,16 @@ def pagina_perfil1(request):
 @cap_manager_permes
 def profile2(request):
     try:
-        perfil = request.user.profile
+        profile = request.user.profile
     except Profile.DoesNotExist:
-        perfil = Profile.objects.create(user=request.user)
+        profile = Profile.objects.create(user=request.user)
 
     if request.method == 'POST':
-        perfil.tipus = request.POST.getlist('tipus')
-        perfil.plataformes = request.POST.getlist('plataformes')
-        perfil.generes = request.POST.getlist('generos')
-        perfil.edat_rating = request.POST.getlist('edats')
-        perfil.save()
+        profile.tipus = request.POST.getlist('tipus')
+        profile.plataformes = request.POST.getlist('plataformes')
+        profile.generes = request.POST.getlist('generos')
+        profile.edat_rating = request.POST.getlist('edats')
+        profile.save()
 
         messages.success(request, "Preferències actualitzades!")
         return redirect('profile2')
@@ -602,12 +600,12 @@ def profile2(request):
     ratings = get_age_ratings_from_api()
 
     context = {
-        'perfil': perfil,
+        'perfil': profile,
         'genres_api': genres,
         'ratings_api': ratings,
         'opcions': {
             'tipus': [('movie', 'Pel·lícules'), ('series', 'Sèries')],
-            'plataformas': OPCIONS.get('plataformas', []),
+            'plataformas': OPTIONS.get('plataformas', []),
         }
     }
     return render(request, 'profile2.html', context)
@@ -624,14 +622,14 @@ def cambiar_password(request):
 
 
 @login_required
-def esborrar_compte(request):
+def delete_account(request):
     if request.method == 'POST':
         request.user.delete()
         return redirect('pagina_principal')
     return render(request, 'registration/esborrar_compte.html')
 
 
-def cerca_contingut(request):
+def search_content(request):
     query = request.GET.get('q', '').strip()
 
     movies = get_all_movies()
@@ -639,9 +637,9 @@ def cerca_contingut(request):
     series = get_all_series()
     for s in series: s['tipus'] = 'series'
 
-    totes = movies + series
-    resultat_principal = None
-    recomanacions = []
+    all_content = movies + series
+    main_result = None
+    recommendations = []
 
     # ✅ Carreguem traduccions una sola vegada
     genres_api = get_genres_from_api()
@@ -650,50 +648,49 @@ def cerca_contingut(request):
     mapa_ratings = {str(r['id']): r.get('description', 'N/A') for r in ratings_api}
 
     if query:
-        titols = [p['titol'] for p in totes]
-        matches = process.extract(query, titols, scorer=fuzz.token_set_ratio, limit=1)
+        titles = [p['titol'] for p in all_content]
+        matches = process.extract(query, titles, scorer=fuzz.token_set_ratio, limit=1)
 
         if matches and matches[0][1] > 65:
-            resultat_principal = next(p for p in totes if p['titol'] == matches[0][0])
+            main_result = next(p for p in all_content if p['titol'] == matches[0][0])
 
             # ✅ Enriquim el resultat principal
-            resultat_principal['genere_nom'] = mapa_genres.get(str(resultat_principal.get('genre_id')), 'General')
-            resultat_principal['edat_nom'] = mapa_ratings.get(str(resultat_principal.get('age_rating_id')), 'N/A')
-            resultat_principal['imatge'] = get_imatge_tmdb(resultat_principal['titol'])
+            main_result['genere_nom'] = mapa_genres.get(str(main_result.get('genre_id')), 'General')
+            main_result['edat_nom'] = mapa_ratings.get(str(main_result.get('age_rating_id')), 'N/A')
+            main_result['imatge'] = get_imatge_tmdb(main_result['titol'])
 
-            altres = [p for p in totes if p['id'] != resultat_principal['id']]
+            others = [p for p in all_content if p['id'] != main_result['id']]
 
-            def calcular_puntuacio(item):
+            def calculate_score(item):
                 score = 0
-                # Mateix Director: +10 punts
-                if item.get('director_id') == resultat_principal.get('director_id'):
+                if item.get('director_id') == main_result.get('director_id'):
                     score += 10
-                # Mateix Gènere: +5 punts
-                if item.get('genre_id') == resultat_principal.get('genre_id'):
+                if item.get('genre_id') == main_result.get('genre_id'):
                     score += 5
-                # Mateix Age Rating: +2 punts
-                if item.get('age_rating_id') == resultat_principal.get('age_rating_id'):
+                if item.get('age_rating_id') == main_result.get('age_rating_id'):
                     score += 2
                 return score
+             
+            
 
             # ✅ Només continguts del mateix gènere
-            recomanacions = [
-                p for p in altres
-                if p.get('genre_id') == resultat_principal.get('genre_id')
+            recommendations = [
+                p for p in others
+                if p.get('genre_id') == main_result.get('genre_id')
             ][:5]
 
             # ✅ Enriquim gènere i edat de les recomanacions
-            for item in recomanacions:
+            for item in recommendations:
                 item['genere_nom'] = mapa_genres.get(str(item.get('genre_id')), 'General')
                 item['edat_nom'] = mapa_ratings.get(str(item.get('age_rating_id')), 'N/A')
 
-            # ✅ Imatges TMDB en paral·lel
-            enriquir_imatges_tmdb(recomanacions)
+
+            enrich_tmdb_images(recommendations)
 
     return render(request, 'cerca_contingut.html', {
         'query': query,
-        'resultat': resultat_principal,
-        'resultats': recomanacions
+        'resultat': main_result,
+        'resultats': recommendations
     })
 
 
@@ -926,8 +923,16 @@ def register_view(request):
 
             # Busquem la pel·lícula a la base de dades local
             film = get_object_or_404(Pelicula, id=film_id)
+            # Fetch movie
+            film = get_object_or_404(Pelicula, id=film_id)
 
             # Obtenim el registre d'aquest usuari i aquesta peli, o el creem a 0
+            view_reg, created = Views.objects.get_or_create(
+                usuari=request.user,
+                pelicula=film,
+                defaults={"count": 0}
+            )
+            # Create or update view
             view_reg, created = Views.objects.get_or_create(
                 usuari=request.user,
                 pelicula=film,
@@ -946,4 +951,4 @@ def register_view(request):
             print("Error al registrar la visita:", str(e))
             return JsonResponse({"error": str(e)}, status=500)
 
-    return JsonResponse({"error": "Mètode no permès"}, status=405)
+    return JsonResponse({"error": "Method not permited"}, status=405)

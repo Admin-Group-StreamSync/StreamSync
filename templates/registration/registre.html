@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Registre - StreamSync{% endblock %}
+{% block title %}Register - StreamSync{% endblock %}
 
 {% block extra_css %}
 <style>
@@ -48,8 +48,8 @@
         <div class="mx-auto mb-3" style="width: 45px; height: 45px; background: linear-gradient(135deg, #8a2be2, #d40078); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: white;">
             <i class="bi bi-film"></i>
         </div>
-        <h3 class="fw-bold mb-1">Crea el teu compte</h3>
-        <p id="step-txt" class="text-muted small mb-4">Dades del compte</p>
+        <h3 class="fw-bold mb-1">Create your account</h3>
+        <p id="step-txt" class="text-muted small mb-4">Account details</p>
 
         <div class="step-dot-container">
             <div class="step-dot active" id="dot1"></div>
@@ -60,9 +60,10 @@
         <form method="POST" id="reg-form">
             {% csrf_token %}
 
+            <!-- Validation errors -->
             {% if form.errors %}
             <div class="error-box">
-                <p class="fw-bold mb-1">Corregeix el següent:</p>
+                <p class="fw-bold mb-1">Please fix the following:</p>
                 <ul class="mb-0">
                     {% for field in form %}{% for error in field.errors %}<li>{{ field.label }}: {{ error }}</li>{% endfor %}{% endfor %}
                     {% for error in form.non_field_errors %}<li>{{ error }}</li>{% endfor %}
@@ -70,89 +71,92 @@
             </div>
             {% endif %}
 
+            <!-- Step 1: account credentials -->
             <div id="step1">
                 <div class="form-group-custom">
-                    <label>Usuari</label>
-                    <input type="text" name="username" class="form-control-figma" placeholder="nom_usuari" value="{{ form.username.value|default:'' }}" required>
+                    <label>Username</label>
+                    <input type="text" name="username" class="form-control-figma" placeholder="username" value="{{ form.username.value|default:'' }}" required>
                 </div>
                 <div class="form-group-custom">
-                    <label>Nom complet</label>
+                    <label>Full name</label>
 
-                    <input type="text" name="first_name" class="form-control-figma" placeholder="El teu nom i cognoms" value="{{ form.first_name.value|default:'' }}" required>
+                    <input type="text" name="first_name" class="form-control-figma" placeholder="Your full name" value="{{ form.first_name.value|default:'' }}" required>
                 </div>
                 <div class="form-group-custom">
                     <label>Email</label>
-                    <input type="email" name="email" class="form-control-figma" placeholder="correu@exemple.com" value="{{ form.email.value|default:'' }}" required>
+                    <input type="email" name="email" class="form-control-figma" placeholder="email@example.com" value="{{ form.email.value|default:'' }}" required>
                 </div>
                 <div class="form-group-custom">
-                    <label>Contrasenya</label>
-                    <input type="password" name="password1" class="form-control-figma" placeholder="Minim 8 caracters" minlength="8" required>
-                    <small class="text-muted d-block mt-1">La contrasenya ha de tenir com a minim 8 caracters.</small>
+                    <label>Password</label>
+                    <input type="password" name="password1" class="form-control-figma" placeholder="Minimum 8 characters" minlength="8" required>
+                    <small class="text-muted d-block mt-1">Password must contain at least 8 characters.</small>
                 </div>
                 <div class="form-group-custom">
-                    <label>Repeteix Contrasenya</label>
-                    <input type="password" name="password2" class="form-control-figma" placeholder="Repeteix la contrasenya" minlength="8" required>
+                    <label>Repeat password</label>
+                    <input type="password" name="password2" class="form-control-figma" placeholder="Repeat your password" minlength="8" required>
 
                 </div>
-                <button type="button" class="btn-gradient" onclick="changeStep(2)">Següent</button>
+                <button type="button" class="btn-gradient" onclick="changeStep(2)">Next</button>
             </div>
 
+            <!-- Step 2: content and platform preferences -->
             <div id="step2" class="hidden">
 
-                <p class="text-start fw-bold mb-2 text-uppercase small text-muted">Què t'agrada veure?</p>
+                <p class="text-start fw-bold mb-2 text-uppercase small text-muted">What do you like to watch?</p>
                 <div class="selection-grid mb-4">
-                    {% for val, nom in opcions.tipus %}
+                    {% for value, label in opcions.tipus %}
                     <label class="select-item">
-                        <input type="checkbox" name="tipus" value="{{ val }}" class="checkbox-hidden" onchange="mark(this)">
-                        <span>{{ nom }}</span>
+                        <input type="checkbox" name="tipus" value="{{ value }}" class="checkbox-hidden" onchange="mark(this)">
+                        <span>{{ label }}</span>
                     </label>
                     {% endfor %}
                 </div>
 
-                <p class="text-start fw-bold mb-2 text-uppercase small text-muted">Les teves plataformes</p>
+                <p class="text-start fw-bold mb-2 text-uppercase small text-muted">Your platforms</p>
                 <div class="selection-grid">
-                    {% for p in opcions.plataformas %}
+                    {% for platform in opcions.plataformas %}
                     <label class="select-item">
-                        <input type="checkbox" name="plataformes" value="{{ p }}" class="checkbox-hidden" onchange="mark(this)">
-                        <span>{{ p }}</span>
+                        <input type="checkbox" name="plataformes" value="{{ platform }}" class="checkbox-hidden" onchange="mark(this)">
+                        <span>{{ platform }}</span>
                     </label>
                     {% endfor %}
                 </div>
 
-                <button type="button" class="btn-gradient mt-4" onclick="changeStep(3)">Continuar</button>
-                <button type="button" class="btn-back" onclick="changeStep(1)">Tornar</button>
+                <button type="button" class="btn-gradient mt-4" onclick="changeStep(3)">Continue</button>
+                <button type="button" class="btn-back" onclick="changeStep(1)">Back</button>
             </div>
 
+            <!-- Step 3: language, genres, and age rating -->
             <div id="step3" class="hidden">
-                <p class="text-start fw-bold mb-2">Idiomes</p>
+                <p class="text-start fw-bold mb-2">Languages</p>
                 <div class="selection-grid">
-                    {% for i in opcions.idiomes %}
-                    <label class="select-item"><input type="checkbox" name="idiomas" value="{{i}}" class="hidden" onchange="mark(this)">{{i}}</label>
+                    {% for language in opcions.idiomes %}
+                    <label class="select-item"><input type="checkbox" name="idiomas" value="{{ language }}" class="hidden" onchange="mark(this)">{{ language }}</label>
                     {% endfor %}
                 </div>
 
-                <p class="text-start fw-bold mb-2 text-uppercase small text-muted">Gèneres favorits</p>
+                <p class="text-start fw-bold mb-2 text-uppercase small text-muted">Favorite genres</p>
                 <div class="selection-grid" style="grid-template-columns: 1fr 1fr 1fr;">
-                    {% for g in opcions.genres_api %}
+                    {% for genre in opcions.genres_api %}
                     <label class="select-item p-2 text-center" style="font-size: 0.8rem;">
-                        <input type="checkbox" name="generos" value="{{ g.id }}" class="checkbox-hidden" onchange="mark(this)">
-                        <span>{{ g.name }}</span>
+                        <input type="checkbox" name="generos" value="{{ genre.id }}" class="checkbox-hidden" onchange="mark(this)">
+                        <span>{{ genre.name }}</span>
                     </label>
                     {% endfor %}
                 </div>
 
-                <p class="text-start fw-bold mt-4 mb-2 text-uppercase small text-muted">Restricció d'edat</p>
+                <p class="text-start fw-bold mt-4 mb-2 text-uppercase small text-muted">Age restriction</p>
                 <div class="selection-grid mb-4">
-                    {% for e in opcions.ratings_api %}
+                    {% for age in opcions.ratings_api %}
                     <label class="select-item">
-                        <input type="checkbox" name="edats" value="{{ e.id }}" class="checkbox-hidden" onchange="mark(this)">
-                        <span>{{ e.description }}</span>
+                        <input type="checkbox" name="edats" value="{{ age.id }}" class="checkbox-hidden" onchange="mark(this)">
+                        <span>{{ age.description }}</span>
                     </label>
                     {% endfor %}
                 </div>
 
-                <button type="submit" class="btn-gradient">Finalitzar i Crear Compte</button>
-                <button type="button" class="btn-back" onclick="changeStep(2)">Tornar</button>
+                <button type="submit" class="btn-gradient">Finish and Create Account</button>
+                <button type="button" class="btn-back" onclick="changeStep(2)">Back</button>
             </div>
         </form>
     </div>
@@ -169,7 +173,7 @@
         document.getElementById('dot2').classList.toggle('active', s >= 2);
         document.getElementById('dot3').classList.toggle('active', s >= 3);
 
-        const txts = ["Dades del compte", "Plataformes i tipus", "Gèneres i edats"];
+        const txts = ["Account details", "Platforms and types", "Genres and ages"];
         document.getElementById('step-txt').innerText = txts[s-1];
         window.scrollTo(0,0);
     }

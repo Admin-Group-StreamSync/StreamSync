@@ -1,13 +1,13 @@
 {% extends "base.html" %}
 
-{% block title %}Cerca: {{ query }} - StreamSync{% endblock %}
+{% block title %}Search: {{ query }} - StreamSync{% endblock %}
 
 {% block content %}
 <div class="container py-5" style="max-width: 1200px !important;">
 
     <div class="mb-4">
         <h5 class="text-muted fw-bold text-uppercase">
-            <i class="bi bi-search me-2"></i>Resultats per a: "{{ query }}"
+            <i class="bi bi-search me-2"></i>Results for: "{{ query }}"
         </h5>
     </div>
 
@@ -22,7 +22,7 @@
             <div style="flex: 1 !important; padding: 50px !important; display: flex !important; flex-direction: column !important; justify-content: center !important; min-width: 0 !important;">
                 <div style="margin-bottom: 15px;">
                     <span class="badge bg-primary rounded-pill px-3 py-2" style="font-weight: 700;">
-                        <i class="bi bi-stars me-1"></i> MILLOR COINCIDÈNCIA
+                        <i class="bi bi-stars me-1"></i> BEST MATCH
                     </span>
                 </div>
 
@@ -56,14 +56,14 @@
                 </div>
 
                 <p style="font-size: 1.25rem !important; color: #555 !important; line-height: 1.6 !important; margin-bottom: 35px !important; max-width: 600px !important;">
-                    {{ resultat.sinopsi|default:"Sense descripció disponible." }}
+                    {{ resultat.sinopsi|default:"No description available." }}
                 </p>
 
                 <div>
                     <a href="{% url 'pagina_contingut' tipus=resultat.tipus content_id=resultat.id %}"
                        class="btn"
                        style="background-color: #8a2be2 !important; color: white !important; padding: 18px 45px !important; border-radius: 100px !important; font-weight: 700 !important; text-decoration: none !important; display: inline-flex !important; align-items: center !important; font-size: 1.1rem !important; transition: 0.3s !important;">
-                        <i class="bi bi-play-fill me-2 fs-4"></i> VEURE ARA
+                        <i class="bi bi-play-fill me-2 fs-4"></i> WATCH NOW
                     </a>
                 </div>
             </div>
@@ -74,15 +74,15 @@
                     <i class="bi bi-search-heart" style="font-size: 5rem !important; color: #8a2be2; opacity: 0.3;"></i>
                 </div>
                 <h1 style="font-weight: 800 !important; color: #1a1a1a !important; margin-bottom: 15px !important; letter-spacing: -1px !important;">
-                    Vaja! No hem trobat res per a "{{ query }}"
+                    No results found for "{{ query }}"
                 </h1>
                 <p style="font-size: 1.25rem !important; color: #666 !important; margin-bottom: 40px !important; max-width: 500px !important;">
-                    Sembla que no tenim cap contingut amb aquest nom al nostre catàleg actual.
+                    It seems we do not have content with that name in our current catalog.
                 </p>
                 <a href="{% url 'pagina_principal' %}"
                    class="btn"
                    style="background-color: #8a2be2 !important; color: white !important; padding: 18px 45px !important; border-radius: 100px !important; font-weight: 700 !important; text-decoration: none !important; display: inline-flex !important; align-items: center !important; font-size: 1.1rem !important; transition: 0.3s !important;">
-                    <i class="bi bi-house-door-fill me-2"></i> TORNA A LA PÀGINA D'INICI
+                    <i class="bi bi-house-door-fill me-2"></i> GO BACK TO HOME PAGE
                 </a>
             </div>
         {% endif %}
@@ -92,7 +92,7 @@
     {% if resultats %}
     <div class="mt-5 pt-5 border-top">
         <h3 class="fw-bold mb-4">
-            {% if resultat %}Altres resultats similars...{% else %}Títols que et poden interessar...{% endif %}
+            {% if resultat %}Other similar results...{% else %}Titles you may like...{% endif %}
         </h3>
         <div class="row row-cols-2 row-cols-md-4 row-cols-lg-5 g-4">
             {% for item in resultats %}

@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Editar Llista - StreamSync{% endblock %}
+{% block title %}Edit List - StreamSync{% endblock %}
 
 {% block extra_css %}
 <style>
@@ -32,7 +32,6 @@
         outline: none;
     }
 
-    /* Selector d'icones personalitzat */
     .icon-selector input[type="radio"] {
         display: none;
     }
@@ -57,7 +56,6 @@
         transform: scale(1.1);
     }
 
-    /* Selector de color circular */
     .color-input-wrapper {
         width: 100%;
         height: 56px;
@@ -118,7 +116,7 @@
         <div class="col-lg-5 col-md-8">
 
             <a href="{% url 'detall_carpeta' carpeta.id %}" class="btn-back-figma">
-                <i class="bi bi-arrow-left me-2"></i> Cancel·lar edició
+                <i class="bi bi-arrow-left me-2"></i> Cancel editing
             </a>
 
             <div class="edit-card p-5">
@@ -126,21 +124,21 @@
                     <div class="d-inline-block p-3 rounded-circle mb-3" style="background: var(--soft-purple);">
                         <i class="bi bi-pencil-square fs-1 text-primary" style="color: var(--primary-purple) !important;"></i>
                     </div>
-                    <h2 class="fw-bold text-dark">Editar Llista</h2>
-                    <p class="text-muted">Modifica els detalls de la teva col·lecció</p>
+                    <h2 class="fw-bold text-dark">Edit List</h2>
+                    <p class="text-muted">Update your collection details</p>
                 </div>
 
                 <form method="POST">
                     {% csrf_token %}
 
                     <div class="mb-4">
-                        <label class="form-label fw-bold text-dark small text-uppercase">Nom de la llista</label>
+                        <label class="form-label fw-bold text-dark small text-uppercase">List name</label>
                         <input type="text" name="nom" class="form-control form-control-figma"
                                value="{{ carpeta.nom }}" required>
                     </div>
 
                     <div class="mb-4">
-                        <label class="form-label fw-bold text-dark small text-uppercase">Tria una icona</label>
+                        <label class="form-label fw-bold text-dark small text-uppercase">Choose an icon</label>
                         <div class="d-flex justify-content-between icon-selector">
                             <label>
                                 <input type="radio" name="icona" value="bi-star-fill" {% if carpeta.icona == 'bi-star-fill' %}checked{% endif %}>
@@ -166,7 +164,7 @@
                     </div>
 
                     <div class="mb-5">
-                        <label class="form-label fw-bold text-dark small text-uppercase">Color de la carpeta</label>
+                        <label class="form-label fw-bold text-dark small text-uppercase">Folder color</label>
                         <div class="color-input-wrapper">
                             <input type="color" name="color" value="{{ carpeta.color }}">
                         </div>
@@ -174,7 +172,7 @@
 
                     <div class="d-grid gap-3">
                         <button type="submit" class="btn-save shadow">
-                            <i class="bi bi-check-circle me-2"></i>Guardar Canvis
+                            <i class="bi bi-check-circle me-2"></i>Save Changes
                         </button>
                     </div>
                 </form>

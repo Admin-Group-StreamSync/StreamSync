@@ -1,10 +1,10 @@
 {% extends "base_manager.html" %}
 
-{% block title %}Panell d'Anàlisi - {{ plataforma }}{% endblock %}
+{% block title %}Analytics Dashboard - {{ plataforma }}{% endblock %}
 
 {% block extra_css %}
 <style>
-    /* FRANJA BLAU DEL SUB-HEADER */
+    /* Blue sub-header stripe */
     .sub-header {
         background-color: #3b5bdb;
         color: white;
@@ -12,7 +12,7 @@
         margin-bottom: 30px;
     }
 
-    /* TARGETES DE METRIQUES */
+    /* Metric cards */
     .stat-card {
         background: #ffffff;
         border-radius: 12px;
@@ -31,7 +31,7 @@
         margin-bottom: 10px;
     }
 
-    /* CAIXES DELS ICONES */
+    /* Icon containers */
     .icon-box {
         width: 38px;
         height: 38px;
@@ -47,7 +47,7 @@
     .icon-pink   { background-color: #fce7f3; color: #db2777; }
     .icon-green  { background-color: #dcfce7; color: #16a34a; }
 
-    /* TEXTOS I TENDENCIES */
+    /* Text and trend values */
     .stat-title {
         color: #64748b;
         font-size: 0.85rem;
@@ -67,7 +67,7 @@
         margin-top: 8px;
     }
 
-    /* ESTILS BARRES D'EDAT */
+    /* Age bars */
     .age-bar-container {
         margin-bottom: 18px;
     }
@@ -84,21 +84,22 @@
         background-color: #f1f5f9;
         border-radius: 10px;
         overflow: hidden;
-        display: flex; /* Ajuda a posicionar la barra interior */
+        display: flex; /* Helps position the inner progress bar */
     }
     .progress-custom .progress-bar {
-        height: 100%; /* AQUESTA ÉS LA CLAU: fa que el color ocupi els 10px d'alçada */
+        height: 100%; /* Ensures color fills the full 10px height */
         border-radius: 10px;
-        transition: width 0.8s ease-in-out; /* Animació fluida a l'omplir-se */
+        transition: width 0.8s ease-in-out; /* Smooth fill animation */
     }
 </style>
 {% endblock %}
 
 {% block content %}
+<!-- Manager analytics dashboard -->
 <div class="sub-header">
     <div class="container">
-        <h2 class="fw-bold mb-1">Panell d'Anàlisi - {{ plataforma }}</h2>
-        <p class="mb-0 opacity-75" style="font-size: 0.95rem;">Benvingut/da, Responsable {{ plataforma }} | Dades actualitzades en temps real</p>
+        <h2 class="fw-bold mb-1">Analytics Dashboard - {{ plataforma }}</h2>
+        <p class="mb-0 opacity-75" style="font-size: 0.95rem;">Welcome, Manager {{ plataforma }} | Data updated in real time</p>
     </div>
 </div>
 
@@ -115,9 +116,9 @@
                         {% else %}<i class="bi bi-dash"></i> 0%{% endif %}
                     </div>
                 </div>
-                <div class="stat-title">Total Visualitzacions</div>
+                <div class="stat-title">Total Views</div>
                 <h3 class="stat-value">{{ metricas.total_views }}</h3>
-                <div class="stat-subtitle">Historic acumulat</div>
+                <div class="stat-subtitle">Cumulative history</div>
             </div>
         </div>
 
@@ -131,9 +132,9 @@
                         {% else %}<i class="bi bi-dash"></i> 0%{% endif %}
                     </div>
                 </div>
-                <div class="stat-title">Usuaris Actius (Fidels)</div>
+                <div class="stat-title">Active Users (Loyal)</div>
                 <h3 class="stat-value">{{ metricas.usuaris_interessats }}</h3>
-                <div class="stat-subtitle">Tota la plataforma</div>
+                <div class="stat-subtitle">Across the full platform</div>
             </div>
         </div>
 
@@ -147,9 +148,9 @@
                         {% else %}<i class="bi bi-dash"></i> 0{% endif %}
                     </div>
                 </div>
-                <div class="stat-title">Valoracio Mitjana</div>
+                <div class="stat-title">Average Rating</div>
                 <h3 class="stat-value">{{ metricas.nota_mitjana }}</h3>
-                <div class="stat-subtitle">Sobre 10 punts</div>
+                <div class="stat-subtitle">Out of 10 points</div>
             </div>
         </div>
 
@@ -163,9 +164,9 @@
                         {% else %}<i class="bi bi-dash"></i> 0%{% endif %}
                     </div>
                 </div>
-                <div class="stat-title">Total Ressenyes</div>
+                <div class="stat-title">Total Reviews</div>
                 <h3 class="stat-value">{{ metricas.total_ressenyes }}</h3>
-                <div class="stat-subtitle">Historic acumulat</div>
+                <div class="stat-subtitle">Cumulative history</div>
             </div>
         </div>
 
@@ -179,9 +180,9 @@
                         {% else %}<i class="bi bi-dash"></i> 0%{% endif %}
                     </div>
                 </div>
-                <div class="stat-title">Guardats a Llistes</div>
+                <div class="stat-title">Saved to Lists</div>
                 <h3 class="stat-value">{{ metricas.total_guardados }}</h3>
-                <div class="stat-subtitle">Interes d'usuaris</div>
+                <div class="stat-subtitle">User interest</div>
             </div>
         </div>
     </div>
@@ -190,7 +191,7 @@
     <div class="row g-4 mt-2 mb-4">
         <div class="col-lg-7">
             <div class="stat-card p-4">
-                <h6 class="fw-bold mb-4" style="color: #1e293b;">Visualitzacions per Genere</h6>
+                <h6 class="fw-bold mb-4" style="color: #1e293b;">Views by Genre</h6>
                 <div style="height: 300px;">
                     <canvas id="barChart"></canvas>
                 </div>
@@ -199,7 +200,7 @@
 
         <div class="col-lg-5">
             <div class="stat-card p-4">
-                <h6 class="fw-bold mb-4" style="color: #1e293b;">Distribucio de Contingut Consumit</h6>
+                <h6 class="fw-bold mb-4" style="color: #1e293b;">Consumed Content Distribution</h6>
                 <div style="height: 300px; display: flex; justify-content: center;">
                     <canvas id="doughnutChart"></canvas>
                 </div>
@@ -211,7 +212,7 @@
 
         <div class="col-lg-7">
             <div class="stat-card p-4">
-                <h6 class="fw-bold mb-4" style="color: #1e293b;">Evolucio de Visualitzacions i Usuaris</h6>
+                <h6 class="fw-bold mb-4" style="color: #1e293b;">Views and Users Evolution</h6>
                 <div style="height: 300px;">
                     <canvas id="lineChart"></canvas>
                 </div>
@@ -220,12 +221,12 @@
 
         <div class="col-lg-5">
             <div class="stat-card p-4">
-                <h6 class="fw-bold mb-4" style="color: #1e293b;">Contingut Consumit per Classificacio d'Edat</h6>
+                <h6 class="fw-bold mb-4" style="color: #1e293b;">Consumed Content by Age Classification</h6>
                 <div class="pt-2">
 
                     <div class="age-bar-container">
                         <div class="age-label-row">
-                            <span>Tots</span>
+                            <span>All</span>
                             <span>{{ edats_pct.tots }}%</span>
                         </div>
                         <div class="progress-custom">
@@ -282,7 +283,7 @@
     <div class="row g-4 mt-2">
         <div class="col-12">
             <div class="stat-card p-4">
-                <h5 class="fw-bold mb-4" style="color: #1e293b;">Top 5 Continguts Mes Vistos</h5>
+                <h5 class="fw-bold mb-4" style="color: #1e293b;">Top 5 Most Viewed Titles</h5>
 
                 {% if top_contingut %}
                     <div class="row row-cols-1 row-cols-md-3 row-cols-lg-5 g-3">
@@ -298,7 +299,7 @@
                 {% else %}
                     <div class="text-center p-5 rounded" style="background-color: #f8f9fa; border: 2px dashed #cbd5e1;">
                         <i class="bi bi-bar-chart-line display-4 text-muted mb-3 d-block"></i>
-                        <p class="text-muted fw-bold mb-0">No hi ha dades suficients per mostrar els grafics ni el ranquing.</p>
+                        <p class="text-muted fw-bold mb-0">There is not enough data to show the charts or ranking.</p>
                     </div>
                 {% endif %}
             </div>
@@ -311,7 +312,7 @@
 <script>
     document.addEventListener("DOMContentLoaded", function() {
 
-        // 1. GRAFIC DE BARRES
+        // 1. Bar chart
         const ctxBar = document.getElementById('barChart').getContext('2d');
         new Chart(ctxBar, {
             type: 'bar',
@@ -334,12 +335,12 @@
             }
         });
 
-        // 2. GRAFIC DE DONA
+        // 2. Doughnut chart
         const ctxDoughnut = document.getElementById('doughnutChart').getContext('2d');
         new Chart(ctxDoughnut, {
             type: 'doughnut',
             data: {
-                labels: ['Pel·lícules', 'Sèries'],
+                labels: ['Movies', 'Series'],
                 datasets: [{
                     data: {{ grafic_tipus_data|safe }},
                     backgroundColor: ['#a855f7', '#ec4899'],
@@ -352,7 +353,7 @@
             }
         });
 
-        // 3. GRAFIC DE LINIES (Evolucio)
+        // 3. Line chart (evolution)
         const ctxLine = document.getElementById('lineChart').getContext('2d');
         new Chart(ctxLine, {
             type: 'line',
@@ -360,17 +361,17 @@
                 labels: {{ grafic_evolucio_labels|safe }},
                 datasets: [
                     {
-                        label: 'Visualitzacions',
+                        label: 'Views',
                         data: {{ grafic_evolucio_vistes|safe }},
-                        borderColor: '#a855f7', // Lila
+                        borderColor: '#a855f7', // Purple
                         backgroundColor: '#a855f7',
                         tension: 0.4,
                         yAxisID: 'y'
                     },
                     {
-                        label: 'Usuaris',
+                        label: 'Users',
                         data: {{ grafic_evolucio_usuaris|safe }},
-                        borderColor: '#ec4899', // Rosa
+                        borderColor: '#ec4899', // Pink
                         backgroundColor: '#ec4899',
                         tension: 0.4,
                         yAxisID: 'y1'

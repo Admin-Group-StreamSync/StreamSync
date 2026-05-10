@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 from matplotlib.ticker import MaxNLocator
 
 import os
-# ── Configuración ──────────────────────────────────────────────────────────────
+# Configuration
 REPO   = "Admin-Group-StreamSync/StreamSync"
 TOKEN  = config("HISTOGRAM_TOKEN")
 OWNER, REPO_NAME = REPO.split("/")
@@ -17,7 +17,7 @@ headers = {
     "Accept": "application/vnd.github+json",
 }
 
-# ── Fetch con paginación ───────────────────────────────────────────────────────
+#  Paginated fetch
 def fetch_all_issues(owner: str, repo: str) -> list[dict]:
     issues, page = [], 1
     while True:
@@ -34,7 +34,7 @@ def fetch_all_issues(owner: str, repo: str) -> list[dict]:
         page += 1
     return issues
 
-# ── Parseo de fechas ───────────────────────────────────────────────────────────
+#  Date parsing
 def parse_dates(issues: list[dict]) -> list[tuple[datetime, datetime | None]]:
     result = []
     for issue in issues:
@@ -47,7 +47,7 @@ def parse_dates(issues: list[dict]) -> list[tuple[datetime, datetime | None]]:
         result.append((created, closed))
     return result
 
-# ── Semanas del mes con rango real (lun–dom) ───────────────────────────────────
+#  Month weeks with real range (Mon–Sun)
 def build_weeks(year: int, month: int) -> list[tuple[str, datetime, datetime]]:
     cal   = calendar.monthcalendar(year, month)
     weeks = []
@@ -57,10 +57,10 @@ def build_weeks(year: int, month: int) -> list[tuple[str, datetime, datetime]]:
             continue
         start = datetime(year, month, days[0])
         end   = datetime(year, month, days[-1], 23, 59, 59)
-        weeks.append((f"Sem {i + 1}\n({days[0]}-{days[-1]})", start, end))
+        weeks.append((f"Wk {i + 1}\n({days[0]}-{days[-1]})", start, end))
     return weeks
 
-# ── Conteo de issues abiertas en cada semana ───────────────────────────────────
+#  Open issues count per week
 def count_open_per_week(
     issue_dates: list[tuple[datetime, datetime | None]],
     weeks: list[tuple[str, datetime, datetime]],
@@ -76,15 +76,15 @@ def count_open_per_week(
         counts.append(open_count)
     return counts
 
-# ── Main ───────────────────────────────────────────────────────────────────────
+
 def main():
 
-    SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-    img_path = os.path.join(SCRIPT_DIR, 'issues_per_week.png')
-    print("Obteniendo issues de GitHub…")
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    img_path = os.path.join(script_dir, 'issues_per_week.png')
+    print("Fetching GitHub issues...")
     issues      = fetch_all_issues(OWNER, REPO_NAME)
     issue_dates = parse_dates(issues)
-    print(f"  → {len(issues)} issues encontradas (sin PRs)")
+    print(f"  -> {len(issues)} issues found (excluding PRs)")
 
     weeks = []
     weeks.extend(build_weeks(2026, 3))
@@ -104,7 +104,7 @@ def main():
         for label, start, end in weeks
     ]
 
-    # ── Gráfica ────────────────────────────────────────────────────────────────
+    # Chart
     fig, ax = plt.subplots(figsize=(14, 6))
     bars = ax.bar(labels, counts, color="#4C72B0", edgecolor="white", linewidth=0.8)
 
@@ -121,10 +121,10 @@ def main():
             )
 
     ax.yaxis.set_major_locator(MaxNLocator(integer=True))
-    ax.set_xlabel("Semanas del mes", fontsize=12)
-    ax.set_ylabel("Número de issues abiertas", fontsize=12)
+    ax.set_xlabel("Weeks of the month", fontsize=12)
+    ax.set_ylabel("Number of open issues", fontsize=12)
     ax.set_title(
-        f"Issues abiertas por semana activas a día de hoy",
+        "Open issues per week currently active",
         fontsize=14,
         fontweight="bold",
     )
@@ -132,7 +132,7 @@ def main():
 
     plt.tight_layout()
     plt.savefig(img_path)
-    print(f"Gráfico generado exitosamente en: {img_path}")
+    print(f"Chart generated successfully at: {img_path}")
 
 if __name__ == "__main__":
     main()
