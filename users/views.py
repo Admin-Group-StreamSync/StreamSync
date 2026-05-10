@@ -673,9 +673,6 @@ def search_content(request):
              
             
 
-            recommendations = sorted(others, key=calculate_score, reverse=True)
-            recommendations = [p for p in recommendations if calculate_score(p) > 0][:5]
-            
             # ✅ Només continguts del mateix gènere
             recommendations = [
                 p for p in others
