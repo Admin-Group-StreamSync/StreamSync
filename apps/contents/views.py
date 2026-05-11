@@ -3,7 +3,11 @@ from django.shortcuts import render
 from thefuzz import process, fuzz
 
 from apps.contents.models import Pelicula
+<<<<<<< HEAD
 from apps.contents.services import get_all_movies, get_all_series, get_tmdb_image
+=======
+from apps.contents.service import get_all_movies, get_all_series, get_tmdb_image
+>>>>>>> f9fe18d (refactor: Changing and separating content app)
 from apps.external_apis import get_genres_from_api, get_age_ratings_from_api, get_directors_from_api
 from apps.users.decorators.permissions import cap_manager_permes
 from apps.users.models.models import LlistaPersonal, Ressenya
@@ -186,6 +190,19 @@ def search_content(request):
 
             others = [p for p in all_content if p['id'] != main_result['id']]
 
+<<<<<<< HEAD
+=======
+            def calculate_score(item):
+                score = 0
+                if item.get('director_id') == main_result.get('director_id'):
+                    score += 10
+                if item.get('genre_id') == main_result.get('genre_id'):
+                    score += 5
+                if item.get('age_rating_id') == main_result.get('age_rating_id'):
+                    score += 2
+                return score
+
+>>>>>>> f9fe18d (refactor: Changing and separating content app)
             # ✅ Només continguts del mateix gènere
             recommendations = [
                                   p for p in others
