@@ -1,9 +1,18 @@
+from typing import Type
+
+from django.contrib.auth.base_user import AbstractBaseUser
 from django.db import models
+
 from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
+
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.core.validators import MinValueValidator, MaxValueValidator
 
+from apps.contents.models import Pelicula
+
+# User: Type[AbstractBaseUser] = get_user_model()
 
 class Profile(models.Model):
     # Stores user preference filters used in recommendations and discovery.
@@ -22,32 +31,7 @@ class Profile(models.Model):
         return f"Profile of {self.user.username}"
 
 
-class Genere(models.Model):
-    nom = models.CharField(max_length=100, unique=True)
 
-    def __str__(self):
-        return self.nom
-
-class Pelicula(models.Model):
-    id = models.CharField(max_length=50, primary_key=True)
-    titol = models.CharField(max_length=255)
-    director = models.CharField(max_length=255, blank=True, null=True)
-    sinopsi = models.TextField(blank=True, null=True)
-    any = models.IntegerField(null=True, blank=True)
-    valoracio = models.FloatField(default=0.0)
-    plataforma = models.CharField(max_length=100, blank=True, null=True)
-    classificacio_edat = models.CharField(max_length=50, blank=True, null=True)
-    durada = models.CharField(max_length=50, blank=True, null=True)
-    imatge = models.URLField(max_length=500, null=True, blank=True)
-    tipus = models.CharField(
-        max_length=20,
-        choices=[('movie', 'Movie'), ('series', 'Series')],
-        default='movie'
-    )
-    generes = models.ManyToManyField(Genere, related_name="pelicules", blank=True)
-
-    def __str__(self):
-        return self.titol
 
 
 class Carpeta(models.Model):
