@@ -15,7 +15,6 @@ from rest_framework.decorators import api_view
 from thefuzz import process, fuzz
 from django.db.models import Count, Avg, Sum
 from django.http import JsonResponse
-import json
 from django.utils import timezone
 from datetime import timedelta
 # Importem els teus models i formularis
