@@ -22,9 +22,13 @@ urlpatterns = [
     # LISTS AND FOLDERS MANAGEMENT
 
 
-
-
     # FEEDBACK PAGE
     path('feedback/', feedback_view, name='feedback'),
+
+    # COOKIES AND LEGAL
+    path('legal/terms', termsofuse_view, name="legal_terms"),
+    path('legal/privacy', privacy_view, name="legal_privacy"),
+    path('legal/cookies', cookies_view, name="legal_cookies"),
+    path('legal/content_disclaimer', content_disclaimer_view, name="legal_content_disclaimer"),
 
 ]

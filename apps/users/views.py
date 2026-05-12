@@ -150,6 +150,17 @@ def feedback_view(request):
 
     return render(request, "pages/feedback.html")
 
+# Legal pages
+def termsofuse_view(request):
+    return render(request, "legal/terms.html")
+def privacy_view(request):
+    return render(request, "legal/privacy.html")
+def cookies_view(request):
+    return render(request, "legal/cookies.html")
+def content_disclaimer_view(request):
+    return render(request, "legal/content_disclaimer.html")
+
+
 # --- 5. USER MANAGEMENT AND LISTS ---
 
 @login_required
@@ -173,66 +184,6 @@ def delete_review(request, ressenya_id):
     content_id_value, content_type = review.pelicula.id, review.pelicula.tipus
     review.delete()
     return redirect('pagina_contingut', tipus=content_type, content_id=content_id_value)
-
-
-<<<<<<< HEAD
-# @login_required
-# def lists(request):
-#     pass
-
-
-@cap_manager_permes
-def lists(request):
-    print(request.user)
-    return render(request, 'llistes.html', {
-        'carpetes': request.user.les_meves_carpetes.all(),
-        'elements_solts': LlistaPersonal.objects.filter(usuari=request.user, carpeta__isnull=True)
-    })
-
-
-@login_required
-def folder_detail(request, carpeta_id):
-    folder = get_object_or_404(Carpeta, id=carpeta_id, usuari=request.user)
-    return render(request, 'detall_carpeta.html', {
-        'carpeta': folder,
-        'elements': LlistaPersonal.objects.filter(carpeta=folder)
-    })
-
-
-@login_required
-def create_list(request):
-    if request.method == "POST":
-        Carpeta.objects.create(
-            usuari=request.user, nom=request.POST.get('nom'),
-            icona=request.POST.get('icona'), color=request.POST.get('color')
-        )
-        return redirect('llistes')
-    return render(request, 'crear_llista.html', {'opcions': OPTIONS})
-
-
-@login_required
-def edit_list(request, carpeta_id):
-    folder = get_object_or_404(Carpeta, id=carpeta_id, usuari=request.user)
-    if request.method == "POST":
-        folder.nom, folder.icona, folder.color = request.POST.get('nom'), request.POST.get('icona'), request.POST.get('color')
-        folder.save()
-        return redirect('llistes')
-    return render(request, 'editar_llista.html', {'carpeta': folder, 'opcions': OPTIONS})
-
-
-@login_required
-def delete_folder(request, carpeta_id):
-    get_object_or_404(Carpeta, id=carpeta_id, usuari=request.user).delete()
-    return redirect('llistes')
-
-
-@login_required
-def remove_from_list(request, tipus, content_id):
-    LlistaPersonal.objects.filter(usuari=request.user, pelicula_id=content_id).delete()
-    messages.success(request, "Element eliminat de la llista.")
-    return redirect('llistes')
-=======
->>>>>>> eb1d954 (maintain: Spliting the listing and analitycs features from users.)
 
 
 # --- 7. REGISTRATION AND PROFILE ---
