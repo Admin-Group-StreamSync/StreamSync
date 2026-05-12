@@ -1,9 +1,4 @@
 import os
-import requests
-from concurrent.futures import ThreadPoolExecutor
-from datetime import timedelta
-from django.core.paginator import Paginator
-from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404
 from django.contrib.auth import update_session_auth_hash, login
 from django.contrib.auth.views import LoginView
@@ -11,18 +6,14 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.contrib.auth.forms import PasswordChangeForm
 from dotenv import load_dotenv
-from django.utils import timezone
-
 from apps.contents.services import get_all_movies, get_all_series, get_genres_from_api, get_age_ratings_from_api, \
     enrich_tmdb_images, OPTIONS
 from apps.users.decorators.permissions import cap_manager_permes
-from apps.users.models.models import Pelicula,  Profile
+from apps.users.models.models import   Profile
 from apps.users.forms.forms import UserRegistrationForm, UserUpdateForm
 
 # 1. LOAD CONFIGURATION
-from functools import wraps
 from django.shortcuts import redirect
-import json
 # 1. CARREGUEM CONFIGURACIÓ
 load_dotenv()
 
@@ -125,14 +116,6 @@ def cookies_view(request):
 def content_disclaimer_view(request):
     return render(request, "legal/content_disclaimer.html")
 
-
-# --- 5. USER MANAGEMENT AND LISTS ---
-
-
-
-
-# --- 7. REGISTRATION AND PROFILE ---
-
 def crear_cuenta(request):
     genres_api = get_genres_from_api()
     ratings_api = get_age_ratings_from_api()
@@ -170,7 +153,6 @@ def crear_cuenta(request):
     }
     return render(request, 'registration/registre.html', context)
 
-
 @login_required
 def profile_page1(request):
     form = UserUpdateForm(request.POST or None, instance=request.user)
@@ -178,7 +160,6 @@ def profile_page1(request):
         form.save()
         messages.success(request, "Perfil actualitzat!")
     return render(request, 'registration/pagina_perfil1.html', {'form': form})
-
 
 @login_required
 @cap_manager_permes
@@ -212,7 +193,6 @@ def profile2(request):
     }
     return render(request, 'profile2.html', context)
 
-
 @login_required
 def cambiar_password(request):
     form = PasswordChangeForm(request.user, request.POST or None)
@@ -221,7 +201,6 @@ def cambiar_password(request):
         update_session_auth_hash(request, user)
         return redirect('pagina_perfil1')
     return render(request, 'registration/cambiar_password.html', {'form': form})
-
 
 @login_required
 def delete_account(request):
