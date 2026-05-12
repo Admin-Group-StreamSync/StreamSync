@@ -46,7 +46,6 @@ def get_all_series(query=None):
 
 def map_data(item, port):
     platforms = {"8080": "CinePlus", "8081": "StreamHub", "8082": "PlayMax"}
-    port_net = str(port).replace('/','')
 
 
     title = item.get('title') or item.get('titol') or "Sense títol"
