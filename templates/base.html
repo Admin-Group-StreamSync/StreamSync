@@ -163,6 +163,48 @@
             outline: none;
             box-shadow: 0 0 0 4px rgba(138, 43, 226, 0.1);
         }
+
+        /* COOKIE POPUP */
+
+        .cookie-popup {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: min(92%, 700px);
+            background: white;
+            border: 1px solid var(--figma-border);
+            border-radius: 20px;
+            padding: 20px;
+            z-index: 9999;
+            animation: fadeUp 0.4s ease;
+        }
+
+        .cookie-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .cookie-content {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateX(-50%) translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(-50%) translateY(0);
+            }
+        }
     </style>
 
     {% block extra_css %}{% endblock %}
@@ -196,16 +238,78 @@
                 <strong>StreamSync</strong> © 2026
             </div>
 
-            <div class="text-muted small">
+            <div class="text-muted">
                 <a href="{% url 'feedback' %}" class="text-decoration-none">
                     We value your feedback!
                 </a>
             </div>
+
+            <div class="text-muted small d-flex flex-wrap gap-3">
+
+                <a href="{% url 'legal_privacy' %}" class="text-decoration-none text-muted">
+                    Privacy
+                </a>
+
+                <a href="{% url 'legal_cookies' %}" class="text-decoration-none text-muted">
+                    Cookies
+                </a>
+
+                <a href="{% url 'legal_terms' %}" class="text-decoration-none text-muted">
+                    Terms of use
+                </a>
+
+                <a href="{% url 'legal_content_disclaimer' %}" class="text-decoration-none text-muted">
+                    Legal disclaimer
+                </a>
+
+            </div>
+
         </div>
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
     {% block extra_js %}{% endblock %}
+    <script>
+        function acceptCookies() {
+            localStorage.setItem("cookieConsent", "accepted");
+            document.getElementById("cookiePopup").style.display = "none";
+        }
+
+        function rejectCookies() {
+            localStorage.setItem("cookieConsent", "rejected");
+            document.getElementById("cookiePopup").style.display = "none";
+        }
+
+        document.addEventListener("DOMContentLoaded", function () {
+            const consent = localStorage.getItem("cookieConsent");
+
+            if (consent) {
+                document.getElementById("cookiePopup").style.display = "none";
+            }
+        });
+    </script>
+
 </body>
+    <!-- COOKIE POPUP -->
+    <div id="cookiePopup" class="cookie-popup shadow-lg">
+        <div class="cookie-content">
+            <div>
+                <h6 class="mb-1 fw-bold">🍪 Aquest lloc utilitza cookies</h6>
+                <p class="mb-0 small text-muted">
+                    Utilitzem cookies per millorar l'experiència d'usuari i analitzar trànsit.
+                </p>
+            </div>
+
+            <div class="d-flex gap-2 mt-3 mt-md-0">
+                <button class="btn btn-outline-secondary btn-sm" onclick="rejectCookies()">
+                    Rebutjar
+                </button>
+
+                <button class="btn btn-dark btn-sm" onclick="acceptCookies()">
+                    Acceptar
+                </button>
+            </div>
+        </div>
+    </div>
 </html>

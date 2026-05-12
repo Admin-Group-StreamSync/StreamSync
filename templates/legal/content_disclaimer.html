@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+
+{% block title %}Legal Content Disclaimer{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+
+    <h1 class="fw-bold mb-4">Legal Content Disclaimer</h1>
+
+    <h4>1. Data sources</h4>
+    <p>
+        This platform displays multimedia content information obtained through third-party sources,
+        including external APIs and content data services.
+        This means that titles, descriptions, ratings, and metadata may come from external sources
+        outside the direct control of the platform.
+    </p>
+
+    <h4>2. Streaming link availability</h4>
+    <p>
+        Links or references to streaming services are provided by third parties and may vary in availability,
+        functionality or continuity over time.
+        This platform does not guarantee that the links will always be operational or accessible.
+    </p>
+
+    <h4>3. Accuracy of information</h4>
+    <p>
+        Although every effort is made to display up-to-date and correct information, there may be errors, outdated data
+        or inconsistencies derived from the external sources used.
+    </p>
+
+    <h4>4. Limitation of liability</h4>
+    <p>
+        This platform is not responsible for the availability, accuracy or reliability of the content provided
+        by external services. The use of the information is made under the responsibility of the user.
+    </p>
+
+    <h4>5. Using the TMDB API</h4>
+    <p>
+        This product uses The Movie Database (TMDB) API to obtain images from movies,
+        series.
+    </p>
+
+    <p>
+        <strong>TMDB does not sponsor or certify this product.</strong>
+        This project is not officially affiliated with TMDB.
+    </p>
+
+    <blockquote class="p-3 bg-light border-start border-4">
+        “This product uses the TMDB API but is not endorsed or certified by TMDB.”
+    </blockquote>
+
+    <h4>Logo and attribution</h4>
+    <p>
+        When the TMDB logo is used, it is displayed in accordance with its official guidelines
+        and never more prominently than the platform's main brand.
+    </p>
+
+    <p>
+        The logo used is one of those officially approved by TMDB and is included solely for attribution purposes.
+    </p>
+
+    <div class="mt-4">
+        <img src="https://www.themoviedb.org/assets/2/v4/logos/v2/blue_square_2-d537fb228cf3ded904ef09b136fe3fec72548ebc1fea3fbbd1ad9e36364db38b.svg"
+             alt="TMDB Logo"
+             style="height: 50px;">
+    </div>
+
+    <p class="mt-4 text-muted small">
+        Last update: 2026
+    </p>
+
+</div>
+{% endblock %}
