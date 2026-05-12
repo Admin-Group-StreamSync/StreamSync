@@ -1,4 +1,4 @@
-from django.urls import path
+from django.urls import path,include
 from . import views
 
 urlpatterns = [
@@ -47,5 +47,12 @@ urlpatterns = [
     path('dashboard/<str:plataforma_nom>/', views.dashboard_manager, name='dashboard_manager'),
     # FEEDBACK PAGE
     path('feedback/', views.feedback_view, name='feedback'),
+
+    # COOKIES AND LEGAL
+    path("cookies/", include("cookie_consent.urls")),
+    path('legal/terms', views.termsofuse_view, name="legal_terms"),
+    path('legal/privacy', views.privacy_view, name="legal_privacy"),
+    path('legal/cookies', views.cookies_view, name="legal_cookies"),
+    path('legal/content_disclaimer', views.content_disclaimer_view, name="legal_content_disclaimer"),
 
 ]
