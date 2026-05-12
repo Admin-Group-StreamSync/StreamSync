@@ -313,7 +313,7 @@ def content_detail(request, tipus, content_id):
     item['genere_nom'] = mapa_genres.get(str(item.get('genre_id')), 'General')
     item['director_nom'] = mapa_directors.get(str(item.get('director_id')), 'Desconegut')
     item['edat_nom'] = mapa_ratings.get(str(item.get('age_rating_id')), 'N/A')
-    item['imatge'] = get_imatge_tmdb(item['titol'])
+    item['imatge'] = get_tmdb_image(item['titol'])
 
     movie_db, _ = Pelicula.objects.update_or_create(
         id=item['id'],
@@ -328,7 +328,7 @@ def content_detail(request, tipus, content_id):
     )
 
     # ✅ Enriquim les recomanacions amb gènere i edat
-    raw_recommendations = [p for p in totes if str(p['id']) != str(content_id)][:5]
+    raw_recommendations = [p for p in all_content if str(p['id']) != str(content_id)][:5]
     for r in raw_recommendations:
         r['genere_nom'] = mapa_genres.get(str(r.get('genre_id')), 'General')
         r['edat_nom'] = mapa_ratings.get(str(r.get('age_rating_id')), 'N/A')
@@ -341,7 +341,7 @@ def content_detail(request, tipus, content_id):
     if request.user.is_authenticated:
         ressenya_usuari = Ressenya.objects.filter(
             usuari=request.user,
-            pelicula=peli_db
+            pelicula=movie_db
         ).first()
 
     return render(request, 'pagina_contingut.html', {
@@ -390,10 +390,10 @@ def catalogo(request, tipus=None):
         item['edat_nom'] = rating_map.get(eid, "N/A")
         item['director_nom'] = director_map.get(did, "Desconegut")
 
-        if f['p'] and f['p'] not in item.get('plataformes_disponibles', [item.get('plataforma', '')]): continue
-        if f['g'] and gid != f['g']: continue
-        if f['e'] and eid != f['e']: continue
-        if f['d'] and f['d'] not in item['director_nom'].lower(): continue
+        if filters['p'] and filters['p'] not in item.get('plataformes_disponibles', [item.get('plataforma', '')]): continue
+        if filters['g'] and gid != filters['g']: continue
+        if filters['e'] and eid != filters['e']: continue
+        if filters['d'] and filters['d'] not in item['director_nom'].lower(): continue
 
         try:
             if float(item.get('rating', 0)) < float(filters['v']): continue
@@ -668,7 +668,7 @@ def search_content(request):
             # ✅ Enriquim el resultat principal
             main_result['genere_nom'] = mapa_genres.get(str(main_result.get('genre_id')), 'General')
             main_result['edat_nom'] = mapa_ratings.get(str(main_result.get('age_rating_id')), 'N/A')
-            main_result['imatge'] = get_imatge_tmdb(main_result['titol'])
+            main_result['imatge'] = get_tmdb_image(main_result['titol'])
 
             others = [p for p in all_content if p['id'] != main_result['id']]
 
