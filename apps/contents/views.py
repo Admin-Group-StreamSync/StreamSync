@@ -3,7 +3,7 @@ from django.shortcuts import render
 from thefuzz import process, fuzz
 
 from apps.contents.models import Pelicula
-from apps.contents.service import get_all_movies, get_all_series, get_tmdb_image
+from apps.contents.services import get_all_movies, get_all_series, get_tmdb_image
 from apps.external_apis import get_genres_from_api, get_age_ratings_from_api, get_directors_from_api
 from apps.users.decorators.permissions import cap_manager_permes
 from apps.users.models.models import LlistaPersonal, Ressenya
