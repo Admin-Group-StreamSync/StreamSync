@@ -11,11 +11,6 @@ from apps.users.views import OPTIONS
 # Create your views here.
 
 
-# @login_required
-# def lists(request):
-#     pass
-
-
 @cap_manager_permes
 def lists(request):
     return render(request, 'llistes.html', {
