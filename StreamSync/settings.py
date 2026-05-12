@@ -39,7 +39,7 @@ INSTALLED_APPS = [
     'apps.users',
     'apps.analytics',
     'apps.contents',
-    'apps.lists'
+    'apps.lists',
     'cookie_consent'
 ]
 
