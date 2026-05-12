@@ -249,16 +249,8 @@ def register_view(request):
 
             # Busquem la pel·lícula a la base de dades local
             film = get_object_or_404(Pelicula, id=film_id)
-            # Fetch movie
-            film = get_object_or_404(Pelicula, id=film_id)
 
             # Obtenim el registre d'aquest usuari i aquesta peli, o el creem a 0
-            view_reg, created = Views.objects.get_or_create(
-                usuari=request.user,
-                pelicula=film,
-                defaults={"count": 0}
-            )
-            # Create or update view
             view_reg, created = Views.objects.get_or_create(
                 usuari=request.user,
                 pelicula=film,
