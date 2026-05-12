@@ -486,11 +486,6 @@ def delete_review(request, ressenya_id):
 
 @login_required
 def lists(request):
-    pass
-
-
-@cap_manager_permes
-def llistes(request):
     return render(request, 'llistes.html', {
         'carpetes': request.user.les_meves_carpetes.all(),
         'elements_solts': LlistaPersonal.objects.filter(usuari=request.user, carpeta__isnull=True)
