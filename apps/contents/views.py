@@ -186,16 +186,6 @@ def search_content(request):
 
             others = [p for p in all_content if p['id'] != main_result['id']]
 
-            def calculate_score(item):
-                score = 0
-                if item.get('director_id') == main_result.get('director_id'):
-                    score += 10
-                if item.get('genre_id') == main_result.get('genre_id'):
-                    score += 5
-                if item.get('age_rating_id') == main_result.get('age_rating_id'):
-                    score += 2
-                return score
-
             # ✅ Només continguts del mateix gènere
             recommendations = [
                                   p for p in others
