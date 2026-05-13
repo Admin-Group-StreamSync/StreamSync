@@ -23,6 +23,14 @@ API_CONFIG = dict(zip(urls_list, keys_list))
 
 TMDB_API_KEY = os.getenv('TMDB_API_KEY')
 
+ALLOWED_AVATARS = [
+    "images/avatars/image1.png",
+    "images/avatars/image2.png",
+    "images/avatars/image3.png",
+    "images/avatars/image4.png",
+    "images/avatars/image5.png",
+]
+
 class StreamSyncLoginView(LoginView):
     def get_success_url(self):
         user = self.request.user
@@ -159,7 +167,27 @@ def profile_page1(request):
     if request.method == 'POST' and form.is_valid():
         form.save()
         messages.success(request, "Perfil actualitzat!")
-    return render(request, 'registration/pagina_perfil1.html', {'form': form})
+    current_avatar = request.user.last_name if request.user.last_name in ALLOWED_AVATARS else ALLOWED_AVATARS[0]
+    return render(request, 'registration/pagina_perfil1.html', {
+        'form': form,
+        'avatars': ALLOWED_AVATARS,
+        'current_avatar': current_avatar,
+    })
+
+@login_required
+def update_avatar(request):
+    if request.method != 'POST':
+        return redirect('pagina_perfil1')
+
+    avatar_path = request.POST.get('avatarPath')
+    if avatar_path not in ALLOWED_AVATARS:
+        messages.error(request, "Avatar no vàlid.")
+        return redirect('pagina_perfil1')
+
+    request.user.last_name = avatar_path
+    request.user.save(update_fields=['last_name'])
+    messages.success(request, "Avatar actualitzat!")
+    return redirect('pagina_perfil1')
 
 @login_required
 @cap_manager_permes
@@ -208,4 +236,3 @@ def delete_account(request):
         request.user.delete()
         return redirect('pagina_principal')
     return render(request, 'registration/esborrar_compte.html')
-

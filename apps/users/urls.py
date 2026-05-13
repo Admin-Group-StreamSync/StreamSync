@@ -8,6 +8,7 @@ urlpatterns = [
     # REGISTRATION AND USER MANAGEMENT
     path('registre/', views.crear_cuenta, name='registre'),
     path('perfil/', views.profile_page1, name='pagina_perfil1'),
+    path('perfil/avatar/', views.update_avatar, name='update_avatar'),
     path('perfil/preferencies/', views.profile2, name='profile2'),
     path('perfil/password/', views.cambiar_password, name='cambiar_password'),
     path('esborrar-compte/', views.delete_account, name='esborrar_compte'),
