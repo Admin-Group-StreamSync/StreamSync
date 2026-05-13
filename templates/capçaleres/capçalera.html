@@ -1,43 +1,32 @@
 <style>
-    /* 1. Logo animation and icon (movie clapperboard) */
-    .navbar-brand {
-        transition: transform 0.3s ease;
-    }
-
-    .navbar-brand:hover {
-        transform: scale(1.03);
-    }
-
+    .navbar-brand { transition: transform 0.3s ease; }
+    .navbar-brand:hover { transform: scale(1.03); }
     .navbar-brand i {
         display: inline-block;
-        transition: transform 0.4s ease, color 0.3s ease;
-        color: rgba(255,255,255,0.9);
+        transition: transform 0.4s ease;
+        color: var(--accent);
     }
-
-    /* Clapper closing animation on hover */
-    .navbar-brand:hover i {
-        animation: clapper-action 0.6s ease;
-        color: white;
-    }
+    .navbar-brand:hover i { animation: clapper-action 0.6s ease; color: var(--highlight); }
 
     @keyframes clapper-action {
-        0% { transform: rotate(0deg); }
-        30% { transform: rotate(-15deg); } /* Slight open */
-        60% { transform: rotate(5deg); }   /* Strong close */
+        0%   { transform: rotate(0deg); }
+        30%  { transform: rotate(-15deg); }
+        60%  { transform: rotate(5deg); }
         100% { transform: rotate(0deg); }
     }
 
-    /* 2. Menu link animation (expanding underline) */
     .navbar-nav .nav-link {
         position: relative;
         transition: all 0.3s ease;
-        opacity: 0.85;
+        opacity: 0.75;
+        color: var(--text-secondary) !important;
     }
 
-    .navbar-nav .nav-link:hover, .navbar-nav .nav-link.active {
+    .navbar-nav .nav-link:hover,
+    .navbar-nav .nav-link.active {
         opacity: 1;
         transform: translateY(-2px);
-        color: white !important;
+        color: var(--text-main) !important;
     }
 
     .navbar-nav .nav-link::after {
@@ -47,44 +36,68 @@
         height: 2px;
         bottom: 0;
         left: 50%;
-        background-color: white;
+        background: var(--accent);
         transition: all 0.3s ease;
         transform: translateX(-50%);
     }
 
-    .navbar-nav .nav-link:hover::after, .navbar-nav .nav-link.active::after {
-        width: 80%;
+    .navbar-nav .nav-link:hover::after,
+    .navbar-nav .nav-link.active::after { width: 80%; }
+
+    .btn-nav-user {
+        background: var(--bg-surface);
+        border: 1px solid var(--border-color);
+        color: var(--text-main) !important;
+        border-radius: 50px;
+        padding: 8px 20px;
+        font-weight: 700;
+        font-size: 0.85rem;
+        transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        text-decoration: none;
     }
 
-    /* 3. Login/Profile button animation (pop effect) */
-    .btn-light {
-        transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
+    .btn-nav-user:hover {
+        transform: scale(1.05);
+        border-color: var(--accent);
+        color: var(--highlight) !important;
+        box-shadow: 0 5px 20px rgba(116, 140, 171, 0.2);
     }
 
-    .btn-light:hover {
-        transform: scale(1.08);
-        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2) !important;
-        background-color: #ffffff !important;
+    .btn-nav-login {
+        background: var(--primary-gradient);
+        border: none;
+        color: var(--highlight) !important;
+        border-radius: 50px;
+        padding: 8px 20px;
+        font-weight: 700;
+        font-size: 0.85rem;
+        transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        text-decoration: none;
     }
 
-    /* 4. Search bar animation (highlight effect) */
-    .input-group {
-        transition: all 0.3s ease;
+    .btn-nav-login:hover {
+        transform: scale(1.05);
+        box-shadow: 0 5px 20px rgba(62, 92, 118, 0.5);
+        opacity: 0.9;
     }
 
-    .input-group:hover, .input-group:focus-within {
-        background: rgba(255, 255, 255, 0.35) !important;
-        border-color: rgba(255, 255, 255, 0.5) !important;
+    .nav-search-input { transition: all 0.3s ease; }
+    .nav-search-input:hover,
+    .nav-search-input:focus-within {
+        background: rgba(116, 140, 171, 0.1) !important;
+        border-color: var(--accent) !important;
         transform: scale(1.02);
     }
 </style>
 
-<nav class="navbar navbar-expand-lg navbar-dark shadow-sm py-3" style="background: #8a2be2;">
+<nav class="navbar navbar-expand-lg navbar-dark py-3 shadow-sm"
+     style="background: var(--bg-card); border-bottom: 1px solid var(--border-color);">
     <div class="container-fluid px-4">
         <div class="d-flex align-items-center justify-content-between w-100">
 
             <div class="flex-grow-1" style="flex-basis: 0;">
-                <a class="navbar-brand fw-bold d-flex align-items-center fs-4 m-0" href="{% url 'pagina_principal' %}">
+                <a class="navbar-brand fw-bold d-flex align-items-center fs-4 m-0 text-decoration-none"
+                   href="{% url 'pagina_principal' %}" style="color: var(--text-main);">
                     <i class="bi bi-clapperboard-fill me-2 fs-3"></i>
                     <span style="letter-spacing: -0.5px;">StreamSync</span>
                 </a>
@@ -93,14 +106,17 @@
             <div class="flex-grow-1 d-none d-lg-flex justify-content-center" style="flex-basis: 0;">
                 {% if request.path != '/' %}
                 <form action="{% url 'cerca_contingut' %}" method="GET" style="width: 100%; max-width: 400px;">
-                    <div class="input-group" style="background: rgba(255,255,255,0.2); border-radius: 50px; border: 1px solid rgba(255,255,255,0.1);">
-                        <span class="input-group-text bg-transparent border-0 text-white opacity-75 ps-3">
+                    <div class="input-group nav-search-input"
+                         style="background: var(--bg-main); border-radius: 50px; border: 1px solid var(--border-color);">
+                        <span class="input-group-text bg-transparent border-0 ps-3"
+                              style="color: var(--text-muted);">
                             <i class="bi bi-search"></i>
                         </span>
-                        <input type="text" name="q" class="form-control bg-transparent border-0 text-white py-2 shadow-none"
+                        <input type="text" name="q"
+                               class="form-control bg-transparent border-0 py-2 shadow-none"
                                placeholder="Search movies or series..."
                                value="{{ query|default:'' }}"
-                               style="color: white !important;">
+                               style="color: var(--text-main) !important;">
                     </div>
                 </form>
                 {% endif %}
@@ -110,29 +126,31 @@
                 <div class="collapse navbar-collapse justify-content-end" id="navMenu">
                     <ul class="navbar-nav align-items-center gap-2">
                         <li class="nav-item">
-                            <a class="nav-link text-white fw-semibold small" href="{% url 'llistes' %}">My lists</a>
+                            <a class="nav-link fw-semibold small" href="{% url 'llistes' %}">My lists</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-white fw-semibold small {% if tipus_actual == 'movie' %}active{% endif %}"
+                            <a class="nav-link fw-semibold small {% if tipus_actual == 'movie' %}active{% endif %}"
                                href="{% url 'cataleg_pelis' %}">Movies</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-white fw-semibold small {% if tipus_actual == 'series' %}active{% endif %}"
+                            <a class="nav-link fw-semibold small {% if tipus_actual == 'series' %}active{% endif %}"
                                href="{% url 'cataleg_series' %}">Series</a>
                         </li>
                         <li class="nav-item ms-2">
                             {% if user.is_authenticated %}
-                                <a class="btn btn-light rounded-pill px-4 py-2 fw-bold text-primary shadow-sm" href="{% url 'pagina_perfil1' %}">
+                                <a class="btn-nav-user" href="{% url 'pagina_perfil1' %}">
                                     <i class="bi bi-person-circle me-1"></i> {{ user.username }}
                                 </a>
                             {% else %}
-                                <a class="btn btn-light rounded-pill px-4 py-2 fw-bold text-primary shadow-sm" href="{% url 'login' %}">Login</a>
+                                <a class="btn-nav-login" href="{% url 'login' %}">
+                                    <i class="bi bi-box-arrow-in-right me-1"></i> Login
+                                </a>
                             {% endif %}
                         </li>
                     </ul>
                 </div>
-
-                <button class="navbar-toggler border-0 ms-2 d-lg-none" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu">
+                <button class="navbar-toggler border-0 ms-2 d-lg-none" type="button"
+                        data-bs-toggle="collapse" data-bs-target="#navMenu">
                     <span class="navbar-toggler-icon"></span>
                 </button>
             </div>

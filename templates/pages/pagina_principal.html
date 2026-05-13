@@ -6,9 +6,20 @@
 <style>
     .hero-search {
         padding: 120px 0;
-        background: linear-gradient(135deg, #8a2be2 0%, #d40078 100%);
+        background: linear-gradient(135deg, #0d1321 0%, #1d2d44 60%, #3e5c76 100%);
         text-align: center;
-        color: white;
+        color: var(--text-main);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .hero-search::before {
+        content: '';
+        position: absolute;
+        top: -50%; left: -50%;
+        width: 200%; height: 200%;
+        background: radial-gradient(ellipse at center, rgba(116, 140, 171, 0.1) 0%, transparent 60%);
+        pointer-events: none;
     }
 
     .main-search-bar-container {
@@ -17,108 +28,146 @@
         transition: transform 0.3s ease;
     }
 
-    .main-search-bar-container:hover {
-        transform: scale(1.02);
-    }
+    .main-search-bar-container:hover { transform: scale(1.02); }
 
-    .main-search-bar-white {
-        background: white;
+    .main-search-bar-dark {
+        background: rgba(13, 19, 33, 0.5);
         border-radius: 50px;
         padding: 8px;
-        box-shadow: 0 15px 35px rgba(0,0,0,0.2);
-        border: none;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+        border: 1px solid rgba(116, 140, 171, 0.3);
     }
 
-    .main-search-bar-white input {
+    .main-search-bar-dark input {
         border: none;
         padding-left: 25px;
         font-size: 1.1rem;
         box-shadow: none !important;
         border-radius: 50px 0 0 50px;
-        color: #333;
+        background: transparent !important;
+        color: var(--highlight) !important;
     }
 
-    .main-search-bar-white .btn-primary {
+    .main-search-bar-dark input::placeholder {
+        color: rgba(116, 140, 171, 0.6) !important;
+    }
+
+    .main-search-bar-dark .btn-search {
         border-radius: 50px;
         padding: 12px 40px;
         font-weight: 800;
-        background: #8a2be2;
+        background: var(--primary-gradient);
         border: none;
+        color: var(--highlight);
         transition: 0.3s;
     }
 
-    .main-search-bar-white .btn-primary:hover {
-        background: #6a11cb;
-        box-shadow: 0 5px 15px rgba(138, 43, 226, 0.4);
+    .main-search-bar-dark .btn-search:hover {
+        opacity: 0.9;
+        box-shadow: 0 5px 20px rgba(62, 92, 118, 0.5);
+        transform: translateY(-1px);
+        color: white;
     }
 
-    /* 2. Section styling */
-    .section-container { padding: 60px 0; background-color: #ffffff; }
+    .section-container {
+        padding: 60px 0;
+        background-color: var(--bg-main);
+    }
 
     .trending-title-main {
         font-size: 1.6rem;
         font-weight: 800;
-        color: #1a1a1a;
+        color: var(--text-main);
         margin-bottom: 30px;
         letter-spacing: -0.5px;
         display: flex;
         align-items: center;
     }
 
-    .text-purple { color: #8a2be2; }
-
     .pref-badge {
         font-size: 0.75rem;
         text-transform: uppercase;
-        background: #f8f0ff;
-        color: #8a2be2;
+        background: rgba(62, 92, 118, 0.3);
+        color: var(--accent);
         padding: 5px 15px;
         border-radius: 50px;
         font-weight: 700;
         margin-left: 15px;
-        border: 1px solid #eadaff;
+        border: 1px solid rgba(116, 140, 171, 0.3);
     }
 
     .empty-pref-card {
-        background: #fcfaff;
-        border: 2px dashed #eadaff;
+        background: var(--bg-card);
+        border: 2px dashed var(--border-color);
         border-radius: 30px;
         padding: 40px;
         text-align: center;
         transition: 0.3s;
     }
+
     .empty-pref-card:hover {
-        border-color: #8a2be2;
-        background: #f8f4ff;
+        border-color: var(--accent);
+        background: rgba(62, 92, 118, 0.1);
     }
 
-    .btn-purple {
-        background: #8a2be2;
-        color: white;
+    .btn-primary-custom {
+        background: var(--primary-gradient);
+        color: var(--highlight);
         font-weight: 700;
         border-radius: 50px;
         padding: 10px 25px;
         transition: 0.3s;
         border: none;
+        text-decoration: none;
+        display: inline-block;
     }
-    .btn-purple:hover { background: #6a11cb; color: white; transform: translateY(-2px); }
+
+    .btn-primary-custom:hover {
+        opacity: 0.9;
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 20px rgba(62, 92, 118, 0.4);
+    }
+
+    .section-divider {
+        border: none;
+        border-top: 1px solid var(--border-color);
+        margin: 10px 0 50px;
+    }
+
+    .configure-link {
+        color: var(--text-muted);
+        text-decoration: none;
+        font-weight: 700;
+        font-size: 0.85rem;
+        transition: 0.2s;
+    }
+
+    .configure-link:hover { color: var(--accent); }
 </style>
 {% endblock %}
 
 {% block content %}
+
 <section class="hero-search">
-    <div class="container">
-        <h1 class="display-3 fw-bold mb-3" style="letter-spacing: -2px;">Discover your next<br>favorite series or movie</h1>
-        <p class="fs-5 mb-5 opacity-75">Thousands of titles from every platform in one place</p>
+    <div class="container" style="position: relative; z-index: 1;">
+        <h1 class="display-3 fw-bold mb-3" style="letter-spacing: -2px; color: var(--highlight);">
+            Discover your next<br>favorite series or movie
+        </h1>
+        <p class="fs-5 mb-5" style="color: var(--accent);">
+            Thousands of titles from every platform in one place
+        </p>
 
         <div class="main-search-bar-container">
             <form action="{% url 'cerca_contingut' %}" method="GET">
-                <div class="input-group main-search-bar-white">
-                    <span class="input-group-text bg-transparent border-0 ps-4 text-muted">
+                <div class="input-group main-search-bar-dark">
+                    <span class="input-group-text bg-transparent border-0 ps-4"
+                          style="color: var(--text-secondary);">
                         <i class="bi bi-search fs-5"></i>
                     </span>
-                    <input type="text" name="q" class="form-control" placeholder="Search movies, series, directors..." required>
-                    <button class="btn btn-primary" type="submit">SEARCH</button>
+                    <input type="text" name="q" class="form-control"
+                           placeholder="Search movies, series, directors..." required>
+                    <button class="btn btn-search" type="submit">SEARCH</button>
                 </div>
             </form>
         </div>
@@ -131,10 +180,10 @@
     <section class="mb-5">
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h3 class="trending-title-main m-0">
-                <i class="bi bi-stars text-purple me-2"></i> For you
+                <i class="bi bi-stars me-2" style="color: var(--accent);"></i> For you
                 <span class="pref-badge">Personalized</span>
             </h3>
-            <a href="{% url 'profile2' %}" class="btn btn-sm btn-link text-decoration-none text-muted fw-bold">
+            <a href="{% url 'profile2' %}" class="configure-link">
                 <i class="bi bi-gear-fill me-1"></i> CONFIGURE
             </a>
         </div>
@@ -150,14 +199,19 @@
         {% else %}
             <div class="empty-pref-card">
                 <div class="mb-3">
-                    <i class="bi bi-palette2 display-6 text-purple opacity-50"></i>
+                    <i class="bi bi-palette2 display-6" style="color: var(--accent); opacity: 0.5;"></i>
                 </div>
-                <h5 class="fw-bold">Looking for something specific?</h5>
-                <p class="text-muted small">Choose your favorite genres or an age filter to personalize this section.</p>
-                <a href="{% url 'profile2' %}" class="btn btn-purple btn-sm mt-2">CONFIGURE PREFERENCES</a>
+                <h5 class="fw-bold" style="color: var(--text-main);">Looking for something specific?</h5>
+                <p class="small" style="color: var(--text-secondary);">
+                    Choose your favorite genres or an age filter to personalize this section.
+                </p>
+                <a href="{% url 'profile2' %}" class="btn-primary-custom btn-sm mt-2">
+                    CONFIGURE PREFERENCES
+                </a>
             </div>
         {% endif %}
     </section>
+    <hr class="section-divider">
     {% endif %}
 
     <section class="mb-5">
@@ -172,6 +226,8 @@
             {% endfor %}
         </div>
     </section>
+
+    <hr class="section-divider">
 
     <section class="mb-5">
         <h3 class="trending-title-main">
