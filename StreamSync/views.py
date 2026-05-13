@@ -12,7 +12,7 @@ def pagina_principal(request):
     return render(request, 'pages/pagina_principal.html')
 def profile2(request):
     return render(request, 'profile2.html')
-def llistes(request):
+def lists(request):
     return render(request, 'llistes.html')
 def login(request):
     if request.method == "POST":
