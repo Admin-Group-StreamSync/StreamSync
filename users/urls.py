@@ -21,7 +21,7 @@ urlpatterns = [
     path('cataleg/series/', views.catalogo, {'tipus': 'series'}, name='cataleg_series'),
 
     # CONTENT DETAIL (Updated with <str:tipus>)
-    path('cataleg/detall/<str:tipus>/<str:content_id>/', views.content_detail, name='pagina_contingut'),
+    path('cataleg/detall/<str:tipus>/<str:content_id>/', views.content_detail, name='pagina_contingut'),u
 
     # REVIEWS (Updated to keep consistency with detail)
     path('cataleg/detall/<str:tipus>/<str:content_id>/opinar/', views.publish_review, name='publicar_ressenya'),
