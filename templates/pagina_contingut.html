@@ -221,7 +221,11 @@
             </div>
             <div class="p-3 bg-white rounded-4 border d-inline-flex align-items-center gap-3 shadow-sm">
                 <div class="d-flex align-items-center justify-content-center bg-primary text-white rounded-3 px-3 py-2 fw-black fs-4">
-                    <i class="bi bi-people-fill me-2"></i> {{ community_rating }}
+                    <i class="bi bi-people-fill me-2"></i> {% if community_rating %}
+                        {{ community_rating }}
+                    {% else %}
+                        -
+                    {% endif %}
                 </div>
 
                 <div>

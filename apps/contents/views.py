@@ -73,8 +73,10 @@ def content_detail(request, tipus, content_id):
     ## community reviews
     community_rating = Ressenya.objects.filter(
         pelicula=movie_db
-    ).aggregate(avg=Avg('puntuacio'))['avg'] or 0
-    community_rating = round(community_rating, 1)
+    ).aggregate(avg=Avg('puntuacio'))['avg']
+
+    if community_rating is not None:
+        community_rating = round(community_rating, 1)
 
 
     return render(request, 'pagina_contingut.html', {
