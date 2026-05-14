@@ -1,14 +1,14 @@
 {% extends "base.html" %}
 
-{% block title %}Preferències - StreamSync{% endblock %}
+{% block title %}Preferences - StreamSync{% endblock %}
 
 {% block extra_css %}
 <style>
-    /* Forcem el fons blanc total com has demanat */
+
     body {
         background-color: #ffffff !important;
     }
-    .card-registro {
+    .card-register {
         border-radius: 15px;
         border: 1px solid #eee;
     }
@@ -23,25 +23,25 @@
 <div class="container d-flex justify-content-center mb-3 mt-5" style="max-width: 700px; padding: 0;">
     <div class="w-100 text-start">
         <a href="{% url 'crear_cuenta' %}" class="btn btn-outline-secondary btn-sm rounded-pill shadow-sm">
-            <i class="bi bi-arrow-left"></i> Enrere (Dades personals)
+            <i class="bi bi-arrow-left"></i> Back (Personal details)
         </a>
     </div>
 </div>
 
-<div class="card p-4 shadow-sm card-registro mb-5" style="width: 100%; max-width: 700px;">
-    <h2 class="text-center fw-bold mb-2">QUÈ T'AGRADA VEURE?</h2>
-    <p class="text-center text-muted mb-4 small">Tria els teus gustos per finalitzar la creació del compte.</p>
+<div class="card p-4 shadow-sm card-register mb-5" style="width: 100%; max-width: 700px;">
+    <h2 class="text-center fw-bold mb-2">WHAT DO YOU LIKE TO WATCH?</h2>
+    <p class="text-center text-muted mb-4 small">Choose your preferences to finish account creation.</p>
 
     <form method="post" action="{% url 'sign_in2' %}">
         {% csrf_token %}
 
-        <p class="fw-bold mb-3 text-primary">PLATAFORMES:</p>
+        <p class="fw-bold mb-3 text-primary">PLATFORMS:</p>
         <div class="row row-cols-2 row-cols-md-4 g-3 mb-4">
-            {% for plat in opcions.plataformes %}
+            {% for platform in opcions.plataformes %}
             <div class="col">
                 <div class="form-check">
-                    <input class="form-check-input guardado-local" type="checkbox" name="plataformas" value="{{ plat }}" id="p_{{ plat }}">
-                    <label class="form-check-label" for="p_{{ plat }}">{{ plat }}</label>
+                    <input class="form-check-input local-save" type="checkbox" name="plataformas" value="{{ platform }}" id="p_{{ platform }}">
+                    <label class="form-check-label" for="p_{{ platform }}">{{ platform }}</label>
                 </div>
             </div>
             {% endfor %}
@@ -49,13 +49,13 @@
 
         <hr class="my-4 opacity-25">
 
-        <p class="fw-bold mb-3 text-primary">GÈNERES:</p>
+        <p class="fw-bold mb-3 text-primary">GENRES:</p>
         <div class="row row-cols-2 row-cols-md-4 g-3 mb-4">
-            {% for gen in opcions.generes %}
+            {% for genre in opcions.generes %}
             <div class="col">
                 <div class="form-check">
-                    <input class="form-check-input guardado-local" type="checkbox" name="generos" value="{{ gen }}" id="g_{{ gen }}">
-                    <label class="form-check-label" for="g_{{ gen }}">{{ gen }}</label>
+                    <input class="form-check-input local-save" type="checkbox" name="generos" value="{{ genre }}" id="g_{{ genre }}">
+                    <label class="form-check-label" for="g_{{ genre }}">{{ genre }}</label>
                 </div>
             </div>
             {% endfor %}
@@ -63,13 +63,13 @@
 
         <hr class="my-4 opacity-25">
 
-        <p class="fw-bold mb-3 text-primary">IDIOMES:</p>
+        <p class="fw-bold mb-3 text-primary">LANGUAGES:</p>
         <div class="row row-cols-2 row-cols-md-4 g-3 mb-4">
-            {% for idi in opcions.idiomes %}
+            {% for language in opcions.idiomes %}
             <div class="col">
                 <div class="form-check">
-                    <input class="form-check-input guardado-local" type="checkbox" name="idiomas" value="{{ idi }}" id="i_{{ idi }}">
-                    <label class="form-check-label" for="i_{{ idi }}">{{ idi }}</label>
+                    <input class="form-check-input local-save" type="checkbox" name="idiomas" value="{{ language }}" id="i_{{ language }}">
+                    <label class="form-check-label" for="i_{{ language }}">{{ language }}</label>
                 </div>
             </div>
             {% endfor %}
@@ -77,13 +77,13 @@
 
         <hr class="my-4 opacity-25">
 
-        <p class="fw-bold mb-3 text-primary">EDATS (RATINGS):</p>
+        <p class="fw-bold mb-3 text-primary">AGES (RATINGS):</p>
         <div class="row row-cols-2 row-cols-md-4 g-3 mb-4">
-            {% for ed in opcions.edats %}
+            {% for age in opcions.edats %}
             <div class="col">
                 <div class="form-check">
-                    <input class="form-check-input guardado-local" type="checkbox" name="edats" value="{{ ed }}" id="e_{{ ed }}">
-                    <label class="form-check-label" for="e_{{ ed }}">{{ ed }}</label>
+                    <input class="form-check-input local-save" type="checkbox" name="edats" value="{{ age }}" id="e_{{ age }}">
+                    <label class="form-check-label" for="e_{{ age }}">{{ age }}</label>
                 </div>
             </div>
             {% endfor %}
@@ -91,43 +91,43 @@
 
         <hr class="my-4 opacity-25">
 
-        <p class="fw-bold mb-3 text-primary">PAÏSOS ORIGEN:</p>
+        <p class="fw-bold mb-3 text-primary">COUNTRIES OF ORIGIN:</p>
         <div class="row row-cols-2 row-cols-md-4 g-3 mb-4">
-            {% for pa in opcions.paisos %}
+            {% for country in opcions.paisos %}
             <div class="col">
                 <div class="form-check">
-                    <input class="form-check-input guardado-local" type="checkbox" name="paisos" value="{{ pa }}" id="pa_{{ pa }}">
-                    <label class="form-check-label" for="pa_{{ pa }}">{{ pa }}</label>
+                    <input class="form-check-input local-save" type="checkbox" name="paisos" value="{{ country }}" id="pa_{{ country }}">
+                    <label class="form-check-label" for="pa_{{ country }}">{{ country }}</label>
                 </div>
             </div>
             {% endfor %}
         </div>
 
         <button type="submit" class="btn btn-primary btn-lg w-100 fw-bold mt-3 shadow-sm">
-            FINALITZAR REGISTRE I CREAR COMPTE
+            FINISH REGISTRATION AND CREATE ACCOUNT
         </button>
     </form>
 </div>
 
 <script>
     document.addEventListener("DOMContentLoaded", function() {
-        const checkboxes = document.querySelectorAll('.guardado-local');
+        const checkboxes = document.querySelectorAll('.local-save');
 
-        // 1. En carregar la pàgina, restaurar el que estigués guardat a la sessió
+        // 1) Restore checkbox values saved in session storage.
         checkboxes.forEach(chk => {
             if (sessionStorage.getItem(chk.id) === 'true') {
                 chk.checked = true;
             }
         });
 
-        // 2. Guardar en temps real quan l'usuari marqui o desmarqui
+        // 2) Save changes immediately when the user checks/unchecks.
         checkboxes.forEach(chk => {
             chk.addEventListener('change', function() {
                 sessionStorage.setItem(this.id, this.checked);
             });
         });
 
-        // 3. Netejar la memòria un cop l'usuari crea el compte amb èxit
+        // 3) Clear stored data once the form is successfully submitted.
         const form = document.querySelector('form');
         if(form) {
             form.addEventListener('submit', function() {

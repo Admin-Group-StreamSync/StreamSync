@@ -36,7 +36,12 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'users'
+    'apps.users',
+    'apps.lists',
+    'apps.contents',
+    'apps.analytics',
+    'apps.reviews',
+    'cookie_consent'
 ]
 
 MIDDLEWARE = [
@@ -119,12 +124,12 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
-# Si algú intenta entrar a una pàgina privada sense estar loguejat
+# If a user tries to access a private page without being logged in
 LOGIN_URL = 'login'
 
-# CANVIA AIXÒ: On va l'usuari just després de posar bé la seva contrasenya
-# Volem que vagi al perfil tal com has demanat
+# Redirect destination right after a successful login
+# We want the user to be sent to the profile page
 LOGIN_REDIRECT_URL = 'pagina_perfil1'
 
-# On va l'usuari en tancar la sessió
+# Redirect destination after logout
 LOGOUT_REDIRECT_URL = 'pagina_principal'

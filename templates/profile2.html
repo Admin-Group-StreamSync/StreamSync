@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}StreamSync - Preferencies{% endblock %}
+{% block title %}StreamSync - Preferences{% endblock %}
 
 {% block extra_css %}
 <style>
@@ -72,25 +72,25 @@
                 <div class="sidebar-nav">
                     <div class="mb-2">
                         <a href="{% url 'pagina_principal' %}" class="btn-back-sidebar text-uppercase">
-                            <i class="bi bi-arrow-left me-2"></i> Tornar a l'Inici
+                            <i class="bi bi-arrow-left me-2"></i> Back to Home
                         </a>
                     </div>
-                    <div class="sidebar-title">El meu Compte</div>
+                    <div class="sidebar-title">My Account</div>
                     <nav>
                         <a href="{% url 'pagina_perfil1' %}" class="nav-link-custom">
-                            <i class="bi bi-person"></i> Informació personal
+                            <i class="bi bi-person"></i> Personal information
                         </a>
                         <a href="{% url 'profile2' %}" class="nav-link-custom active">
-                            <i class="bi bi-sliders"></i> Preferències
+                            <i class="bi bi-sliders"></i> Preferences
                         </a>
                         <a href="{% url 'llistes' %}" class="nav-link-custom">
-                            <i class="bi bi-bookmark"></i> Les meves llistes
+                            <i class="bi bi-bookmark"></i> My lists
                         </a>
                         <hr class="my-4 opacity-25">
                         <form method="post" action="{% url 'logout' %}">
                             {% csrf_token %}
                             <button type="submit" class="nav-link-custom border-0 bg-transparent w-100 text-danger text-start">
-                                <i class="bi bi-box-arrow-left"></i> Tancar sessió
+                                <i class="bi bi-box-arrow-left"></i> Sign out
                             </button>
                         </form>
                     </nav>
@@ -99,58 +99,58 @@
 
             <div class="col-md-9">
                 <div class="content-card shadow-sm">
-                    <h2 class="fw-bold mb-1">Preferències de contingut</h2>
-                    <p class="text-muted small mb-5">Personalitza el que vols veure a la teva pàgina principal.</p>
+                    <h2 class="fw-bold mb-1">Content preferences</h2>
+                    <p class="text-muted small mb-5">Customize what you want to see on your home page.</p>
 
                     <form method="post" id="pref-form">
                         {% csrf_token %}
 
-                        <label class="section-label">Què t'agrada veure?</label>
+                        <label class="section-label">What do you like to watch?</label>
                         <div class="selection-grid">
-                            {% for val, nom in opcions.tipus %}
-                            <label class="select-item {% if val in perfil.tipus %}selected{% endif %}">
-                                <input type="checkbox" name="tipus" value="{{ val }}" class="checkbox-hidden"
-                                       {% if val in perfil.tipus %}checked{% endif %}>
-                                <span>{{ nom }}</span>
+                            {% for value, label in opcions.tipus %}
+                            <label class="select-item {% if value in perfil.tipus %}selected{% endif %}">
+                                <input type="checkbox" name="tipus" value="{{ value }}" class="checkbox-hidden"
+                                       {% if value in perfil.tipus %}checked{% endif %}>
+                                <span>{{ label }}</span>
                             </label>
                             {% endfor %}
                         </div>
 
-                        <label class="section-label">Les teves plataformes</label>
+                        <label class="section-label">Your platforms</label>
                         <div class="selection-grid">
-                            {% for p in opcions.plataformas %}
-                            <label class="select-item {% if p in perfil.plataformes %}selected{% endif %}">
-                                <input type="checkbox" name="plataformes" value="{{ p }}" class="checkbox-hidden"
-                                       {% if p in perfil.plataformes %}checked{% endif %}>
-                                <span>{{ p }}</span>
+                            {% for platform in opcions.plataformas %}
+                            <label class="select-item {% if platform in perfil.plataformes %}selected{% endif %}">
+                                <input type="checkbox" name="plataformes" value="{{ platform }}" class="checkbox-hidden"
+                                       {% if platform in perfil.plataformes %}checked{% endif %}>
+                                <span>{{ platform }}</span>
                             </label>
                             {% endfor %}
                         </div>
 
-                        <label class="section-label">Gèneres favorits</label>
+                        <label class="section-label">Favorite genres</label>
                         <div class="selection-grid">
-                            {% for g in genres_api %}
-                            <label class="select-item {% if g.id|stringformat:'s' in perfil.generes %}selected{% endif %}">
-                                <input type="checkbox" name="generos" value="{{ g.id }}" class="checkbox-hidden"
-                                       {% if g.id|stringformat:'s' in perfil.generes %}checked{% endif %}>
-                                <span>{{ g.name }}</span>
+                            {% for genre in genres_api %}
+                            <label class="select-item {% if genre.id|stringformat:'s' in perfil.generes %}selected{% endif %}">
+                                <input type="checkbox" name="generos" value="{{ genre.id }}" class="checkbox-hidden"
+                                       {% if genre.id|stringformat:'s' in perfil.generes %}checked{% endif %}>
+                                <span>{{ genre.name }}</span>
                             </label>
                             {% endfor %}
                         </div>
 
-                        <label class="section-label">Restricció d'edat</label>
+                        <label class="section-label">Age restriction</label>
                         <div class="selection-grid">
-                            {% for r in ratings_api %}
-                            <label class="select-item {% if r.id|stringformat:'s' in perfil.edat_rating %}selected{% endif %}">
-                                <input type="checkbox" name="edats" value="{{ r.id }}" class="checkbox-hidden"
-                                       {% if r.id|stringformat:'s' in perfil.edat_rating %}checked{% endif %}>
-                                <span>{{ r.description }}</span>
+                            {% for rating in ratings_api %}
+                            <label class="select-item {% if rating.id|stringformat:'s' in perfil.edat_rating %}selected{% endif %}">
+                                <input type="checkbox" name="edats" value="{{ rating.id }}" class="checkbox-hidden"
+                                       {% if rating.id|stringformat:'s' in perfil.edat_rating %}checked{% endif %}>
+                                <span>{{ rating.description }}</span>
                             </label>
                             {% endfor %}
                         </div>
 
                         <div class="pt-4 border-top d-flex align-items-center">
-                            <button type="submit" class="btn-save-pref">GUARDAR CANVIS</button>
+                            <button type="submit" class="btn-save-pref">SAVE CHANGES</button>
                         </div>
                     </form>
                 </div>

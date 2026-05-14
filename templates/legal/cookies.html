@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block title %}Cookies Policy{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+
+    <h1 class="fw-bold mb-4">Cookies Policy</h1>
+
+    <h4>1. What are cookies and why are they used?</h4>
+    <p>
+        Cookies are small text files that are stored on the user's device when they visit this platform.
+        They are used to ensure the correct functioning of the service, improve the user experience and analyze the use of the platform.
+    </p>
+
+    <h4>2. Types of used cookies</h4>
+        <p>The following types of cookies may be used on this platform:</p>
+
+    <ul>
+        <li>
+            <strong>Session cookies:</strong> They are temporary and are automatically deleted when the user closes the browser.
+            They are used to keep the session active during browsing.
+        </li>
+        <li>
+            <strong>Persistent cookies:</strong> They remain for a certain period of time and allow the user's preferences or settings to be
+            remembered on future visits.
+        </li>
+    </ul>
+
+    <h4>3. Managing and disabling cookies</h4>
+    <p>
+        The user can configure their browser to accept, reject or delete cookies at any time.
+        Disabling cookies may affect the correct functioning of some functionalities of the platform.
+    </p>
+
+    <ul>
+        <li>Chrome: Settings → Privacy & Security → Cookies</li>
+        <li>Firefox: Options → Privacy & Security</li>
+        <li>Safari: Preferences → Privacy</li>
+    </ul>
+
+    <h4>4. Relationship with the Privacy Policy</h4>
+    <p>
+        For more information on the processing of personal data, please consult the
+        <a href="{% url 'legal_privacy' %}">Privacy Policy</a>.
+    </p>
+
+    <p class="mt-4 text-muted small">
+        Last update: 2026
+    </p>
+
+</div>
+{% endblock %}
