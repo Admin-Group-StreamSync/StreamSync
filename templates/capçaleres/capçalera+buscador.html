@@ -1,5 +1,4 @@
 <style>
-    /* Efecte de pujada i línia inferior per als enllaços */
     .navbar-nav .nav-link {
         position: relative;
         transition: all 0.3s ease;
@@ -25,7 +24,7 @@
         width: 80%;
     }
 
-    /* Efecte per al botó blanc de Login / Perfil */
+    /* White Login/Profile button effect */
     .btn-light, .btn-white {
         transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
     }
@@ -34,7 +33,7 @@
         box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2) !important;
     }
 
-    /* Animació del Cercador */
+    /* Search input animation */
     .input-group {
         transition: all 0.3s ease;
     }
@@ -44,7 +43,7 @@
     }
     .form-control::placeholder { color: rgba(255,255,255,0.7); }
 
-    /* Animació del Logo */
+    /* Logo animation */
     .navbar-brand:hover i {
         display: inline-block;
         animation: rotate-logo 0.5s ease;
@@ -74,7 +73,7 @@
                             <i class="bi bi-search"></i>
                         </span>
                         <input type="text" name="q" class="form-control bg-transparent border-0 text-white py-2 shadow-none"
-                               placeholder="Buscar pel·lícules i sèries..."
+                               placeholder="Search movies and series..."
                                style="color: white !important;">
                     </div>
                 </form>
@@ -84,9 +83,9 @@
             <div class="flex-grow-1 d-flex justify-content-end align-items-center" style="flex-basis: 0;">
                 <div class="collapse navbar-collapse justify-content-end" id="navMenu">
                     <ul class="navbar-nav align-items-center gap-2">
-                        <li class="nav-item"><a class="nav-link text-white fw-semibold small" href="{% url 'llistes' %}">Les meves llistes</a></li>
-                        <li class="nav-item"><a class="nav-link text-white fw-semibold small" href="{% url 'catalogo' %}?tipus=movie">Pel·lícules</a></li>
-                        <li class="nav-item"><a class="nav-link text-white fw-semibold small" href="{% url 'catalogo' %}?tipus=series">Sèries</a></li>
+                        <li class="nav-item"><a class="nav-link text-white fw-semibold small" href="{% url 'llistes' %}">My lists</a></li>
+                        <li class="nav-item"><a class="nav-link text-white fw-semibold small" href="{% url 'catalogo' %}?tipus=movie">Movies</a></li>
+                        <li class="nav-item"><a class="nav-link text-white fw-semibold small" href="{% url 'catalogo' %}?tipus=series">Series</a></li>
                         <li class="nav-item ms-2">
                             {% if user.is_authenticated %}
                                 <a class="btn btn-light rounded-pill px-4 py-2 fw-bold text-primary shadow-sm" href="{% url 'pagina_perfil1' %}">

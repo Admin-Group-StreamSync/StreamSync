@@ -1,5 +1,5 @@
 <style>
-    /* 1. Animació i icona del Logo (Claqueta de cinema) */
+    /* 1. Logo animation and icon (movie clapperboard) */
     .navbar-brand {
         transition: transform 0.3s ease;
     }
@@ -14,7 +14,7 @@
         color: rgba(255,255,255,0.9);
     }
 
-    /* Animació de cloenda de la claqueta al fer hover */
+    /* Clapper closing animation on hover */
     .navbar-brand:hover i {
         animation: clapper-action 0.6s ease;
         color: white;
@@ -22,12 +22,12 @@
 
     @keyframes clapper-action {
         0% { transform: rotate(0deg); }
-        30% { transform: rotate(-15deg); } /* Obre una mica */
-        60% { transform: rotate(5deg); }   /* Tanca fort */
+        30% { transform: rotate(-15deg); } /* Slight open */
+        60% { transform: rotate(5deg); }   /* Strong close */
         100% { transform: rotate(0deg); }
     }
 
-    /* 2. Animació per als enllaços del menú (Subratllat expansiu) */
+    /* 2. Menu link animation (expanding underline) */
     .navbar-nav .nav-link {
         position: relative;
         transition: all 0.3s ease;
@@ -56,7 +56,7 @@
         width: 80%;
     }
 
-    /* 3. Animació per al Botó de Login / Perfil (Efecte pop) */
+    /* 3. Login/Profile button animation (pop effect) */
     .btn-light {
         transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
     }
@@ -67,7 +67,7 @@
         background-color: #ffffff !important;
     }
 
-    /* 4. Animació per a la barra de cerca (Il·luminació) */
+    /* 4. Search bar animation (highlight effect) */
     .input-group {
         transition: all 0.3s ease;
     }
@@ -98,7 +98,7 @@
                             <i class="bi bi-search"></i>
                         </span>
                         <input type="text" name="q" class="form-control bg-transparent border-0 text-white py-2 shadow-none"
-                               placeholder="Cerca pel·lícules o sèries..."
+                               placeholder="Search movies or series..."
                                value="{{ query|default:'' }}"
                                style="color: white !important;">
                     </div>
@@ -110,15 +110,15 @@
                 <div class="collapse navbar-collapse justify-content-end" id="navMenu">
                     <ul class="navbar-nav align-items-center gap-2">
                         <li class="nav-item">
-                            <a class="nav-link text-white fw-semibold small" href="{% url 'llistes' %}">Les meves llistes</a>
+                            <a class="nav-link text-white fw-semibold small" href="{% url 'llistes' %}">My lists</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link text-white fw-semibold small {% if tipus_actual == 'movie' %}active{% endif %}"
-                               href="{% url 'cataleg_pelis' %}">Pel·lícules</a>
+                               href="{% url 'cataleg_pelis' %}">Movies</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link text-white fw-semibold small {% if tipus_actual == 'series' %}active{% endif %}"
-                               href="{% url 'cataleg_series' %}">Sèries</a>
+                               href="{% url 'cataleg_series' %}">Series</a>
                         </li>
                         <li class="nav-item ms-2">
                             {% if user.is_authenticated %}

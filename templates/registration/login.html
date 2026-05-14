@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Iniciar Sessió - StreamSync{% endblock %}
+{% block title %}Sign In - StreamSync{% endblock %}
 
 {% block extra_css %}
 <style>
@@ -17,39 +17,43 @@
 {% endblock %}
 
 {% block content %}
+<!-- Login card -->
 <div class="login-container">
     <div class="login-card">
+        <!-- Brand icon -->
         <div class="mx-auto mb-3" style="width: 45px; height: 45px; background: linear-gradient(135deg, #8a2be2, #d40078); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: white;">
             <i class="bi bi-film"></i>
         </div>
 
-        <h3 class="fw-bold mb-1">Benvingut</h3>
-        <p class="text-muted small mb-4">Introdueix les teves credencials</p>
+        <h3 class="fw-bold mb-1">Welcome</h3>
+        <p class="text-muted small mb-4">Enter your credentials</p>
 
+        <!-- Invalid credentials message -->
         {% if form.errors %}
         <div class="error-box">
-            <i class="bi bi-exclamation-circle-fill me-2"></i> L'usuari o la contrasenya no són correctes.
+            <i class="bi bi-exclamation-circle-fill me-2"></i> Username or password is incorrect.
         </div>
         {% endif %}
 
+        <!-- Authentication form -->
         <form method="POST">
             {% csrf_token %}
 
             <div class="form-group-custom">
-                <label>Nom d'usuari</label>
-                <input type="text" name="username" class="form-control-figma" placeholder="nom_usuari" required>
+                <label>Username</label>
+                <input type="text" name="username" class="form-control-figma" placeholder="username" required>
             </div>
 
             <div class="form-group-custom">
-                <label>Contrasenya</label>
+                <label>Password</label>
                 <input type="password" name="password" class="form-control-figma" placeholder="••••••••" required>
             </div>
 
-            <button type="submit" class="btn-gradient">Iniciar Sessió</button>
+            <button type="submit" class="btn-gradient">Sign In</button>
         </form>
 
         <p class="mt-4 small text-muted">
-            No tens compte? <a href="{% url 'registre' %}" class="text-primary fw-bold text-decoration-none">Registra't aquí</a>
+            Don't have an account? <a href="{% url 'registre' %}" class="text-primary fw-bold text-decoration-none">Register here</a>
         </p>
     </div>
 </div>

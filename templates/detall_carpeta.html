@@ -122,7 +122,7 @@
     <div class="row">
         <div class="col-12">
             <a href="{% url 'llistes' %}" class="btn-back-figma">
-                <i class="bi bi-arrow-left me-2"></i> Tornar a les meves llistes
+                <i class="bi bi-arrow-left me-2"></i> Back to my lists
             </a>
         </div>
     </div>
@@ -137,11 +137,11 @@
                     </div>
                     <div>
                         <h1 class="fw-bold m-0" style="letter-spacing: -1.5px;">{{ carpeta.nom }}</h1>
-                        <p class="text-muted m-0 fw-semibold">{{ elements.count }} elements guardats</p>
+                        <p class="text-muted m-0 fw-semibold">{{ elements.count }} saved items</p>
                     </div>
                 </div>
                 <a href="{% url 'editar_llista' carpeta.id %}" class="btn-edit-list">
-                    <i class="bi bi-pencil-square me-2"></i> Editar Llista
+                    <i class="bi bi-pencil-square me-2"></i> Edit List
                 </a>
             </div>
         </div>
@@ -159,7 +159,7 @@
 
                         <a href="{% url 'treure_de_llista' tipus=item.pelicula.tipus content_id=item.pelicula.id %}"
                            class="text-danger small fw-bold text-decoration-none">
-                            <i class="bi bi-trash3 me-1"></i> Treure
+                            <i class="bi bi-trash3 me-1"></i> Remove
                         </a>
                     </div>
                 </div>
@@ -170,23 +170,23 @@
                     <div class="empty-icon">
                         <i class="bi bi-collection-play fs-1"></i>
                     </div>
-                    <h2 class="text-dark fw-bold mb-2">Aquesta llista encara està buida</h2>
-                    <p class="text-muted mb-5">Comença a omplir-la explorant el nostre contingut:</p>
+                    <h2 class="text-dark fw-bold mb-2">This list is still empty</h2>
+                    <p class="text-muted mb-5">Start filling it by exploring our content:</p>
 
                     <div class="d-flex justify-content-center gap-4 flex-wrap align-items-center">
                         <div class="text-center">
-                            <p class="small fw-bold text-uppercase text-muted mb-3">¿Vols afegir pel·lícules?</p>
+                            <p class="small fw-bold text-uppercase text-muted mb-3">Want to add movies?</p>
                             <a href="{% url 'cataleg_pelis' %}" class="btn-pill-custom btn-catalog-peli">
-                                <i class="bi bi-film me-2"></i>Catàleg de Pel·lícules
+                                <i class="bi bi-film me-2"></i>Movie Catalog
                             </a>
                         </div>
 
                         <div class="vr d-none d-md-block mx-2" style="height: 60px; opacity: 0.1;"></div>
 
                         <div class="text-center">
-                            <p class="small fw-bold text-uppercase text-muted mb-3">¿Vols afegir sèries?</p>
+                            <p class="small fw-bold text-uppercase text-muted mb-3">Want to add series?</p>
                             <a href="{% url 'cataleg_series' %}" class="btn-pill-custom btn-catalog-serie">
-                                <i class="bi bi-tv me-2"></i>Catàleg de Sèries
+                                <i class="bi bi-tv me-2"></i>Series Catalog
                             </a>
                         </div>
                     </div>

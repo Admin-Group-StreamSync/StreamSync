@@ -2,13 +2,16 @@
 from django.contrib import admin
 from django.urls import path, include
 from django.contrib.auth import views as auth_views
-from users.views import StreamSyncLoginView
+from apps.users.views import StreamSyncLoginView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include('users.urls')),  # Les teves rutes d'usuari
+    path('', include('apps.users.urls')),
+    path('', include('apps.analytics.urls')),
+    path('', include('apps.lists.urls')),
+    path('', include('apps.contents.urls')),
+    path('', include('apps.reviews.urls')),
 
-    # LOGIN: Utilitzem la vista de Django però el TEU template
     path('login/', StreamSyncLoginView.as_view(template_name='registration/login.html'), name='login'),
 
     # LOGOUT
