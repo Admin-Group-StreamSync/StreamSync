@@ -1,15 +1,22 @@
 # StreamSync/urls.py
 from django.contrib import admin
+from django.conf import settings
 from django.urls import path, include
 from django.contrib.auth import views as auth_views
-from users.views import StreamSyncLoginView
+from django.views.static import serve
+from apps.users.views import StreamSyncLoginView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include('users.urls')),
+    path('', include('apps.users.urls')),
+    path('', include('apps.analytics.urls')),
+    path('', include('apps.lists.urls')),
+    path('', include('apps.contents.urls')),
+    path('', include('apps.reviews.urls')),
 
     path('login/', StreamSyncLoginView.as_view(template_name='registration/login.html'), name='login'),
 
     # LOGOUT
     path('logout/', auth_views.LogoutView.as_view(), name='logout'),
+    path('images/<path:path>', serve, {'document_root': settings.BASE_DIR / 'templates/images'}),
 ]
