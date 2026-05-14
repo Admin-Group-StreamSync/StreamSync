@@ -10,6 +10,7 @@ from apps.contents.services import get_all_series, get_all_movies, get_directors
 from apps.lists.models import LlistaPersonal
 from apps.reviews.models import Ressenya
 from apps.users.decorators.permissions import cap_manager_permes
+from django.db.models import Avg
 
 # Create your views here.
 
@@ -69,6 +70,13 @@ def content_detail(request, tipus, content_id):
             pelicula=movie_db
         ).first()
 
+    ## community reviews
+    community_rating = Ressenya.objects.filter(
+        pelicula=movie_db
+    ).aggregate(avg=Avg('puntuacio'))['avg'] or 0
+    community_rating = round(community_rating, 1)
+
+
     return render(request, 'pagina_contingut.html', {
         'item': item,
         'tipus': tipus,
@@ -78,6 +86,7 @@ def content_detail(request, tipus, content_id):
         'ressenyes': Ressenya.objects.filter(pelicula=movie_db).order_by('-data_publicacio'),
         'recomanacions': recommendations,
         'ressenya_usuari': ressenya_usuari,
+        'community_rating': community_rating,
     })
 
 @cap_manager_permes

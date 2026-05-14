@@ -207,13 +207,28 @@
                 {% endif %}
             </div>
 
-            <div class="p-3 bg-white rounded-4 border d-inline-flex align-items-center gap-3 shadow-sm">
+            <div class="p-3 bg-white rounded-4 border d-inline-flex align-items-center gap-3 shadow-sm me-3">
                 <div class="d-flex align-items-center justify-content-center bg-warning rounded-3 px-3 py-2 fw-black fs-4">
                     <i class="bi bi-star-fill me-2"></i> {{ item.rating|default:"0.0" }}
                 </div>
+
                 <div>
-                    <div class="small fw-bold text-uppercase text-muted" style="font-size: 0.6rem;">Global Score</div>
-                    <div class="fw-bold text-dark">StreamSync Community</div>
+                    <div class="small fw-bold text-uppercase text-muted" style="font-size: 0.6rem;">
+                        Official Rating
+                    </div>
+                    <div class="fw-bold text-dark">Providers Score</div>
+                </div>
+            </div>
+            <div class="p-3 bg-white rounded-4 border d-inline-flex align-items-center gap-3 shadow-sm">
+                <div class="d-flex align-items-center justify-content-center bg-primary text-white rounded-3 px-3 py-2 fw-black fs-4">
+                    <i class="bi bi-people-fill me-2"></i> {{ community_rating }}
+                </div>
+
+                <div>
+                    <div class="small fw-bold text-uppercase text-muted" style="font-size: 0.6rem;">
+                        Community Rating
+                    </div>
+                    <div class="fw-bold text-dark">StreamSync Users</div>
                 </div>
             </div>
         </div>
