@@ -137,7 +137,7 @@ def crear_cuenta(request):
             messages.success(request, f"Benvingut/da, {user.username}!")
             return redirect('pagina_principal')
         else:
-            print("Form errors:", form.errors)
+            #print("Form errors:", form.errors)
             messages.error(request, "Error in the form.")
     else:
         form = UserRegistrationForm()
