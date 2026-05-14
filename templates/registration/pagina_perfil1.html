@@ -79,6 +79,12 @@
     }
     .avatar-option img { width: 100%; height: 100%; object-fit: cover; border-radius: 8px; }
     .avatar-option.selected { border-color: #8a2be2; }
+    .avatar-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 92px);
+        gap: 8px;
+        justify-content: center;
+    }
 </style>
 {% endblock %}
 
@@ -208,7 +214,7 @@
                 <form method="post" action="{% url 'update_avatar' %}">
                     {% csrf_token %}
                     <input type="hidden" name="avatarPath" id="selectedAvatarPath" value="{{ current_avatar|default:'' }}">
-                    <div class="d-flex flex-wrap gap-2 justify-content-center">
+                    <div class="avatar-grid">
                         {% for avatar in avatars %}
                             <button type="button"
                                     class="avatar-option {% if avatar == current_avatar %}selected{% endif %}"

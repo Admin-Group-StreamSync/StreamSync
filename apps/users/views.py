@@ -29,6 +29,9 @@ ALLOWED_AVATARS = [
     "images/avatars/image3.png",
     "images/avatars/image4.png",
     "images/avatars/image5.png",
+    "images/avatars/image6.png",
+    "images/avatars/image7.png",
+    "images/avatars/image8.png",
 ]
 
 class StreamSyncLoginView(LoginView):
