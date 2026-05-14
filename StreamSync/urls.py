@@ -1,7 +1,9 @@
 # StreamSync/urls.py
 from django.contrib import admin
+from django.conf import settings
 from django.urls import path, include
 from django.contrib.auth import views as auth_views
+from django.views.static import serve
 from apps.users.views import StreamSyncLoginView
 
 urlpatterns = [
@@ -16,4 +18,5 @@ urlpatterns = [
 
     # LOGOUT
     path('logout/', auth_views.LogoutView.as_view(), name='logout'),
+    path('images/<path:path>', serve, {'document_root': settings.BASE_DIR / 'templates/images'}),
 ]

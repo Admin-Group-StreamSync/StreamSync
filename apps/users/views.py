@@ -167,7 +167,7 @@ def profile_page1(request):
     if request.method == 'POST' and form.is_valid():
         form.save()
         messages.success(request, "Perfil actualitzat!")
-    current_avatar = request.user.last_name if request.user.last_name in ALLOWED_AVATARS else ALLOWED_AVATARS[0]
+    current_avatar = request.user.last_name if request.user.last_name in ALLOWED_AVATARS else ""
     return render(request, 'registration/pagina_perfil1.html', {
         'form': form,
         'avatars': ALLOWED_AVATARS,

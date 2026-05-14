@@ -68,6 +68,10 @@
     }
     .btn-delete { color: #eb4d4b; font-weight: 700; text-decoration: none; font-size: 0.9rem; border: none; background: none; cursor: pointer; }
     .avatar-display { width: 64px; height: 64px; border-radius: 50%; object-fit: cover; border: 2px solid #eee; }
+    .avatar-display-fallback {
+        width: 64px; height: 64px; border-radius: 50%; border: 2px solid #eee;
+        background: #f4f0ff; display: flex; align-items: center; justify-content: center; color: #8a2be2;
+    }
     .avatar-picker-btn { width: 34px; height: 34px; border-radius: 50%; border: none; background: #8a2be2; color: white; }
     .avatar-option {
         width: 92px; height: 92px; border: 2px solid #eee; border-radius: 12px; padding: 4px;
@@ -116,7 +120,16 @@
                 <div class="content-card shadow-sm">
                     <div class="d-flex align-items-center mb-5">
                         <div class="me-3 d-flex align-items-end position-relative">
-                            <img src="/{{ current_avatar }}" alt="Avatar" class="avatar-display">
+                            {% if current_avatar %}
+                                <img src="/{{ current_avatar }}" alt="Avatar" class="avatar-display" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                <div class="avatar-display-fallback" style="display:none;">
+                                    <i class="bi bi-person-fill fs-3"></i>
+                                </div>
+                            {% else %}
+                                <div class="avatar-display-fallback">
+                                    <i class="bi bi-person-fill fs-3"></i>
+                                </div>
+                            {% endif %}
                             <button type="button" class="avatar-picker-btn position-absolute end-0 bottom-0"
                                     data-bs-toggle="modal" data-bs-target="#avatarPickerModal" aria-label="Change avatar">
                                 <i class="bi bi-pencil-fill"></i>
@@ -194,7 +207,7 @@
             <div class="modal-body pt-0">
                 <form method="post" action="{% url 'update_avatar' %}">
                     {% csrf_token %}
-                    <input type="hidden" name="avatarPath" id="selectedAvatarPath" value="{{ current_avatar }}">
+                    <input type="hidden" name="avatarPath" id="selectedAvatarPath" value="{{ current_avatar|default:'' }}">
                     <div class="d-flex flex-wrap gap-2 justify-content-center">
                         {% for avatar in avatars %}
                             <button type="button"
