@@ -6,10 +6,11 @@ Handles dashboard rendering and view tracking.
 """
 import json
 import logging
+from datetime import datetime
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
 
 from apps.contents.models import Pelicula
@@ -17,6 +18,7 @@ from apps.analytics.services import (
     add_view,
     build_dashboard_context
 )
+from apps.analytics.pdf_service import AnalyticsPDFGenerator
 
 logger = logging.getLogger(__name__)
 
@@ -142,3 +144,75 @@ def register_view(request):
             {"error": str(error)},
             status=500
         )
+
+
+@login_required
+def download_dashboard_pdf(request, plataforma_nom):
+    """
+    Download analytics dashboard as PDF.
+
+    Generates a comprehensive PDF report with all metrics and charts.
+    Accepts JSON POST with base64 encoded chart images.
+
+    Args:
+        request: Django HTTP request with authenticated user and JSON body.
+        plataforma_nom (str): Platform identifier.
+
+    Returns:
+        HttpResponse: PDF file download response.
+    """
+    # Authorization check
+    if request.user.profile.manager_de != plataforma_nom:
+        logger.warning(
+            f"Unauthorized PDF download attempt by {request.user.username} "
+            f"for platform {plataforma_nom}"
+        )
+        return JsonResponse(
+            {"error": "Unauthorized access"},
+            status=403
+        )
+
+    try:
+        # Parse incoming JSON with chart images
+        data = json.loads(request.body) if request.body else {}
+        chart_images = data.get('charts', {})
+
+        # Build dashboard context
+        context = build_dashboard_context(plataforma_nom)
+
+        # Generate PDF
+        pdf_bytes = AnalyticsPDFGenerator.generate_dashboard_pdf(
+            plataforma_nom,
+            context,
+            chart_images
+        )
+
+        # Prepare response
+        filename = (
+            f"dashboard_{plataforma_nom}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.pdf"
+        )
+
+        response = HttpResponse(pdf_bytes, content_type='application/pdf')
+        response['Content-Disposition'] = f'attachment; filename="{filename}"'
+
+        logger.info(
+            f"PDF downloaded by {request.user.username} for {plataforma_nom}. "
+            f"Filename: {filename}"
+        )
+
+        return response
+
+    except json.JSONDecodeError:
+        logger.error("PDF download: Invalid JSON received")
+        return JsonResponse(
+            {"error": "Invalid JSON format"},
+            status=400
+        )
+
+    except Exception as error:
+        logger.error(f"PDF generation error: {str(error)}")
+        return JsonResponse(
+            {"error": f"PDF generation failed: {str(error)}"},
+            status=500
+        )
+

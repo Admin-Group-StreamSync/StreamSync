@@ -104,7 +104,9 @@
 </div>
 <div class="container mb-5">
     <div class="d-flex justify-content-end">
-        <a href="" class="btn btn-danger" style="margin-bottom: 15px; justify-content: left">Donwload as PDF</a>
+        <button class="btn btn-danger" id="downloadPdfBtn" style="margin-bottom: 15px; justify-content: left">
+            <i class="bi bi-file-pdf"></i> Download as PDF
+        </button>
     </div>
 
     <div class="row row-cols-1 row-cols-md-3 row-cols-lg-5 g-4 mb-4">
@@ -311,12 +313,15 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
 <script>
     document.addEventListener("DOMContentLoaded", function() {
+        // Store chart instances globally for capturing
+        window.chartInstances = {};
 
         // 1. Bar chart
         const ctxBar = document.getElementById('barChart').getContext('2d');
-        new Chart(ctxBar, {
+        window.chartInstances.barChart = new Chart(ctxBar, {
             type: 'bar',
             data: {
                 labels: {{ grafic_generes_labels|safe }},
@@ -339,7 +344,7 @@
 
         // 2. Doughnut chart
         const ctxDoughnut = document.getElementById('doughnutChart').getContext('2d');
-        new Chart(ctxDoughnut, {
+        window.chartInstances.doughnutChart = new Chart(ctxDoughnut, {
             type: 'doughnut',
             data: {
                 labels: ['Movies', 'Series'],
@@ -357,7 +362,7 @@
 
         // 3. Line chart (evolution)
         const ctxLine = document.getElementById('lineChart').getContext('2d');
-        new Chart(ctxLine, {
+        window.chartInstances.lineChart = new Chart(ctxLine, {
             type: 'line',
             data: {
                 labels: {{ grafic_evolucio_labels|safe }},
@@ -398,6 +403,114 @@
             }
         });
 
+        // PDF Download Handler
+        document.getElementById('downloadPdfBtn').addEventListener('click', async function(e) {
+            e.preventDefault();
+
+            const btn = this;
+            const originalText = btn.innerHTML;
+
+            try {
+                // Show loading state
+                btn.disabled = true;
+                btn.innerHTML = '<i class="bi bi-hourglass-split"></i> Generating PDF...';
+
+                // Capture all chart images
+                const chartImages = await captureCharts();
+
+                // Send to backend with chart images
+                const response = await fetch('{% url "download_dashboard_pdf" plataforma %}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]')?.value || ''
+                    },
+                    body: JSON.stringify({
+                        charts: chartImages
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                // Download PDF
+                const blob = await response.blob();
+                downloadBlob(blob, `dashboard_{{ plataforma }}.pdf`);
+
+                // Show success message
+                showNotification('✓ PDF downloaded successfully!', 'success');
+
+            } catch (error) {
+                console.error('PDF generation error:', error);
+                showNotification('✗ Error generating PDF: ' + error.message, 'error');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = originalText;
+            }
+        });
+
+        // Function to capture all charts as base64 images
+        async function captureCharts() {
+            const charts = {};
+
+            try {
+                // Capture doughnut chart (Content Distribution)
+                const doughnutCanvas = document.getElementById('doughnutChart');
+                if (doughnutCanvas) {
+                    charts.grafic_tipus_data = doughnutCanvas.toDataURL('image/png');
+                }
+
+                // Capture bar chart (Genre Distribution)
+                const barCanvas = document.getElementById('barChart');
+                if (barCanvas) {
+                    charts.grafic_generes = barCanvas.toDataURL('image/png');
+                }
+
+                // Capture line chart (Evolution)
+                const lineCanvas = document.getElementById('lineChart');
+                if (lineCanvas) {
+                    charts.grafic_evolucio = lineCanvas.toDataURL('image/png');
+                }
+
+                console.log('Charts captured successfully:', Object.keys(charts));
+                return charts;
+
+            } catch (error) {
+                console.error('Error capturing charts:', error);
+                return charts; // Return what we have
+            }
+        }
+
+        // Utility function to download blob as file
+        function downloadBlob(blob, filename) {
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            document.body.removeChild(a);
+        }
+
+        // Utility function to show notifications
+        function showNotification(message, type) {
+            // Use Bootstrap toast if available, otherwise console
+            if (typeof bootstrap !== 'undefined') {
+                const alertDiv = document.createElement('div');
+                alertDiv.className = `alert alert-${type === 'success' ? 'success' : 'danger'} alert-dismissible fade show`;
+                alertDiv.setAttribute('role', 'alert');
+                alertDiv.innerHTML = `
+                    ${message}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                `;
+                document.body.insertBefore(alertDiv, document.body.firstChild);
+                setTimeout(() => alertDiv.remove(), 4000);
+            } else {
+                console.log(message);
+            }
+        }
     });
 </script>
 

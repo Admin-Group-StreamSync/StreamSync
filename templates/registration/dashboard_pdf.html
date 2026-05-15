@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analytics Dashboard PDF - {{ platform_name }}</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 1cm;
+        }
+
+        @font-face {
+            font-family: 'Segoe UI', Arial, sans-serif;
+        }
+
+        * {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            color: #1e293b;
+            font-size: 10pt;
+            line-height: 1.6;
+        }
+
+        /* Header */
+        .pdf-header {
+            background-color: #3b5bdb;
+            color: white;
+            padding: 20px;
+            margin: -1cm -1cm 20px -1cm;
+            text-align: center;
+            border-bottom: 3px solid #1e40af;
+        }
+
+        .pdf-header h1 {
+            font-size: 24pt;
+            margin: 0 0 5px 0;
+            font-weight: 700;
+        }
+
+        .pdf-header p {
+            font-size: 10pt;
+            margin: 0;
+            opacity: 0.9;
+        }
+
+        .pdf-meta {
+            font-size: 8pt;
+            margin: 0;
+            opacity: 0.8;
+        }
+
+        /* Metrics Grid */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+            page-break-inside: avoid;
+        }
+
+        .metric-card {
+            background: #f8f9fa;
+            border: 1px solid #e2e8f0;
+            padding: 12px;
+            border-radius: 6px;
+            text-align: center;
+            page-break-inside: avoid;
+        }
+
+        .metric-label {
+            font-size: 8pt;
+            color: #64748b;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .metric-value {
+            font-size: 16pt;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 3px;
+        }
+
+        .metric-trend {
+            font-size: 8pt;
+            font-weight: 600;
+        }
+
+        .trend-up {
+            color: #16a34a;
+        }
+
+        .trend-down {
+            color: #dc2626;
+        }
+
+        .trend-neutral {
+            color: #64748b;
+        }
+
+        /* Section Divider */
+        .section-divider {
+            height: 2px;
+            background: linear-gradient(90deg, #a855f7, #ec4899);
+            margin: 20px 0;
+            page-break-inside: avoid;
+        }
+
+        /* Charts */
+        .charts-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .chart-container {
+            background: white;
+            border: 1px solid #e2e8f0;
+            padding: 12px;
+            border-radius: 6px;
+            page-break-inside: avoid;
+        }
+
+        .chart-container h3 {
+            font-size: 12pt;
+            margin: 0 0 10px 0;
+            color: #1e293b;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .chart-image {
+            max-width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .no-chart {
+            text-align: center;
+            padding: 20px;
+            color: #94a3b8;
+            font-style: italic;
+        }
+
+        /* Age Distribution */
+        .age-section {
+            page-break-inside: avoid;
+            margin-bottom: 20px;
+            background: white;
+            border: 1px solid #e2e8f0;
+            padding: 12px;
+            border-radius: 6px;
+        }
+
+        .age-section h3 {
+            font-size: 12pt;
+            margin: 0 0 12px 0;
+            color: #1e293b;
+            font-weight: 600;
+        }
+
+        .age-bar-item {
+            display: grid;
+            grid-template-columns: 80px 1fr 40px;
+            gap: 8px;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .age-label {
+            font-size: 9pt;
+            font-weight: 600;
+            color: #334155;
+        }
+
+        .age-bar {
+            height: 16px;
+            background: #e2e8f0;
+            border-radius: 4px;
+            overflow: hidden;
+            display: flex;
+        }
+
+        .age-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #a855f7, #ec4899);
+        }
+
+        .age-percentage {
+            font-size: 9pt;
+            font-weight: 600;
+            color: #334155;
+            text-align: right;
+        }
+
+        /* Top Content */
+        .top-content-section {
+            page-break-inside: avoid;
+            background: white;
+            border: 1px solid #e2e8f0;
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+        }
+
+        .top-content-section h3 {
+            font-size: 12pt;
+            margin: 0 0 12px 0;
+            color: #1e293b;
+            font-weight: 600;
+        }
+
+        .content-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .content-item {
+            display: grid;
+            grid-template-columns: 30px 1fr 60px;
+            gap: 10px;
+            align-items: center;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 4px;
+            font-size: 9pt;
+        }
+
+        .content-rank {
+            font-weight: 700;
+            color: #a855f7;
+            font-size: 12pt;
+        }
+
+        .content-title {
+            font-weight: 600;
+            color: #1e293b;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .content-views {
+            text-align: right;
+            color: #64748b;
+            font-weight: 600;
+        }
+
+        /* Footer */
+        .pdf-footer {
+            margin-top: 30px;
+            padding-top: 15px;
+            border-top: 1px solid #e2e8f0;
+            font-size: 8pt;
+            color: #94a3b8;
+            text-align: center;
+            page-break-inside: avoid;
+        }
+
+        /* Empty state */
+        .empty-state {
+            text-align: center;
+            padding: 30px;
+            background: #f8f9fa;
+            border-radius: 6px;
+            color: #94a3b8;
+        }
+
+        .empty-state-icon {
+            font-size: 24pt;
+            margin-bottom: 10px;
+        }
+
+        .empty-state-text {
+            font-size: 10pt;
+        }
+
+        /* Page break */
+        .page-break {
+            page-break-after: always;
+        }
+
+        h2 {
+            font-size: 14pt;
+            color: #1e293b;
+            margin: 15px 0 10px 0;
+            font-weight: 600;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .mb-20 {
+            margin-bottom: 20px;
+        }
+
+        .mt-20 {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="pdf-header">
+        <h1>Analytics Dashboard</h1>
+        <p>{{ platform_name }} Platform Report</p>
+        <p class="pdf-meta">Generated on {{ generation_date }}</p>
+    </div>
+
+    <!-- Key Metrics -->
+    <h2>Key Performance Indicators</h2>
+    <div class="metrics-grid">
+        <div class="metric-card">
+            <div class="metric-label">Total Views</div>
+            <div class="metric-value">{{ formatted_metrics.total_views }}</div>
+            <div class="metric-trend trend-{% if trend_indicators.views == 'up' %}up{% elif trend_indicators.views == 'down' %}down{% else %}neutral{% endif %}">
+                {% if trend_indicators.views == 'up' %}↑{% elif trend_indicators.views == 'down' %}↓{% else %}→{% endif %}
+                {{ formatted_trends.views }}
+            </div>
+        </div>
+
+        <div class="metric-card">
+            <div class="metric-label">Active Users</div>
+            <div class="metric-value">{{ formatted_metrics.interested_users }}</div>
+            <div class="metric-trend trend-{% if trend_indicators.users == 'up' %}up{% elif trend_indicators.users == 'down' %}down{% else %}neutral{% endif %}">
+                {% if trend_indicators.users == 'up' %}↑{% elif trend_indicators.users == 'down' %}↓{% else %}→{% endif %}
+                {{ formatted_trends.users }}
+            </div>
+        </div>
+
+        <div class="metric-card">
+            <div class="metric-label">Avg. Rating</div>
+            <div class="metric-value">{{ formatted_metrics.average_rating }}</div>
+            <div class="metric-trend trend-{% if trend_indicators.rating == 'up' %}up{% elif trend_indicators.rating == 'down' %}down{% else %}neutral{% endif %}">
+                {% if trend_indicators.rating == 'up' %}↑{% elif trend_indicators.rating == 'down' %}↓{% else %}→{% endif %}
+                {{ formatted_trends.rating }}
+            </div>
+        </div>
+
+        <div class="metric-card">
+            <div class="metric-label">Total Reviews</div>
+            <div class="metric-value">{{ formatted_metrics.total_reviews }}</div>
+            <div class="metric-trend trend-{% if trend_indicators.reviews == 'up' %}up{% elif trend_indicators.reviews == 'down' %}down{% else %}neutral{% endif %}">
+                {% if trend_indicators.reviews == 'up' %}↑{% elif trend_indicators.reviews == 'down' %}↓{% else %}→{% endif %}
+                {{ formatted_trends.reviews }}
+            </div>
+        </div>
+
+        <div class="metric-card">
+            <div class="metric-label">Saved Items</div>
+            <div class="metric-value">{{ formatted_metrics.total_saved }}</div>
+            <div class="metric-trend trend-{% if trend_indicators.saved == 'up' %}up{% elif trend_indicators.saved == 'down' %}down{% else %}neutral{% endif %}">
+                {% if trend_indicators.saved == 'up' %}↑{% elif trend_indicators.saved == 'down' %}↓{% else %}→{% endif %}
+                {{ formatted_trends.saved }}
+            </div>
+        </div>
+    </div>
+
+    <div class="section-divider"></div>
+
+    <!-- Charts -->
+    <h2>Data Visualization</h2>
+
+    <div class="charts-row">
+        <!-- Content Distribution Chart -->
+        <div class="chart-container">
+            <h3>Content Type Distribution</h3>
+            {% if chart_images.grafic_tipus_data %}
+                <img src="{{ chart_images.grafic_tipus_data }}" class="chart-image" alt="Content Distribution">
+            {% else %}
+                <div class="no-chart">Chart image not available</div>
+            {% endif %}
+        </div>
+
+        <!-- Genre Distribution Chart -->
+        <div class="chart-container">
+            <h3>Top Genres by Views</h3>
+            {% if chart_images.grafic_generes %}
+                <img src="{{ chart_images.grafic_generes }}" class="chart-image" alt="Genre Distribution">
+            {% else %}
+                <div class="no-chart">Chart image not available</div>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="charts-row">
+        <!-- Evolution Chart -->
+        <div class="chart-container">
+            <h3>Views & Users Evolution (Last 4 Months)</h3>
+            {% if chart_images.grafic_evolucio %}
+                <img src="{{ chart_images.grafic_evolucio }}" class="chart-image" alt="Evolution">
+            {% else %}
+                <div class="no-chart">Chart image not available</div>
+            {% endif %}
+        </div>
+
+        <!-- This space is reserved for another visualization if needed -->
+        <div class="chart-container">
+            <h3>Data Summary</h3>
+            <p style="margin: 0; font-size: 9pt; color: #64748b;">
+                <strong>Total Content:</strong> {{ pelicules|length }}<br>
+                <strong>Report Type:</strong> Comprehensive Analytics<br>
+                <strong>Data Period:</strong> Full History<br>
+                <strong>Platform:</strong> {{ platform_name }}
+            </p>
+        </div>
+    </div>
+
+    <!-- Age Rating Distribution -->
+    <h2>Content by Age Classification</h2>
+    <div class="age-section">
+        <div class="age-bar-item">
+            <div class="age-label">All Ages</div>
+            <div class="age-bar">
+                <div class="age-fill" style="width: {{ edats_pct.tots }}%; background-color: #10b981;"></div>
+            </div>
+            <div class="age-percentage">{{ edats_pct.tots }}%</div>
+        </div>
+
+        <div class="age-bar-item">
+            <div class="age-label">7+</div>
+            <div class="age-bar">
+                <div class="age-fill" style="width: {{ edats_pct.m7 }}%; background-color: #3b82f6;"></div>
+            </div>
+            <div class="age-percentage">{{ edats_pct.m7 }}%</div>
+        </div>
+
+        <div class="age-bar-item">
+            <div class="age-label">13+</div>
+            <div class="age-bar">
+                <div class="age-fill" style="width: {{ edats_pct.m13 }}%; background-color: #f59e0b;"></div>
+            </div>
+            <div class="age-percentage">{{ edats_pct.m13 }}%</div>
+        </div>
+
+        <div class="age-bar-item">
+            <div class="age-label">16+</div>
+            <div class="age-bar">
+                <div class="age-fill" style="width: {{ edats_pct.m16 }}%; background-color: #ef4444;"></div>
+            </div>
+            <div class="age-percentage">{{ edats_pct.m16 }}%</div>
+        </div>
+
+        <div class="age-bar-item">
+            <div class="age-label">18+</div>
+            <div class="age-bar">
+                <div class="age-fill" style="width: {{ edats_pct.m18 }}%; background-color: #7f1d1d;"></div>
+            </div>
+            <div class="age-percentage">{{ edats_pct.m18 }}%</div>
+        </div>
+    </div>
+
+    <!-- Top Content -->
+    {% if top_contingut %}
+    <h2>Top 5 Most Viewed Titles</h2>
+    <div class="top-content-section">
+        <div class="content-list">
+            {% for item in top_contingut %}
+            <div class="content-item">
+                <div class="content-rank">{{ forloop.counter }}</div>
+                <div class="content-title">{{ item.titol }}</div>
+                <div class="content-views">{{ item.vistes_totals }} views</div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Footer -->
+    <div class="pdf-footer">
+        <p>This is a confidential analytics report. For managers only.</p>
+        <p style="margin-top: 5px; font-size: 7pt;">Generated by StreamSync Analytics System</p>
+    </div>
+</body>
+</html>
+
