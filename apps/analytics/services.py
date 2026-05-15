@@ -535,16 +535,16 @@ def get_age_rating_distribution(platform_name):
 
         return {
             'all': round((age_distribution['All'] / divisor) * 100),
-            '7+': round((age_distribution['7+'] / divisor) * 100),
-            '13+': round((age_distribution['13+'] / divisor) * 100),
-            '16+': round((age_distribution['16+'] / divisor) * 100),
-            '18+': round((age_distribution['18+'] / divisor) * 100),
+            'm7': round((age_distribution['7+'] / divisor) * 100),
+            'm13': round((age_distribution['13+'] / divisor) * 100),
+            'm16': round((age_distribution['16+'] / divisor) * 100),
+            'm18': round((age_distribution['18+'] / divisor) * 100),
         }
 
     except Exception as e:
         logger.error(f"Error calculating age distribution: {str(e)}")
         return {
-            'all': 0, '7+': 0, '13+': 0, '16+': 0, '18+': 0
+            'all': 0, 'm7': 0, 'm13': 0, 'm16': 0, 'm18': 0
         }
 
 
