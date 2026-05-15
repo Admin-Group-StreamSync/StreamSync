@@ -4,7 +4,6 @@ Analytics PDF Service Module.
 Service for generating PDF reports with WeasyPrint.
 Handles PDF generation with metrics, charts, and data visualization.
 """
-import base64
 import logging
 from datetime import datetime
 
