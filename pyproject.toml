@@ -2,7 +2,7 @@
 name = "streamsync"
 version = "0.1.0"
 description = "Add your description here"
-requires-python = ">=3.14"
+requires-python = ">=3.12"
 dependencies = [
     "django-cookie-consent>=1.0.0",
     "matplotlib>=3.10.8",
@@ -12,4 +12,5 @@ dependencies = [
     "python-dotenv>=1.2.2",
     "requests>=2.33.1",
     "thefuzz>=0.22.1",
+    "weasyprint>=68.1",
 ]
