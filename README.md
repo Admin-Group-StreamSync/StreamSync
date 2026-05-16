@@ -42,3 +42,6 @@ python manage.py runserver
 
 ## Contributing providers
 See [CONTRIBUTING_PROVIDERS.md](CONTRIBUTING_PROVIDERS.md) for instructions on adding new streaming services.
+
+## Architecture
+See [docs/CLEAN_ARCHITECTURE_GUIDELINES.md](docs/CLEAN_ARCHITECTURE_GUIDELINES.md) for the service-layer refactor rules and clean architecture conventions used in this repository.
