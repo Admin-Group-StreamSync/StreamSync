@@ -68,7 +68,13 @@
 
             <div class="dropdown">
                 <button class="profile-btn dropdown-toggle" type="button" id="profileMenu" data-bs-toggle="dropdown" aria-expanded="false">
-                    <img src="https://ui-avatars.com/api/?name={{ request.user.username }}&background=ffffff&color=d40078" alt="Avatar">
+                    {% if request.user.last_name|slice:":15" == "images/avatars/" %}
+                        <img src="/{{ request.user.last_name }}" alt="Avatar"
+                             onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-block';">
+                        <i class="bi bi-person-circle" style="display:none; font-size: 1.2rem;"></i>
+                    {% else %}
+                        <i class="bi bi-person-circle" style="font-size: 1.2rem;"></i>
+                    {% endif %}
                     Manager
                 </button>
                 <ul class="dropdown-menu dropdown-menu-end border-0 shadow-sm rounded-3 mt-2" aria-labelledby="profileMenu">

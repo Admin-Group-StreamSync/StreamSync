@@ -23,7 +23,33 @@
     .rating-input:focus { border-color: #8a2be2; box-shadow: none; background: white; }
     .comment-bubble { background: white; border-radius: 20px; padding: 20px; border: 1px solid #edf2f7; transition: 0.3s; }
     .comment-bubble:hover { border-color: #e9d5ff; transform: scale(1.01); }
-    .user-avatar { width: 45px; height: 45px; background: #8a2be2; color: white; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1.2rem; }
+    .user-avatar {
+        width: 45px;
+        height: 45px;
+        background: #8a2be2;
+        color: white;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 1.2rem;
+        overflow: hidden;
+        flex-shrink: 0;
+    }
+    .user-avatar img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+    }
+    .user-avatar-fallback {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
     .btn-delete-review { color: #e53e3e; background: transparent; border: none; padding: 5px; transition: 0.2s; border-radius: 8px; }
     .btn-delete-review:hover { background: #fff5f5; color: #c53030; }
     .badge-series-info { background-color: #00bcd4; color: white; }
@@ -207,13 +233,32 @@
                 {% endif %}
             </div>
 
-            <div class="p-3 bg-white rounded-4 border d-inline-flex align-items-center gap-3 shadow-sm">
+            <div class="p-3 bg-white rounded-4 border d-inline-flex align-items-center gap-3 shadow-sm me-3">
                 <div class="d-flex align-items-center justify-content-center bg-warning rounded-3 px-3 py-2 fw-black fs-4">
                     <i class="bi bi-star-fill me-2"></i> {{ item.rating|default:"0.0" }}
                 </div>
+
                 <div>
-                    <div class="small fw-bold text-uppercase text-muted" style="font-size: 0.6rem;">Global Score</div>
-                    <div class="fw-bold text-dark">StreamSync Community</div>
+                    <div class="small fw-bold text-uppercase text-muted" style="font-size: 0.6rem;">
+                        Official Rating
+                    </div>
+                    <div class="fw-bold text-dark">Providers Score</div>
+                </div>
+            </div>
+            <div class="p-3 bg-white rounded-4 border d-inline-flex align-items-center gap-3 shadow-sm">
+                <div class="d-flex align-items-center justify-content-center bg-primary text-white rounded-3 px-3 py-2 fw-black fs-4">
+                    <i class="bi bi-people-fill me-2"></i> {% if community_rating %}
+                        {{ community_rating }}
+                    {% else %}
+                        -
+                    {% endif %}
+                </div>
+
+                <div>
+                    <div class="small fw-bold text-uppercase text-muted" style="font-size: 0.6rem;">
+                        Community Rating
+                    </div>
+                    <div class="fw-bold text-dark">StreamSync Users</div>
                 </div>
             </div>
         </div>
@@ -262,7 +307,15 @@
                 {% for review in ressenyes %}
                 <div class="comment-bubble shadow-sm position-relative">
                     <div class="d-flex align-items-center gap-3 mb-3">
-                        <div class="user-avatar">{{ r.usuari.username|first|upper }}</div>
+                        <div class="user-avatar">
+                            {% if review.usuari.last_name|slice:":15" == "images/avatars/" %}
+                                <img src="/{{ review.usuari.last_name }}" alt="{{ review.usuari.username }} avatar"
+                                     onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                <span class="user-avatar-fallback" style="display:none;">{{ review.usuari.username|first|upper }}</span>
+                            {% else %}
+                                <span class="user-avatar-fallback">{{ review.usuari.username|first|upper }}</span>
+                            {% endif %}
+                        </div>
                         <div class="flex-grow-1">
                             <h6 class="m-0 fw-bold">{{ review.usuari.username }}</h6>
                             <small class="text-muted">{{ review.data_publicacio|date:"d F, Y" }}</small>
