@@ -15,7 +15,7 @@ OPTIONS = {
 }
 
 # ─────────────────────────────────────────────────────────────────────────────
-# CORRECCIÓ 1: API_CONFIG era una variable global que es construïa UNA SOLA
+# API_CONFIG era una variable global que es construïa UNA SOLA
 # VEGADA en importar el mòdul. Si el .env no existia en aquell moment, quedava
 # com {'': ''} per sempre i calia reiniciar Django per actualitzar-lo.
 # Ara és una funció que es crida cada vegada, llegint les variables en directe.
@@ -65,7 +65,7 @@ def enrich_tmdb_images(items):
 # --- DATA MAPPING ---
 
 # ─────────────────────────────────────────────────────────────────────────────
-# CORRECCIÓ 2: map_data rebia 'port' i feia platforms.get(port, "Altres").
+# map_data rebia 'port' i feia platforms.get(port, "Altres").
 # Això funcionava en local (http://localhost:8080 → port '8080') però no a
 # Render (https://movies-api-1.onrender.com → extreu 'onrender.com').
 # Ara usa la posició de la URL dins get_api_config() per obtenir el nom.
@@ -122,7 +122,7 @@ def deduplicate_content(llista):
 # --- STREAMSYNC API CALLS ---
 
 # ─────────────────────────────────────────────────────────────────────────────
-# CORRECCIÓ 3: totes les funcions ara criden get_api_config() en lloc de la
+# totes les funcions ara criden get_api_config() en lloc de la
 # variable global API_CONFIG. També es valida que la resposta sigui una llista
 # per evitar el TypeError si l'API retorna un string d'error com "Unauthorized".
 # ─────────────────────────────────────────────────────────────────────────────
