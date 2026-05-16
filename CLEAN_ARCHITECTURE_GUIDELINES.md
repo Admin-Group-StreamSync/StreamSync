@@ -69,6 +69,8 @@ Avoid generic names such as:
 - `handle_request`
 - `do_action`
 
+For full service naming rules, see [SERVICE_NAMING_CONVENTIONS.md](SERVICE_NAMING_CONVENTIONS.md).
+
 ## 4. Data and Error Flow
 
 ### Data Flow

@@ -44,4 +44,5 @@ python manage.py runserver
 See [CONTRIBUTING_PROVIDERS.md](CONTRIBUTING_PROVIDERS.md) for instructions on adding new streaming services.
 
 ## Architecture
-See [docs/CLEAN_ARCHITECTURE_GUIDELINES.md](docs/CLEAN_ARCHITECTURE_GUIDELINES.md) for the service-layer refactor rules and clean architecture conventions used in this repository.
+See [CLEAN_ARCHITECTURE_GUIDELINES.md](CLEAN_ARCHITECTURE_GUIDELINES.md) for the service-layer refactor rules and clean architecture conventions used in this repository.
+See [SERVICE_NAMING_CONVENTIONS.md](SERVICE_NAMING_CONVENTIONS.md) for service naming standards (`get_`, `create_`, `update_`, `delete_`, `build_`, `calculate_`).
