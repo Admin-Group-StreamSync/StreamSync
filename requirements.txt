@@ -53,3 +53,15 @@ wsproto==1.3.2
 
 django-cookie-consent~=1.0.0
 
+
+
+textstat
+
+# Prgrama que genera PDF a partir de HTML y CSS
+weasyprint
+cairocffi
+cffi
+tinycss2
+cssselect2
+html5lib
+Pyphen
