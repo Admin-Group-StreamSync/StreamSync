@@ -4,40 +4,100 @@
 
 {% block extra_css %}
 <style>
+    .register-container {
+        display: flex; justify-content: center; align-items: center;
+        padding: 40px 20px; min-height: 90vh;
+        background: var(--bg-main);
+    }
 
-    .register-container { display: flex; justify-content: center; align-items: center; padding: 40px 20px; background: #f8f9fc; min-height: 90vh; }
-    .register-card { width: 100%; max-width: 550px; background: white; border-radius: 20px; padding: 40px; box-shadow: 0 10px 40px rgba(0,0,0,0.05); text-align: center; border: 1px solid #f2f2f2; }
+    .register-card {
+        width: 100%; max-width: 550px;
+        background: var(--bg-card);
+        border-radius: 20px; padding: 40px;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+        text-align: center;
+        border: 1px solid var(--border-color);
+    }
+
+    .register-card h3 { color: var(--text-main); }
+    .register-card .text-muted { color: var(--text-secondary) !important; }
+
+    /* Step dots */
     .step-dot-container { display: flex; justify-content: center; gap: 8px; margin-bottom: 30px; }
-    .step-dot { width: 45px; height: 6px; background: #eee; border-radius: 10px; transition: 0.3s; }
-    .step-dot.active { background: #8a2be2; }
+    .step-dot { width: 45px; height: 6px; background: var(--border-color); border-radius: 10px; transition: 0.3s; }
+    .step-dot.active { background: var(--primary-gradient); background: var(--slate); }
 
-
+    /* Selection grid */
     .selection-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 15px; }
 
     .select-item {
-        border: 1px solid #ddd; border-radius: 12px; padding: 15px; cursor: pointer;
-        transition: 0.2s; font-weight: 600; text-align: left; display: block;
-        position: relative; user-select: none; background: white;
+        border: 1px solid var(--border-color); border-radius: 12px; padding: 15px;
+        cursor: pointer; transition: 0.2s; font-weight: 600; text-align: left;
+        display: block; position: relative; user-select: none;
+        background: var(--bg-main); color: var(--text-secondary);
     }
-    .select-item:hover { border-color: #8a2be2; background: #fcf9ff; }
-    .select-item.selected { border-color: #8a2be2; background: #f8f0ff; color: #8a2be2; box-shadow: 0 0 0 1px #8a2be2; }
+    .select-item:hover { border-color: var(--slate); background: rgba(62, 92, 118, 0.2); color: var(--text-main); }
+    .select-item.selected {
+        border-color: var(--slate); background: rgba(62, 92, 118, 0.4);
+        color: var(--text-main); box-shadow: 0 0 0 1px var(--slate);
+    }
 
     .checkbox-hidden {
-        position: absolute;
-        top: 0; left: 0; width: 100%; height: 100%;
+        position: absolute; top: 0; left: 0; width: 100%; height: 100%;
         opacity: 0; cursor: pointer; z-index: 2; margin: 0;
     }
 
+    /* Form fields */
     .form-group-custom { text-align: left; margin-bottom: 15px; }
-    .form-group-custom label { font-weight: 700; font-size: 0.8rem; color: #555; text-transform: uppercase; margin-bottom: 5px; display: block; }
-    .form-control-figma { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #ddd; outline: none; transition: 0.3s; }
-    .form-control-figma:focus { border-color: #8a2be2; box-shadow: 0 0 8px rgba(138, 43, 226, 0.2); }
+    .form-group-custom label {
+        font-weight: 700; font-size: 0.8rem; color: var(--accent);
+        text-transform: uppercase; margin-bottom: 5px; display: block;
+    }
 
-    .btn-gradient { width: 100%; padding: 14px; border-radius: 12px; border: none; background: linear-gradient(90deg, #8a2be2, #d40078); color: white; font-weight: 700; cursor: pointer; margin-top: 10px; transition: 0.3s; }
+    .form-control-figma {
+        width: 100%; padding: 12px; border-radius: 10px;
+        border: 1px solid var(--border-color);
+        background: var(--bg-main); color: var(--text-main);
+        outline: none; transition: 0.3s;
+    }
+    .form-control-figma::placeholder { color: var(--text-muted); }
+    .form-control-figma:focus {
+        border-color: var(--slate);
+        box-shadow: 0 0 0 3px rgba(116, 140, 171, 0.15);
+    }
+
+    /* Buttons */
+    .btn-gradient {
+        width: 100%; padding: 14px; border-radius: 12px; border: none;
+        background: var(--primary-gradient);
+        color: var(--text-main); font-weight: 700;
+        cursor: pointer; margin-top: 10px; transition: 0.3s;
+    }
     .btn-gradient:hover { opacity: 0.9; transform: translateY(-2px); }
-    .btn-back { background: none; border: none; color: #888; font-weight: 600; cursor: pointer; padding: 10px; margin-top: 10px; }
 
-    .error-box { background: #fff0f0; border: 1px solid #ffbaba; color: #d8000c; padding: 15px; border-radius: 12px; margin-bottom: 20px; text-align: left; font-size: 0.85rem; }
+    .btn-back {
+        background: none; border: none; color: var(--text-secondary);
+        font-weight: 600; cursor: pointer; padding: 10px; margin-top: 10px;
+        transition: color 0.2s;
+    }
+    .btn-back:hover { color: var(--text-main); }
+
+    /* Error box */
+    .error-box {
+        background: rgba(229, 115, 115, 0.1);
+        border: 1px solid rgba(229, 115, 115, 0.3);
+        color: #ef9a9a;
+        padding: 15px; border-radius: 12px; margin-bottom: 20px;
+        text-align: left; font-size: 0.85rem;
+    }
+
+    /* Section labels inside steps */
+    .step-section-label {
+        text-align: left; font-weight: 700; font-size: 0.75rem;
+        text-transform: uppercase; letter-spacing: 0.5px;
+        color: var(--accent); margin-bottom: 8px;
+    }
+
     .hidden { display: none !important; }
 </style>
 {% endblock %}
@@ -45,9 +105,15 @@
 {% block content %}
 <div class="register-container">
     <div class="register-card">
-        <div class="mx-auto mb-3" style="width: 45px; height: 45px; background: linear-gradient(135deg, #8a2be2, #d40078); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: white;">
+
+        <!-- Brand icon -->
+        <div class="mx-auto mb-3"
+             style="width: 45px; height: 45px; background: var(--primary-gradient);
+                    border-radius: 10px; display: flex; align-items: center;
+                    justify-content: center; color: var(--text-main);">
             <i class="bi bi-film"></i>
         </div>
+
         <h3 class="fw-bold mb-1">Create your account</h3>
         <p id="step-txt" class="text-muted small mb-4">Account details</p>
 
@@ -60,7 +126,6 @@
         <form method="POST" id="reg-form">
             {% csrf_token %}
 
-            <!-- Validation errors -->
             {% if form.errors %}
             <div class="error-box">
                 <p class="fw-bold mb-1">Please fix the following:</p>
@@ -75,34 +140,38 @@
             <div id="step1">
                 <div class="form-group-custom">
                     <label>Username</label>
-                    <input type="text" name="username" class="form-control-figma" placeholder="username" value="{{ form.username.value|default:'' }}" required>
+                    <input type="text" name="username" class="form-control-figma"
+                           placeholder="username" value="{{ form.username.value|default:'' }}" required>
                 </div>
                 <div class="form-group-custom">
                     <label>Full name</label>
-
-                    <input type="text" name="first_name" class="form-control-figma" placeholder="Your full name" value="{{ form.first_name.value|default:'' }}" required>
+                    <input type="text" name="first_name" class="form-control-figma"
+                           placeholder="Your full name" value="{{ form.first_name.value|default:'' }}" required>
                 </div>
                 <div class="form-group-custom">
                     <label>Email</label>
-                    <input type="email" name="email" class="form-control-figma" placeholder="email@example.com" value="{{ form.email.value|default:'' }}" required>
+                    <input type="email" name="email" class="form-control-figma"
+                           placeholder="email@example.com" value="{{ form.email.value|default:'' }}" required>
                 </div>
                 <div class="form-group-custom">
                     <label>Password</label>
-                    <input type="password" name="password1" class="form-control-figma" placeholder="Minimum 8 characters" minlength="8" required>
-                    <small class="text-muted d-block mt-1">Password must contain at least 8 characters.</small>
+                    <input type="password" name="password1" class="form-control-figma"
+                           placeholder="Minimum 8 characters" minlength="8" required>
+                    <small class="d-block mt-1" style="color: var(--text-muted);">
+                        Password must contain at least 8 characters.
+                    </small>
                 </div>
                 <div class="form-group-custom">
                     <label>Repeat password</label>
-                    <input type="password" name="password2" class="form-control-figma" placeholder="Repeat your password" minlength="8" required>
-
+                    <input type="password" name="password2" class="form-control-figma"
+                           placeholder="Repeat your password" minlength="8" required>
                 </div>
                 <button type="button" class="btn-gradient" onclick="changeStep(2)">Next</button>
             </div>
 
             <!-- Step 2: content and platform preferences -->
             <div id="step2" class="hidden">
-
-                <p class="text-start fw-bold mb-2 text-uppercase small text-muted">What do you like to watch?</p>
+                <p class="step-section-label">What do you like to watch?</p>
                 <div class="selection-grid mb-4">
                     {% for value, label in opcions.tipus %}
                     <label class="select-item">
@@ -112,7 +181,7 @@
                     {% endfor %}
                 </div>
 
-                <p class="text-start fw-bold mb-2 text-uppercase small text-muted">Your platforms</p>
+                <p class="step-section-label">Your platforms</p>
                 <div class="selection-grid">
                     {% for platform in opcions.plataformas %}
                     <label class="select-item">
@@ -128,14 +197,17 @@
 
             <!-- Step 3: language, genres, and age rating -->
             <div id="step3" class="hidden">
-                <p class="text-start fw-bold mb-2">Languages</p>
+                <p class="step-section-label">Languages</p>
                 <div class="selection-grid">
                     {% for language in opcions.idiomes %}
-                    <label class="select-item"><input type="checkbox" name="idiomas" value="{{ language }}" class="hidden" onchange="mark(this)">{{ language }}</label>
+                    <label class="select-item">
+                        <input type="checkbox" name="idiomas" value="{{ language }}" class="checkbox-hidden" onchange="mark(this)">
+                        {{ language }}
+                    </label>
                     {% endfor %}
                 </div>
 
-                <p class="text-start fw-bold mb-2 text-uppercase small text-muted">Favorite genres</p>
+                <p class="step-section-label mt-4">Favorite genres</p>
                 <div class="selection-grid" style="grid-template-columns: 1fr 1fr 1fr;">
                     {% for genre in opcions.genres_api %}
                     <label class="select-item p-2 text-center" style="font-size: 0.8rem;">
@@ -145,7 +217,7 @@
                     {% endfor %}
                 </div>
 
-                <p class="text-start fw-bold mt-4 mb-2 text-uppercase small text-muted">Age restriction</p>
+                <p class="step-section-label mt-4">Age restriction</p>
                 <div class="selection-grid mb-4">
                     {% for age in opcions.ratings_api %}
                     <label class="select-item">
@@ -168,14 +240,13 @@
         document.getElementById('step2').classList.toggle('hidden', s !== 2);
         document.getElementById('step3').classList.toggle('hidden', s !== 3);
 
-
         document.getElementById('dot1').classList.toggle('active', s >= 1);
         document.getElementById('dot2').classList.toggle('active', s >= 2);
         document.getElementById('dot3').classList.toggle('active', s >= 3);
 
         const txts = ["Account details", "Platforms and types", "Genres and ages"];
         document.getElementById('step-txt').innerText = txts[s-1];
-        window.scrollTo(0,0);
+        window.scrollTo(0, 0);
     }
 
     function mark(cb) {

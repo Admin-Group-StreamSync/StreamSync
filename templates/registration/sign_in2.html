@@ -4,13 +4,98 @@
 
 {% block extra_css %}
 <style>
-
-    body {
-        background-color: #ffffff !important;
+    .preferences-page {
+        background: var(--bg-main);
+        min-height: 100vh;
+        padding: 40px 0;
     }
+
     .card-register {
-        border-radius: 15px;
-        border: 1px solid #eee;
+        background: var(--bg-card);
+        border-radius: 20px;
+        border: 1px solid var(--border-color);
+        box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+    }
+
+    .card-register h2 { color: var(--text-main); }
+    .card-register .text-muted { color: var(--text-secondary) !important; }
+
+    .section-title {
+        font-weight: 800;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+        color: var(--accent);
+        margin-bottom: 15px;
+    }
+
+    /* Custom checkboxes */
+    .form-check-input {
+        background-color: var(--bg-main) !important;
+        border-color: var(--border-color) !important;
+        cursor: pointer;
+    }
+    .form-check-input:checked {
+        background-color: var(--steel) !important;
+        border-color: var(--slate) !important;
+    }
+    .form-check-input:focus {
+        box-shadow: 0 0 0 3px rgba(116, 140, 171, 0.2) !important;
+    }
+    .form-check-label {
+        color: var(--text-secondary);
+        cursor: pointer;
+        font-weight: 600;
+        font-size: 0.9rem;
+        transition: color 0.2s;
+    }
+    .form-check:hover .form-check-label { color: var(--text-main); }
+
+    /* Divider */
+    hr {
+        border-color: var(--border-color) !important;
+        opacity: 1 !important;
+    }
+
+    /* Back button */
+    .btn-back-pref {
+        background: transparent;
+        border: 1px solid var(--border-color);
+        color: var(--text-secondary);
+        border-radius: 50px;
+        padding: 6px 16px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        text-decoration: none;
+        transition: 0.2s;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+    .btn-back-pref:hover {
+        border-color: var(--slate);
+        color: var(--text-main);
+    }
+
+    /* Submit button */
+    .btn-finish {
+        width: 100%;
+        padding: 14px;
+        border-radius: 12px;
+        border: none;
+        background: var(--primary-gradient);
+        color: var(--text-main);
+        font-weight: 700;
+        font-size: 1rem;
+        cursor: pointer;
+        margin-top: 10px;
+        transition: 0.3s;
+        letter-spacing: 0.5px;
+    }
+    .btn-finish:hover {
+        opacity: 0.9;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(62, 92, 118, 0.4);
     }
 </style>
 {% endblock %}
@@ -20,116 +105,122 @@
 {% block main_class %}d-flex flex-column align-items-center justify-content-center{% endblock %}
 
 {% block content %}
-<div class="container d-flex justify-content-center mb-3 mt-5" style="max-width: 700px; padding: 0;">
-    <div class="w-100 text-start">
-        <a href="{% url 'crear_cuenta' %}" class="btn btn-outline-secondary btn-sm rounded-pill shadow-sm">
-            <i class="bi bi-arrow-left"></i> Back (Personal details)
-        </a>
+<div class="preferences-page">
+
+    <div class="container d-flex justify-content-center mb-3" style="max-width: 700px; padding: 0 15px;">
+        <div class="w-100 text-start">
+            <a href="{% url 'crear_cuenta' %}" class="btn-back-pref">
+                <i class="bi bi-arrow-left"></i> Back (Personal details)
+            </a>
+        </div>
     </div>
-</div>
 
-<div class="card p-4 shadow-sm card-register mb-5" style="width: 100%; max-width: 700px;">
-    <h2 class="text-center fw-bold mb-2">WHAT DO YOU LIKE TO WATCH?</h2>
-    <p class="text-center text-muted mb-4 small">Choose your preferences to finish account creation.</p>
+    <div class="card-register p-4 mb-5 mx-auto" style="width: 100%; max-width: 700px;">
+        <h2 class="text-center fw-bold mb-2">WHAT DO YOU LIKE TO WATCH?</h2>
+        <p class="text-center text-muted mb-4 small">Choose your preferences to finish account creation.</p>
 
-    <form method="post" action="{% url 'sign_in2' %}">
-        {% csrf_token %}
+        <form method="post" action="{% url 'sign_in2' %}">
+            {% csrf_token %}
 
-        <p class="fw-bold mb-3 text-primary">PLATFORMS:</p>
-        <div class="row row-cols-2 row-cols-md-4 g-3 mb-4">
-            {% for platform in opcions.plataformes %}
-            <div class="col">
-                <div class="form-check">
-                    <input class="form-check-input local-save" type="checkbox" name="plataformas" value="{{ platform }}" id="p_{{ platform }}">
-                    <label class="form-check-label" for="p_{{ platform }}">{{ platform }}</label>
+            <p class="section-title">Platforms</p>
+            <div class="row row-cols-2 row-cols-md-4 g-3 mb-4">
+                {% for platform in opcions.plataformes %}
+                <div class="col">
+                    <div class="form-check">
+                        <input class="form-check-input local-save" type="checkbox"
+                               name="plataformas" value="{{ platform }}" id="p_{{ platform }}">
+                        <label class="form-check-label" for="p_{{ platform }}">{{ platform }}</label>
+                    </div>
                 </div>
+                {% endfor %}
             </div>
-            {% endfor %}
-        </div>
 
-        <hr class="my-4 opacity-25">
+            <hr class="my-4">
 
-        <p class="fw-bold mb-3 text-primary">GENRES:</p>
-        <div class="row row-cols-2 row-cols-md-4 g-3 mb-4">
-            {% for genre in opcions.generes %}
-            <div class="col">
-                <div class="form-check">
-                    <input class="form-check-input local-save" type="checkbox" name="generos" value="{{ genre }}" id="g_{{ genre }}">
-                    <label class="form-check-label" for="g_{{ genre }}">{{ genre }}</label>
+            <p class="section-title">Genres</p>
+            <div class="row row-cols-2 row-cols-md-4 g-3 mb-4">
+                {% for genre in opcions.generes %}
+                <div class="col">
+                    <div class="form-check">
+                        <input class="form-check-input local-save" type="checkbox"
+                               name="generos" value="{{ genre }}" id="g_{{ genre }}">
+                        <label class="form-check-label" for="g_{{ genre }}">{{ genre }}</label>
+                    </div>
                 </div>
+                {% endfor %}
             </div>
-            {% endfor %}
-        </div>
 
-        <hr class="my-4 opacity-25">
+            <hr class="my-4">
 
-        <p class="fw-bold mb-3 text-primary">LANGUAGES:</p>
-        <div class="row row-cols-2 row-cols-md-4 g-3 mb-4">
-            {% for language in opcions.idiomes %}
-            <div class="col">
-                <div class="form-check">
-                    <input class="form-check-input local-save" type="checkbox" name="idiomas" value="{{ language }}" id="i_{{ language }}">
-                    <label class="form-check-label" for="i_{{ language }}">{{ language }}</label>
+            <p class="section-title">Languages</p>
+            <div class="row row-cols-2 row-cols-md-4 g-3 mb-4">
+                {% for language in opcions.idiomes %}
+                <div class="col">
+                    <div class="form-check">
+                        <input class="form-check-input local-save" type="checkbox"
+                               name="idiomas" value="{{ language }}" id="i_{{ language }}">
+                        <label class="form-check-label" for="i_{{ language }}">{{ language }}</label>
+                    </div>
                 </div>
+                {% endfor %}
             </div>
-            {% endfor %}
-        </div>
 
-        <hr class="my-4 opacity-25">
+            <hr class="my-4">
 
-        <p class="fw-bold mb-3 text-primary">AGES (RATINGS):</p>
-        <div class="row row-cols-2 row-cols-md-4 g-3 mb-4">
-            {% for age in opcions.edats %}
-            <div class="col">
-                <div class="form-check">
-                    <input class="form-check-input local-save" type="checkbox" name="edats" value="{{ age }}" id="e_{{ age }}">
-                    <label class="form-check-label" for="e_{{ age }}">{{ age }}</label>
+            <p class="section-title">Ages (Ratings)</p>
+            <div class="row row-cols-2 row-cols-md-4 g-3 mb-4">
+                {% for age in opcions.edats %}
+                <div class="col">
+                    <div class="form-check">
+                        <input class="form-check-input local-save" type="checkbox"
+                               name="edats" value="{{ age }}" id="e_{{ age }}">
+                        <label class="form-check-label" for="e_{{ age }}">{{ age }}</label>
+                    </div>
                 </div>
+                {% endfor %}
             </div>
-            {% endfor %}
-        </div>
 
-        <hr class="my-4 opacity-25">
+            <hr class="my-4">
 
-        <p class="fw-bold mb-3 text-primary">COUNTRIES OF ORIGIN:</p>
-        <div class="row row-cols-2 row-cols-md-4 g-3 mb-4">
-            {% for country in opcions.paisos %}
-            <div class="col">
-                <div class="form-check">
-                    <input class="form-check-input local-save" type="checkbox" name="paisos" value="{{ country }}" id="pa_{{ country }}">
-                    <label class="form-check-label" for="pa_{{ country }}">{{ country }}</label>
+            <p class="section-title">Countries of Origin</p>
+            <div class="row row-cols-2 row-cols-md-4 g-3 mb-4">
+                {% for country in opcions.paisos %}
+                <div class="col">
+                    <div class="form-check">
+                        <input class="form-check-input local-save" type="checkbox"
+                               name="paisos" value="{{ country }}" id="pa_{{ country }}">
+                        <label class="form-check-label" for="pa_{{ country }}">{{ country }}</label>
+                    </div>
                 </div>
+                {% endfor %}
             </div>
-            {% endfor %}
-        </div>
 
-        <button type="submit" class="btn btn-primary btn-lg w-100 fw-bold mt-3 shadow-sm">
-            FINISH REGISTRATION AND CREATE ACCOUNT
-        </button>
-    </form>
+            <button type="submit" class="btn-finish">
+                FINISH REGISTRATION AND CREATE ACCOUNT
+            </button>
+        </form>
+    </div>
+
 </div>
 
 <script>
     document.addEventListener("DOMContentLoaded", function() {
         const checkboxes = document.querySelectorAll('.local-save');
 
-        // 1) Restore checkbox values saved in session storage.
         checkboxes.forEach(chk => {
             if (sessionStorage.getItem(chk.id) === 'true') {
                 chk.checked = true;
             }
         });
 
-        // 2) Save changes immediately when the user checks/unchecks.
         checkboxes.forEach(chk => {
             chk.addEventListener('change', function() {
                 sessionStorage.setItem(this.id, this.checked);
             });
         });
 
-        // 3) Clear stored data once the form is successfully submitted.
         const form = document.querySelector('form');
-        if(form) {
+        if (form) {
             form.addEventListener('submit', function() {
                 sessionStorage.clear();
             });

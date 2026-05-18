@@ -12,30 +12,36 @@
 
     <style>
         :root {
-            /* ✅ Paleta StreamSync oficial */
-            --bg-main:     #0d1321;   /* Negre fosc */
-            --bg-card:     #1d2d44;   /* Blau marí fosc */
-            --bg-surface:  #3e5c76;   /* Blau mitjà */
-            --bg-elevated: #3e5c76;
+            /* ── StreamSync Color Palette ── */
+            --deep-black:  #0D1321;
+            --navy:        #1D2D44;
+            --steel:       #3E5C76;
+            --slate:       #748CAB;
+            --cream:       #F0EBD8;
 
-            --primary:     #3e5c76;   /* Blau mitjà com a primari */
-            --primary-dark:#1d2d44;
-            --accent:      #748cab;   /* Blau clar com a accent */
-            --highlight:   #f0ebd8;   /* Crema com a highlight/text */
+            /* ── Aliases de sistema (usats per tots els templates) ── */
+            --primary:          var(--steel);
+            --primary-dark:     var(--navy);
+            --accent:           var(--slate);
+            --primary-gradient: linear-gradient(90deg, var(--steel), var(--slate));
 
-            --primary-gradient: linear-gradient(90deg, #1d2d44 0%, #3e5c76 100%);
+            --bg-main:          var(--deep-black);
+            --bg-card:          var(--navy);
+            --bg-surface:       rgba(62, 92, 118, 0.35);
+            --bg-elevated:      #253d58;
 
-            --border-color: #1d2d44;
-            --border-hover: #748cab;
+            --border-color:     rgba(116, 140, 171, 0.2);
+            --border-hover:     var(--slate);
 
-            --text-main:      #f0ebd8;  /* Crema */
-            --text-secondary: #748cab;  /* Blau clar */
-            --text-muted:     #3e5c76;  /* Blau mitjà */
+            --text-main:        var(--cream);
+            --text-secondary:   #9aafc4;
+            --text-muted:       #5e7a96;
+            --highlight:        var(--cream);
         }
 
         * {
             scrollbar-width: thin;
-            scrollbar-color: var(--accent) var(--bg-card);
+            scrollbar-color: var(--steel) var(--bg-surface);
         }
 
         body {
@@ -47,9 +53,11 @@
             min-height: 100vh;
         }
 
-        main { flex-grow: 1; }
+        main {
+            flex-grow: 1;
+        }
 
-        /* ✅ Cards */
+        /* ── Cards de contingut ── */
         .card-streaming-figma {
             background: var(--bg-card);
             border-radius: 20px;
@@ -65,14 +73,14 @@
 
         .card-streaming-figma:hover {
             transform: translateY(-10px);
-            border-color: var(--accent);
-            box-shadow: 0 20px 40px rgba(116, 140, 171, 0.2);
+            border-color: var(--slate);
+            box-shadow: 0 20px 40px rgba(62, 92, 118, 0.35);
         }
 
         .poster-wrapper {
             position: relative;
             aspect-ratio: 16 / 9;
-            background: var(--bg-main);
+            background: #000;
             overflow: hidden;
         }
 
@@ -105,8 +113,8 @@
             position: absolute;
             bottom: 12px;
             right: 12px;
-            background: rgba(13, 19, 33, 0.85);
-            color: #ffb800;
+            background: rgba(0, 0, 0, 0.75);
+            color: #f0c040;
             padding: 4px 10px;
             border-radius: 8px;
             font-weight: 800;
@@ -160,7 +168,6 @@
             text-transform: uppercase;
         }
 
-        /* ✅ Filtres */
         .filter-select-figma {
             appearance: none;
             background: var(--bg-card);
@@ -171,7 +178,7 @@
             font-weight: 600;
             color: var(--text-secondary);
             cursor: pointer;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%23748cab' viewBox='0 0 16 16'%3E%3Cpath d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3E%3C/svg%3E");
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%23748CAB' viewBox='0 0 16 16'%3E%3Cpath d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3E%3C/svg%3E");
             background-repeat: no-repeat;
             background-position: right 15px center;
             background-size: 12px;
@@ -179,12 +186,12 @@
         }
 
         .filter-select-figma:focus {
-            border-color: var(--accent);
+            border-color: var(--slate);
             outline: none;
             box-shadow: 0 0 0 4px rgba(116, 140, 171, 0.2);
         }
 
-        /* ✅ Bootstrap overrides */
+        /* ── Bootstrap overrides ── */
         .card {
             background-color: var(--bg-card) !important;
             border-color: var(--border-color) !important;
@@ -205,7 +212,7 @@
         }
 
         .text-muted {
-            color: var(--text-secondary) !important;
+            color: var(--text-muted) !important;
         }
 
         .bg-white, .bg-light {
@@ -226,19 +233,19 @@
         }
 
         .dropdown-item:hover {
-            background-color: var(--bg-card) !important;
+            background-color: var(--bg-surface) !important;
             color: var(--text-main) !important;
         }
 
         .form-control, .form-select {
-            background-color: var(--bg-card) !important;
+            background-color: var(--bg-surface) !important;
             border-color: var(--border-color) !important;
             color: var(--text-main) !important;
         }
 
         .form-control:focus, .form-select:focus {
-            background-color: var(--bg-card) !important;
-            border-color: var(--accent) !important;
+            background-color: var(--bg-surface) !important;
+            border-color: var(--slate) !important;
             box-shadow: 0 0 0 3px rgba(116, 140, 171, 0.2) !important;
             color: var(--text-main) !important;
         }
@@ -263,23 +270,24 @@
             opacity: 1 !important;
         }
 
-        a { color: var(--accent); }
-        a:hover { color: var(--highlight); }
-
-        /* ✅ Scrollbar */
+        /* ── Scrollbar ── */
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: var(--bg-main); }
-        ::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 3px; }
-        ::-webkit-scrollbar-thumb:hover { background: var(--highlight); }
+        ::-webkit-scrollbar-thumb { background: var(--steel); border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--slate); }
 
-        /* ✅ Cookie popup */
+        /* ── Links ── */
+        a { color: var(--slate); }
+        a:hover { color: var(--cream); }
+
+        /* ── Cookie popup ── */
         .cookie-popup {
             position: fixed;
             bottom: 20px;
             left: 50%;
             transform: translateX(-50%);
             width: min(92%, 700px);
-            background: var(--bg-card);
+            background: var(--bg-elevated);
             border: 1px solid var(--border-color);
             border-radius: 20px;
             padding: 20px;
@@ -336,20 +344,21 @@
                 <span style="color: var(--text-muted);">© 2026</span>
             </div>
             <div>
-                <a href="{% url 'feedback' %}" class="text-decoration-none" style="color: var(--accent);">
+                <a href="{% url 'feedback' %}" class="text-decoration-none" style="color: var(--slate);">
                     We value your feedback!
                 </a>
             </div>
             <div class="small d-flex flex-wrap gap-3">
-                <a href="{% url 'legal_privacy' %}"           class="text-decoration-none" style="color: var(--text-secondary);">Privacy</a>
-                <a href="{% url 'legal_cookies' %}"           class="text-decoration-none" style="color: var(--text-secondary);">Cookies</a>
-                <a href="{% url 'legal_terms' %}"             class="text-decoration-none" style="color: var(--text-secondary);">Terms of use</a>
-                <a href="{% url 'legal_content_disclaimer' %}" class="text-decoration-none" style="color: var(--text-secondary);">Legal disclaimer</a>
+                <a href="{% url 'legal_privacy' %}" class="text-decoration-none" style="color: var(--text-muted);">Privacy</a>
+                <a href="{% url 'legal_cookies' %}" class="text-decoration-none" style="color: var(--text-muted);">Cookies</a>
+                <a href="{% url 'legal_terms' %}" class="text-decoration-none" style="color: var(--text-muted);">Terms of use</a>
+                <a href="{% url 'legal_content_disclaimer' %}" class="text-decoration-none" style="color: var(--text-muted);">Legal disclaimer</a>
             </div>
         </div>
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
     {% block extra_js %}{% endblock %}
 
     <script>
@@ -357,12 +366,15 @@
             localStorage.setItem("cookieConsent", "accepted");
             document.getElementById("cookiePopup").style.display = "none";
         }
+
         function rejectCookies() {
             localStorage.setItem("cookieConsent", "rejected");
             document.getElementById("cookiePopup").style.display = "none";
         }
+
         document.addEventListener("DOMContentLoaded", function () {
-            if (localStorage.getItem("cookieConsent")) {
+            const consent = localStorage.getItem("cookieConsent");
+            if (consent) {
                 document.getElementById("cookiePopup").style.display = "none";
             }
         });
@@ -370,21 +382,26 @@
 
 </body>
 
+    <!-- COOKIE POPUP -->
     <div id="cookiePopup" class="cookie-popup shadow-lg">
         <div class="cookie-content">
             <div>
                 <h6 class="mb-1 fw-bold" style="color: var(--text-main);">🍪 Aquest lloc utilitza cookies</h6>
-                <p class="mb-0 small" style="color: var(--text-secondary);">
+                <p class="mb-0 small" style="color: var(--text-muted);">
                     Utilitzem cookies per millorar l'experiència d'usuari i analitzar trànsit.
                 </p>
             </div>
             <div class="d-flex gap-2 mt-3 mt-md-0">
                 <button class="btn btn-sm"
                         style="border: 1px solid var(--border-color); color: var(--text-secondary); background: transparent;"
-                        onclick="rejectCookies()">Rebutjar</button>
+                        onclick="rejectCookies()">
+                    Rebutjar
+                </button>
                 <button class="btn btn-sm"
-                        style="background: var(--primary-gradient); color: var(--highlight); border: none;"
-                        onclick="acceptCookies()">Acceptar</button>
+                        style="background: var(--primary-gradient); color: var(--cream); border: none;"
+                        onclick="acceptCookies()">
+                    Acceptar
+                </button>
             </div>
         </div>
     </div>

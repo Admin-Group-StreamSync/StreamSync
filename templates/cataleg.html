@@ -8,7 +8,7 @@
 <style>
     .filter-container {
         padding: 30px 0;
-        border-bottom: 1px solid #eee;
+        border-bottom: 1px solid var(--border-color);
         margin-bottom: 30px;
     }
     .filter-row {
@@ -18,30 +18,45 @@
         align-items: end;
     }
     .filter-active {
-        border-color: #8a2be2 !important;
-        background-color: #f8f0ff !important;
-        color: #8a2be2 !important;
+        border-color: var(--accent) !important;
+        background-color: rgba(116, 140, 171, 0.1) !important;
+        color: var(--highlight) !important;
     }
     .filter-select-figma {
         height: 48px;
         border-radius: 12px;
-        border: 1px solid #ddd;
+        border: 1px solid var(--border-color);
         padding: 0 15px;
         font-weight: 500;
-        background-color: white;
+        background-color: var(--bg-card);
+        color: var(--text-secondary);
         transition: all 0.2s;
     }
     input.filter-select-figma {
         cursor: text;
     }
     .filter-select-figma:focus {
-        border-color: #8a2be2;
+        border-color: var(--accent);
         outline: none;
-        box-shadow: 0 0 0 3px rgba(138, 43, 226, 0.1);
+        box-shadow: 0 0 0 3px rgba(116, 140, 171, 0.15);
+        color: var(--highlight);
+    }
+    .filter-select-figma option {
+        background-color: var(--bg-card);
+        color: var(--text-secondary);
     }
     .custom-slider {
         width: 100%;
-        accent-color: #8a2be2;
+        accent-color: var(--accent);
+    }
+    .filter-label {
+        font-size: 0.75rem;
+        font-weight: 700;
+        color: var(--text-secondary);
+        margin-bottom: 4px;
+        margin-left: 8px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
     }
 
     /* Pagination */
@@ -49,9 +64,9 @@
         height: 42px;
         min-width: 42px;
         border-radius: 10px;
-        border: 1px solid #ddd;
-        background: white;
-        color: #444;
+        border: 1px solid var(--border-color);
+        background: var(--bg-card);
+        color: var(--text-secondary);
         font-weight: 600;
         display: inline-flex;
         align-items: center;
@@ -61,18 +76,58 @@
         transition: all 0.2s;
     }
     .pagination-btn:hover {
-        border-color: #8a2be2;
-        color: #8a2be2;
-        background: #f8f0ff;
+        border-color: var(--accent);
+        color: var(--highlight);
+        background: var(--bg-surface);
     }
     .pagination-btn.active {
-        background: #8a2be2;
-        border-color: #8a2be2;
-        color: white;
+        background: var(--primary-gradient);
+        border-color: var(--accent);
+        color: var(--highlight);
     }
     .pagination-btn.disabled {
-        opacity: 0.4;
+        opacity: 0.3;
         pointer-events: none;
+    }
+
+    /* Empty state */
+    .empty-state-card {
+        background: var(--bg-card) !important;
+        border-color: var(--border-color) !important;
+        border-radius: 24px;
+        padding: 60px 40px;
+    }
+
+    /* Results badge */
+    .results-badge {
+        background: var(--bg-surface);
+        color: var(--text-secondary);
+        border: 1px solid var(--border-color);
+        border-radius: 50px;
+        padding: 6px 16px;
+        font-size: 0.85rem;
+        font-weight: 600;
+    }
+
+    /* Clear button */
+    .btn-clear {
+        height: 48px;
+        border-radius: 12px;
+        min-width: 120px;
+        border: 1px solid #e53e3e;
+        color: #e53e3e;
+        background: transparent;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
+        transition: 0.2s;
+    }
+    .btn-clear:hover {
+        background: rgba(229, 62, 62, 0.1);
+        color: #fc8181;
+        border-color: #fc8181;
     }
 </style>
 {% endblock %}
@@ -81,14 +136,18 @@
 <div class="container mt-4 mb-5">
 
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="fw-bold m-0">
-            {% if query %} <i class="bi bi-search me-2"></i>Results for "{{ query }}"
-            {% elif tipus_actual == 'movie' %} <i class="bi bi-film me-2"></i>Movies
-            {% elif tipus_actual == 'series' %} <i class="bi bi-tv me-2"></i>Series
-            {% else %} <i class="bi bi-grid-fill me-2"></i>Content Catalog {% endif %}
+        <h2 class="fw-bold m-0" style="color: var(--highlight);">
+            {% if query %}
+                <i class="bi bi-search me-2" style="color: var(--accent);"></i>Results for "{{ query }}"
+            {% elif tipus_actual == 'movie' %}
+                <i class="bi bi-film me-2" style="color: var(--accent);"></i>Movies
+            {% elif tipus_actual == 'series' %}
+                <i class="bi bi-tv me-2" style="color: var(--accent);"></i>Series
+            {% else %}
+                <i class="bi bi-grid-fill me-2" style="color: var(--accent);"></i>Content Catalog
+            {% endif %}
         </h2>
-        <!-- Shows the real total of filtered results -->
-        <span class="badge bg-light text-dark border fw-normal px-3 py-2 rounded-pill shadow-sm">
+        <span class="results-badge">
             {{ page_obj.paginator.count }} results found
         </span>
     </div>
@@ -97,27 +156,35 @@
         <form method="GET" action="{{ request.path }}" id="filterForm" class="filter-row">
 
             <div class="d-flex flex-column">
-                <label class="small fw-bold text-muted mb-1 ms-2">PLATFORM</label>
-                <select name="plataforma" class="filter-select-figma {% if filtros_sel.p %}filter-active{% endif %}" onchange="this.form.submit()">
+                <label class="filter-label">Platform</label>
+                <select name="plataforma"
+                        class="filter-select-figma {% if filtros_sel.p %}filter-active{% endif %}"
+                        onchange="this.form.submit()">
                     <option value="">All</option>
                     {% for platform in opcions.plataformas %}
-                    <option value="{{ platform }}" {% if filtros_sel.p == platform %}selected{% endif %}>{{ platform }}</option>
+                    <option value="{{ platform }}" {% if filtros_sel.p == platform %}selected{% endif %}>
+                        {{ platform }}
+                    </option>
                     {% endfor %}
                 </select>
             </div>
 
             <div class="d-flex flex-column">
-                <label class="small fw-bold text-muted mb-1 ms-2">GENRE</label>
-                <select name="genere" class="filter-select-figma {% if filtros_sel.g %}filter-active{% endif %}" onchange="this.form.submit()">
+                <label class="filter-label">Genre</label>
+                <select name="genere"
+                        class="filter-select-figma {% if filtros_sel.g %}filter-active{% endif %}"
+                        onchange="this.form.submit()">
                     <option value="">All Genres</option>
                     {% for genre in genres_api %}
-                    <option value="{{ genre.id }}" {% if filtros_sel.g == genre.id|stringformat:"s" %}selected{% endif %}>{{ genre.name }}</option>
+                    <option value="{{ genre.id }}" {% if filtros_sel.g == genre.id|stringformat:"s" %}selected{% endif %}>
+                        {{ genre.name }}
+                    </option>
                     {% endfor %}
                 </select>
             </div>
 
             <div class="d-flex flex-column position-relative">
-                <label class="small fw-bold text-muted mb-1 ms-2">DIRECTOR</label>
+                <label class="filter-label">Director</label>
                 <input type="text"
                        name="director"
                        class="filter-select-figma {% if filtros_sel.d %}filter-active{% endif %}"
@@ -125,27 +192,34 @@
                        value="{{ filtros_sel.d|default:'' }}"
                        onkeypress="if(event.key === 'Enter') this.form.submit();">
                 {% if filtros_sel.d %}
-                    <i class="bi bi-x-circle-fill position-absolute text-muted"
-                       style="right: 15px; top: 38px; cursor: pointer; z-index: 10;"
+                    <i class="bi bi-x-circle-fill position-absolute"
+                       style="right: 15px; top: 38px; cursor: pointer; z-index: 10; color: var(--text-secondary);"
                        onclick="document.getElementsByName('director')[0].value=''; this.form.closest('form').submit();"></i>
                 {% endif %}
             </div>
 
             <div class="d-flex flex-column">
-                <label class="small fw-bold text-muted mb-1 ms-2">AGE</label>
-                <select name="edat" class="filter-select-figma {% if filtros_sel.e %}filter-active{% endif %}" onchange="this.form.submit()">
+                <label class="filter-label">Age</label>
+                <select name="edat"
+                        class="filter-select-figma {% if filtros_sel.e %}filter-active{% endif %}"
+                        onchange="this.form.submit()">
                     <option value="">All Ages</option>
                     {% for age in ratings %}
-                    <option value="{{ age.id }}" {% if filtros_sel.e == age.id|stringformat:"s" %}selected{% endif %}>{{ age.description }}</option>
+                    <option value="{{ age.id }}" {% if filtros_sel.e == age.id|stringformat:"s" %}selected{% endif %}>
+                        {{ age.description }}
+                    </option>
                     {% endfor %}
                 </select>
             </div>
 
             <div class="d-flex flex-column">
-                <label class="small fw-bold text-muted mb-1 ms-2">MIN RATING</label>
-                <div class="slider-wrapper {% if filtros_sel.v != '0' %}filter-active{% endif %}">
+                <label class="filter-label">Min Rating</label>
+                <div class="slider-wrapper {% if filtros_sel.v != '0' %}filter-active{% endif %}"
+                     style="padding: 8px 12px; border-radius: 12px; border: 1px solid var(--border-color); background: var(--bg-card);">
                     <div class="d-flex justify-content-between align-items-center mb-1">
-                        <span id="valDisplay" class="text-primary fw-bold" style="font-size: 0.8rem;">{{ filtros_sel.v|default:"0" }}⭐</span>
+                        <span id="valDisplay" class="fw-bold" style="font-size: 0.8rem; color: var(--accent);">
+                            {{ filtros_sel.v|default:"0" }}⭐
+                        </span>
                     </div>
                     <input type="range" name="valoracio" class="custom-slider"
                            min="0" max="10" step="0.5" value="{{ filtros_sel.v|default:'0' }}"
@@ -154,11 +228,10 @@
                 </div>
             </div>
 
-            <a href="{{ request.path }}"
-               class="btn btn-outline-danger d-flex align-items-center justify-content-center fw-bold"
-               style="height: 48px; border-radius: 12px; min-width: 120px;">
-                <i class="bi bi-trash3 me-2"></i> CLEAR
+            <a href="{{ request.path }}" class="btn-clear">
+                <i class="bi bi-trash3 me-2"></i> Clear
             </a>
+
         </form>
     </div>
 
@@ -169,16 +242,18 @@
             </div>
         {% empty %}
             <div class="empty-state-wrapper w-100 py-5 text-center">
-                <div class="empty-state-card shadow-sm p-5 bg-white rounded-4 border">
+                <div class="empty-state-card shadow-sm mx-auto" style="max-width: 500px;">
                     <div class="mb-4">
-                        <i class="bi bi-search-heart display-1" style="color: #8a2be2; opacity: 0.4;"></i>
+                        <i class="bi bi-search-heart display-1" style="color: var(--accent); opacity: 0.4;"></i>
                     </div>
-                    <h3 class="fw-bold text-dark mb-2">No results found</h3>
-                    <p class="text-muted mb-4">
+                    <h3 class="fw-bold mb-2" style="color: var(--highlight);">No results found</h3>
+                    <p class="mb-4" style="color: var(--text-secondary);">
                         It looks like no content matches your current filters.
                         Try changing your search or clearing the filters.
                     </p>
-                    <a href="{{ request.path }}" class="btn btn-primary px-5 py-3 fw-bold rounded-pill shadow border-0" style="background-color: #8a2be2;">
+                    <a href="{{ request.path }}"
+                       class="btn px-5 py-3 fw-bold rounded-pill border-0"
+                       style="background: var(--primary-gradient); color: var(--highlight);">
                         <i class="bi bi-arrow-clockwise me-2"></i> Reset Filters
                     </a>
                 </div>
@@ -186,6 +261,7 @@
         {% endfor %}
     </div>
 
+    <!-- Paginació -->
     {% if page_obj.has_other_pages %}
     <div class="d-flex justify-content-center align-items-center gap-2 mt-5">
 
@@ -215,7 +291,7 @@
 
     </div>
 
-    <p class="text-center text-muted small mt-3">
+    <p class="text-center small mt-3" style="color: var(--text-secondary);">
         Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
         &nbsp;·&nbsp;
         {{ page_obj.paginator.count }} total results

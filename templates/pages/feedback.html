@@ -4,38 +4,70 @@
 
 {% block extra_css %}
 <style>
+    :root {
+        --deep-black:  #0D1321;
+        --navy:        #1D2D44;
+        --steel:       #3E5C76;
+        --slate:       #748CAB;
+        --cream:       #F0EBD8;
+        --text-muted:  #9aafc4;
+        --border:      rgba(116, 140, 171, 0.2);
+        --glow:        rgba(62, 92, 118, 0.4);
+    }
+
     body {
         background: linear-gradient(
             180deg,
-            #ffffff 0%,
-            #f1ecff 35%,
-            #fbe7f2 100%
+            #0d1321 0%,
+            #1d2d44 50%,
+            #3e5c76 100%
         );
         background-attachment: fixed;
     }
 
     .feedback-white-box {
-        background: white;
+        background: var(--navy);
         border-radius: 20px;
-        box-shadow: 0 20px 50px rgba(0,0,0,0.08);
+        box-shadow: 0 20px 50px rgba(0,0,0,0.4);
+        border: 1px solid var(--border);
     }
 
+    /* ── Títols i textos ── */
+    .feedback-white-box h1,
+    .feedback-white-box h5,
+    .feedback-white-box h6 {
+        color: var(--cream);
+    }
+
+    .feedback-white-box .text-muted {
+        color: var(--text-muted) !important;
+    }
+
+    /* ── Feedback type cards ── */
     .feedback-card {
         cursor: pointer;
         transition: all 0.2s ease;
+        background: var(--deep-black);
+        border-color: var(--border) !important;
+        color: var(--text-muted);
+        border-radius: 16px !important;
     }
 
     .feedback-card:hover {
-        border-color: #8a2be2;
+        border-color: var(--slate) !important;
         transform: translateY(-3px);
+        color: var(--cream);
+        background: rgba(62, 92, 118, 0.3);
     }
 
     .btn-check:checked + .feedback-card {
-        border: 2px solid #8a2be2;
-        background-color: #f3e8ff;
-        color: #6b21a8;
+        border: 2px solid var(--slate) !important;
+        background-color: rgba(62, 92, 118, 0.4);
+        color: var(--cream);
+        box-shadow: 0 0 0 1px var(--slate), 0 0 12px var(--glow);
     }
 
+    /* ── Star rating ── */
     .rating {
         display: flex;
         justify-content: center;
@@ -43,24 +75,74 @@
         gap: 5px;
     }
 
-    .rating input {
-        display: none;
-    }
+    .rating input { display: none; }
 
     .rating label {
         font-size: 2rem;
-        color: #ddd;
+        color: rgba(116, 140, 171, 0.3);
         cursor: pointer;
         transition: color 0.2s;
     }
 
     .rating label:hover,
     .rating label:hover ~ label {
-        color: #ffc107;
+        color: #f0c040;
     }
 
     .rating input:checked ~ label {
-        color: #ffc107;
+        color: #f0c040;
+    }
+
+    /* ── Inputs i textarea ── */
+    .form-control {
+        background: var(--deep-black) !important;
+        border: 1px solid var(--border) !important;
+        color: var(--cream) !important;
+        border-radius: 12px !important;
+    }
+
+    .form-control::placeholder {
+        color: rgba(116, 140, 171, 0.5) !important;
+    }
+
+    .form-control:focus {
+        border-color: var(--slate) !important;
+        box-shadow: 0 0 0 3px rgba(116, 140, 171, 0.15) !important;
+        background: var(--deep-black) !important;
+    }
+
+    .form-label {
+        color: var(--cream);
+    }
+
+    /* ── Badge icona header ── */
+    .header-badge {
+        background: linear-gradient(90deg, var(--steel), var(--slate));
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 64px;
+        height: 64px;
+        border-radius: 50%;
+    }
+
+    /* ── Botó submit ── */
+    .btn-submit {
+        background: linear-gradient(90deg, var(--steel), var(--slate));
+        border: none;
+        color: var(--cream);
+        font-weight: 700;
+        border-radius: 12px;
+        padding: 12px 30px;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+    }
+
+    .btn-submit:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px var(--glow);
+        color: var(--cream);
+        opacity: 0.9;
     }
 </style>
 {% endblock %}
@@ -79,12 +161,10 @@
                     <!-- Header -->
                     <div class="text-center mb-5">
                         <div class="mb-4">
-                            <span class="badge rounded-circle p-3"
-                                  style="background: linear-gradient(90deg,#8a2be2,#d40078);">
+                            <span class="header-badge">
                                 <i class="bi bi-chat-dots text-white fs-2"></i>
                             </span>
                         </div>
-
                         <h1 class="fw-bold">Your opinion matters</h1>
                         <p class="text-muted">
                             Help us improve StreamSync with comments, suggestions, and bug reports
@@ -98,7 +178,7 @@
 
                         <div class="col-6">
                             <input type="radio" name="tipus" id="general" value="general" class="btn-check">
-                            <label class="p-3 border rounded-4 text-center w-100 feedback-card" for="general">
+                            <label class="p-3 border text-center w-100 feedback-card" for="general">
                                 <i class="bi bi-star fs-4"></i>
                                 <div class="fw-semibold mt-2">General rating</div>
                             </label>
@@ -106,7 +186,7 @@
 
                         <div class="col-6">
                             <input type="radio" name="tipus" id="error" value="error" class="btn-check">
-                            <label class="p-3 border rounded-4 text-center w-100 feedback-card" for="error">
+                            <label class="p-3 border text-center w-100 feedback-card" for="error">
                                 <i class="bi bi-bug fs-4"></i>
                                 <div class="fw-semibold mt-2">Report error</div>
                             </label>
@@ -114,7 +194,7 @@
 
                         <div class="col-6">
                             <input type="radio" name="tipus" id="suggeriment" value="suggeriment" class="btn-check">
-                            <label class="p-3 border rounded-4 text-center w-100 feedback-card" for="suggeriment">
+                            <label class="p-3 border text-center w-100 feedback-card" for="suggeriment">
                                 <i class="bi bi-lightbulb fs-4"></i>
                                 <div class="fw-semibold mt-2">Suggestion</div>
                             </label>
@@ -122,7 +202,7 @@
 
                         <div class="col-6">
                             <input type="radio" name="tipus" id="altres" value="altres" class="btn-check">
-                            <label class="p-3 border rounded-4 text-center w-100 feedback-card" for="altres">
+                            <label class="p-3 border text-center w-100 feedback-card" for="altres">
                                 <i class="bi bi-chat-left-text fs-4"></i>
                                 <div class="fw-semibold mt-2">Other comments</div>
                             </label>
@@ -132,12 +212,10 @@
 
                     <!-- Rating -->
                     <div class="mt-5 text-center">
-
                         <h5 class="fw-bold mb-2">How do you rate your experience?</h5>
                         <p class="text-muted mb-4">Select a score</p>
 
                         <div class="rating">
-
                             <input type="radio" name="rating" id="star5" value="5">
                             <label for="star5"><i class="bi bi-star-fill"></i></label>
 
@@ -152,32 +230,28 @@
 
                             <input type="radio" name="rating" id="star1" value="1">
                             <label for="star1"><i class="bi bi-star-fill"></i></label>
-
                         </div>
-
                     </div>
 
+                    <!-- Details -->
                     <div class="mt-5">
-
                         <h6 class="fw-bold mb-3">Feedback details</h6>
 
                         <div class="mb-3">
                             <label class="form-label fw-semibold">Title</label>
-                            <input type="text" name="titol" class="form-control rounded-3"
+                            <input type="text" name="titol" class="form-control"
                                    placeholder="Summary of your feedback" required>
                         </div>
 
                         <div>
                             <label class="form-label fw-semibold">Description</label>
-                            <textarea name="descripcio" class="form-control rounded-3"
+                            <textarea name="descripcio" class="form-control"
                                       rows="4" placeholder="Tell us more details..." required></textarea>
                         </div>
-
                     </div>
 
                     <div class="mt-4 text-end">
-                        <button type="submit" class="btn btn-lg px-4 text-white"
-                                style="background: linear-gradient(90deg,#8a2be2,#d40078); border: none;">
+                        <button type="submit" class="btn-submit">
                             Send feedback
                         </button>
                     </div>

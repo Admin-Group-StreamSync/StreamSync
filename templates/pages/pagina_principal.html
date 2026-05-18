@@ -4,6 +4,26 @@
 
 {% block extra_css %}
 <style>
+    /* ── StreamSync Color Palette ── */
+    :root {
+        --deep-black:    #0D1321;
+        --navy:          #1D2D44;
+        --steel:         #3E5C76;
+        --slate:         #748CAB;
+        --cream:         #F0EBD8;
+
+        /* Aliases per compatibilitat amb el template */
+        --bg-main:       var(--deep-black);
+        --bg-card:       var(--navy);
+        --text-main:     var(--cream);
+        --text-secondary:#9aafc4;
+        --text-muted:    #9aafc4;
+        --highlight:     var(--cream);
+        --accent:        var(--slate);
+        --border-color:  rgba(116, 140, 171, 0.2);
+        --primary-gradient: linear-gradient(90deg, var(--steel), var(--slate));
+    }
+
     .hero-search {
         padding: 120px 0;
         background: linear-gradient(135deg, #0d1321 0%, #1d2d44 60%, #3e5c76 100%);
@@ -66,7 +86,7 @@
         opacity: 0.9;
         box-shadow: 0 5px 20px rgba(62, 92, 118, 0.5);
         transform: translateY(-1px);
-        color: white;
+        color: var(--cream);
     }
 
     .section-container {
@@ -124,7 +144,7 @@
 
     .btn-primary-custom:hover {
         opacity: 0.9;
-        color: white;
+        color: var(--cream);
         transform: translateY(-2px);
         box-shadow: 0 5px 20px rgba(62, 92, 118, 0.4);
     }

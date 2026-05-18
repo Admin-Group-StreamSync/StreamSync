@@ -1,12 +1,22 @@
 <style>
-    .navbar-brand { transition: transform 0.3s ease; }
-    .navbar-brand:hover { transform: scale(1.03); }
+    .navbar-brand {
+        transition: transform 0.3s ease;
+    }
+
+    .navbar-brand:hover {
+        transform: scale(1.03);
+    }
+
     .navbar-brand i {
         display: inline-block;
-        transition: transform 0.4s ease;
+        transition: transform 0.4s ease, color 0.3s ease;
         color: var(--accent);
     }
-    .navbar-brand:hover i { animation: clapper-action 0.6s ease; color: var(--highlight); }
+
+    .navbar-brand:hover i {
+        animation: clapper-action 0.6s ease;
+        color: var(--highlight);
+    }
 
     @keyframes clapper-action {
         0%   { transform: rotate(0deg); }
@@ -26,7 +36,7 @@
     .navbar-nav .nav-link.active {
         opacity: 1;
         transform: translateY(-2px);
-        color: var(--text-main) !important;
+        color: var(--highlight) !important;
     }
 
     .navbar-nav .nav-link::after {
@@ -42,12 +52,14 @@
     }
 
     .navbar-nav .nav-link:hover::after,
-    .navbar-nav .nav-link.active::after { width: 80%; }
+    .navbar-nav .nav-link.active::after {
+        width: 80%;
+    }
 
     .btn-nav-user {
         background: var(--bg-surface);
-        border: 1px solid var(--border-color);
-        color: var(--text-main) !important;
+        border: 1px solid var(--accent);
+        color: var(--highlight) !important;
         border-radius: 50px;
         padding: 8px 20px;
         font-weight: 700;
@@ -58,9 +70,9 @@
 
     .btn-nav-user:hover {
         transform: scale(1.05);
-        border-color: var(--accent);
+        border-color: var(--highlight);
         color: var(--highlight) !important;
-        box-shadow: 0 5px 20px rgba(116, 140, 171, 0.2);
+        box-shadow: 0 5px 20px rgba(116, 140, 171, 0.25);
     }
 
     .btn-nav-login {
@@ -79,9 +91,13 @@
         transform: scale(1.05);
         box-shadow: 0 5px 20px rgba(62, 92, 118, 0.5);
         opacity: 0.9;
+        color: var(--highlight) !important;
     }
 
-    .nav-search-input { transition: all 0.3s ease; }
+    .nav-search-input {
+        transition: all 0.3s ease;
+    }
+
     .nav-search-input:hover,
     .nav-search-input:focus-within {
         background: rgba(116, 140, 171, 0.1) !important;
@@ -95,33 +111,36 @@
     <div class="container-fluid px-4">
         <div class="d-flex align-items-center justify-content-between w-100">
 
+            <!-- Logo -->
             <div class="flex-grow-1" style="flex-basis: 0;">
                 <a class="navbar-brand fw-bold d-flex align-items-center fs-4 m-0 text-decoration-none"
-                   href="{% url 'pagina_principal' %}" style="color: var(--text-main);">
+                   href="{% url 'pagina_principal' %}" style="color: var(--highlight);">
                     <i class="bi bi-clapperboard-fill me-2 fs-3"></i>
                     <span style="letter-spacing: -0.5px;">StreamSync</span>
                 </a>
             </div>
 
+            <!-- Barra de cerca central -->
             <div class="flex-grow-1 d-none d-lg-flex justify-content-center" style="flex-basis: 0;">
                 {% if request.path != '/' %}
                 <form action="{% url 'cerca_contingut' %}" method="GET" style="width: 100%; max-width: 400px;">
                     <div class="input-group nav-search-input"
                          style="background: var(--bg-main); border-radius: 50px; border: 1px solid var(--border-color);">
                         <span class="input-group-text bg-transparent border-0 ps-3"
-                              style="color: var(--text-muted);">
+                              style="color: var(--text-secondary);">
                             <i class="bi bi-search"></i>
                         </span>
                         <input type="text" name="q"
                                class="form-control bg-transparent border-0 py-2 shadow-none"
                                placeholder="Search movies or series..."
                                value="{{ query|default:'' }}"
-                               style="color: var(--text-main) !important;">
+                               style="color: var(--highlight) !important;">
                     </div>
                 </form>
                 {% endif %}
             </div>
 
+            <!-- Links i botó usuari -->
             <div class="flex-grow-1 d-flex justify-content-end align-items-center" style="flex-basis: 0;">
                 <div class="collapse navbar-collapse justify-content-end" id="navMenu">
                     <ul class="navbar-nav align-items-center gap-2">
@@ -149,6 +168,7 @@
                         </li>
                     </ul>
                 </div>
+
                 <button class="navbar-toggler border-0 ms-2 d-lg-none" type="button"
                         data-bs-toggle="collapse" data-bs-target="#navMenu">
                     <span class="navbar-toggler-icon"></span>

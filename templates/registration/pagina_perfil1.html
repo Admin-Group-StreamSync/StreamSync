@@ -4,87 +4,137 @@
 
 {% block extra_css %}
 <style>
-    .profile-container { background: #fff; min-height: 90vh; padding: 40px 0; }
+    .profile-container { background: var(--bg-main); min-height: 90vh; padding: 40px 0; }
 
     .sidebar-nav {
-        background: #fff; border-radius: 20px; padding: 30px;
-        border: 1px solid #f2f2f2; box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+        background: var(--bg-card); border-radius: 20px; padding: 30px;
+        border: 1px solid var(--border-color); box-shadow: 0 8px 32px rgba(0,0,0,0.4);
     }
 
     .btn-back-sidebar {
-        display: inline-flex;
-        align-items: center;
-        text-decoration: none;
-        color: #999;
-        font-weight: 800;
-        font-size: 0.7rem;
-        letter-spacing: 0.5px;
-        transition: all 0.3s ease;
-        padding: 8px 12px;
-        border-radius: 12px;
-        margin-left: -12px;
-        margin-bottom: 15px;
+        display: inline-flex; align-items: center; text-decoration: none;
+        color: var(--text-secondary); font-weight: 800; font-size: 0.7rem;
+        letter-spacing: 0.5px; transition: all 0.3s ease;
+        padding: 8px 12px; border-radius: 12px; margin-left: -12px; margin-bottom: 15px;
     }
-
     .btn-back-sidebar:hover {
-        color: #8a2be2;
-        background: #f8f0ff;
-        transform: translateX(-5px); /* Side movement effect */
+        color: var(--text-main); background: rgba(116, 140, 171, 0.15); transform: translateX(-5px);
     }
 
-    .sidebar-title { font-weight: 800; font-size: 1.1rem; margin-bottom: 25px; color: #000; }
+    .sidebar-title { font-weight: 800; font-size: 1.1rem; margin-bottom: 25px; color: var(--text-main); }
 
     .nav-link-custom {
         display: flex; align-items: center; padding: 12px 15px; border-radius: 12px;
-        text-decoration: none; color: #666; font-weight: 600; transition: 0.3s; margin-bottom: 8px;
+        text-decoration: none; color: var(--text-secondary); font-weight: 600;
+        transition: 0.3s; margin-bottom: 8px;
     }
-    .nav-link-custom:hover { background: #f8f0ff; color: #8a2be2; }
-    .nav-link-custom.active { background: #f8f0ff; color: #8a2be2; border: 1px solid #8a2be2; }
+    .nav-link-custom:hover { background: rgba(116, 140, 171, 0.15); color: var(--text-main); }
+    .nav-link-custom.active {
+        background: rgba(62, 92, 118, 0.5); color: var(--text-main); border: 1px solid var(--steel);
+    }
     .nav-link-custom i { font-size: 1.2rem; margin-right: 12px; }
+    .nav-link-custom.text-danger { color: #e57373 !important; }
+    .nav-link-custom.text-danger:hover { background: rgba(229,115,115,0.1); color: #ef9a9a !important; }
 
-    .content-card { background: white; border-radius: 24px; padding: 40px; border: 1px solid #f2f2f2; }
+    .content-card {
+        background: var(--bg-card); border-radius: 24px; padding: 40px;
+        border: 1px solid var(--border-color); box-shadow: 0 8px 40px rgba(0,0,0,0.35);
+    }
+    .content-card h2 { color: var(--text-main); }
+    .content-card .text-muted { color: var(--text-secondary) !important; }
 
-    /* Form */
     .section-label {
-        font-weight: 800; font-size: 0.7rem; color: #999;
+        font-weight: 800; font-size: 0.7rem; color: var(--accent);
         text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px; display: block;
     }
-    .form-control-figma {
-        width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #ddd;
-        background-color: #fff; font-size: 0.95rem; outline: none;
-    }
-    .form-control-figma:focus { border-color: #8a2be2; }
-    .form-control-figma[readonly] { background-color: #f9f9f9; color: #aaa; border-color: #eee; cursor: not-allowed; }
 
+    .form-control-figma {
+        width: 100%; padding: 12px; border-radius: 10px;
+        border: 1px solid var(--border-color);
+        background: var(--bg-main); color: var(--text-main);
+        font-size: 0.95rem; outline: none; transition: 0.3s;
+    }
+    .form-control-figma::placeholder { color: var(--text-muted); }
+    .form-control-figma:focus {
+        border-color: var(--slate);
+        box-shadow: 0 0 0 3px rgba(116, 140, 171, 0.15);
+    }
+    .form-control-figma[readonly] {
+        background: rgba(13, 19, 33, 0.5); color: var(--text-muted);
+        border-color: var(--border-color); cursor: not-allowed;
+    }
 
     .btn-save {
         padding: 12px 35px; border-radius: 10px; border: none;
-        background: linear-gradient(90deg, #8a2be2, #d40078);
-        color: white; font-weight: 700; text-transform: uppercase; font-size: 0.85rem; cursor: pointer;
+        background: var(--primary-gradient);
+        color: var(--text-main); font-weight: 700; text-transform: uppercase;
+        font-size: 0.85rem; cursor: pointer; transition: 0.3s;
     }
+    .btn-save:hover { opacity: 0.9; transform: translateY(-1px); }
+
     .btn-pass {
-        padding: 12px 25px; border-radius: 10px; border: 1px solid #ddd;
-        background: white; color: #555; font-weight: 700; text-transform: uppercase; font-size: 0.85rem; text-decoration: none;
+        padding: 12px 25px; border-radius: 10px;
+        border: 1px solid var(--border-color);
+        background: transparent; color: var(--text-secondary);
+        font-weight: 700; text-transform: uppercase; font-size: 0.85rem;
+        text-decoration: none; transition: 0.3s;
     }
-    .btn-delete { color: #eb4d4b; font-weight: 700; text-decoration: none; font-size: 0.9rem; border: none; background: none; cursor: pointer; }
-    .avatar-display { width: 64px; height: 64px; border-radius: 50%; object-fit: cover; border: 2px solid #eee; }
+    .btn-pass:hover { border-color: var(--slate); color: var(--text-main); }
+
+    .btn-delete {
+        color: #e57373; font-weight: 700; text-decoration: none;
+        font-size: 0.9rem; border: none; background: none; cursor: pointer; transition: 0.2s;
+    }
+    .btn-delete:hover { color: #ef9a9a; }
+
+    .avatar-display {
+        width: 64px; height: 64px; border-radius: 50%;
+        object-fit: cover; border: 2px solid var(--border-color);
+    }
     .avatar-display-fallback {
-        width: 64px; height: 64px; border-radius: 50%; border: 2px solid #eee;
-        background: #f4f0ff; display: flex; align-items: center; justify-content: center; color: #8a2be2;
+        width: 64px; height: 64px; border-radius: 50%;
+        border: 2px solid var(--border-color);
+        background: var(--bg-surface); display: flex;
+        align-items: center; justify-content: center; color: var(--slate);
     }
-    .avatar-picker-btn { width: 34px; height: 34px; border-radius: 50%; border: none; background: #8a2be2; color: white; }
+    .avatar-picker-btn {
+        width: 34px; height: 34px; border-radius: 50%; border: none;
+        background: var(--primary-gradient); color: var(--text-main);
+    }
+
     .avatar-option {
-        width: 92px; height: 92px; border: 2px solid #eee; border-radius: 12px; padding: 4px;
-        background: #fff; cursor: pointer;
+        width: 92px; height: 92px; border: 2px solid var(--border-color);
+        border-radius: 12px; padding: 4px; background: var(--bg-main); cursor: pointer;
+        transition: border-color 0.2s;
     }
     .avatar-option img { width: 100%; height: 100%; object-fit: cover; border-radius: 8px; }
-    .avatar-option.selected { border-color: #8a2be2; }
+    .avatar-option.selected { border-color: var(--slate); box-shadow: 0 0 0 1px var(--slate); }
+    .avatar-option:hover { border-color: var(--slate); }
+
     .avatar-grid {
-        display: grid;
-        grid-template-columns: repeat(4, 92px);
-        gap: 8px;
-        justify-content: center;
+        display: grid; grid-template-columns: repeat(4, 92px);
+        gap: 8px; justify-content: center;
     }
+
+    /* Modals */
+    .modal-content {
+        background: var(--bg-card) !important;
+        border: 1px solid var(--border-color) !important;
+        border-radius: 20px;
+    }
+    .modal-header { border-bottom: 1px solid var(--border-color) !important; }
+    .modal-title { color: var(--text-main); }
+    .modal-body h4 { color: var(--text-main); }
+    .modal-body .text-muted { color: var(--text-secondary) !important; }
+    .btn-close { filter: invert(1) opacity(0.6); }
+    .btn-close:hover { filter: invert(1) opacity(1); }
+
+    .btn-cancel-modal {
+        border-radius: 12px; padding: 10px 24px; font-weight: 700;
+        background: var(--bg-surface); border: 1px solid var(--border-color);
+        color: var(--text-secondary); transition: 0.2s;
+    }
+    .btn-cancel-modal:hover { color: var(--text-main); border-color: var(--slate); }
 </style>
 {% endblock %}
 
@@ -99,7 +149,6 @@
                             <i class="bi bi-arrow-left me-2"></i> Back to Home
                         </a>
                     </div>
-
                     <div class="sidebar-title">My Account</div>
                     <nav>
                         <a href="{% url 'pagina_perfil1' %}" class="nav-link-custom active">
@@ -111,7 +160,7 @@
                         <a href="{% url 'llistes' %}" class="nav-link-custom">
                             <i class="bi bi-bookmark"></i> My lists
                         </a>
-                        <hr class="my-4 opacity-25">
+                        <hr class="my-4">
                         <form method="post" action="{% url 'logout' %}">
                             {% csrf_token %}
                             <button type="submit" class="nav-link-custom border-0 bg-transparent w-100 text-danger text-start">
@@ -127,7 +176,8 @@
                     <div class="d-flex align-items-center mb-5">
                         <div class="me-3 d-flex align-items-end position-relative">
                             {% if current_avatar %}
-                                <img src="/{{ current_avatar }}" alt="Avatar" class="avatar-display" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                <img src="/{{ current_avatar }}" alt="Avatar" class="avatar-display"
+                                     onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
                                 <div class="avatar-display-fallback" style="display:none;">
                                     <i class="bi bi-person-fill fs-3"></i>
                                 </div>
@@ -173,7 +223,8 @@
                                 <button type="submit" class="btn-save">SAVE CHANGES</button>
                                 <a href="{% url 'cambiar_password' %}" class="btn-pass">CHANGE PASSWORD</a>
                             </div>
-                            <button type="button" class="btn-delete" data-bs-toggle="modal" data-bs-target="#deleteAccountModal">
+                            <button type="button" class="btn-delete"
+                                    data-bs-toggle="modal" data-bs-target="#deleteAccountModal">
                                 Delete account
                             </button>
                         </div>
@@ -184,18 +235,23 @@
     </div>
 </div>
 
+<!-- Delete account modal -->
 <div class="modal fade" id="deleteAccountModal" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content border-0 shadow" style="border-radius: 20px;">
+        <div class="modal-content border-0 shadow">
             <div class="modal-body p-5 text-center">
-                <i class="bi bi-exclamation-triangle text-danger display-4 mb-3"></i>
+                <i class="bi bi-exclamation-triangle display-4 mb-3" style="color: #e57373;"></i>
                 <h4 class="fw-bold">Delete account?</h4>
                 <p class="text-muted">This action is permanent and all your saved lists will be lost.</p>
                 <div class="d-flex gap-2 justify-content-center mt-4">
-                    <button type="button" class="btn btn-light px-4 fw-bold" data-bs-dismiss="modal" style="border-radius: 12px;">Cancel</button>
+                    <button type="button" class="btn-cancel-modal btn" data-bs-dismiss="modal">Cancel</button>
                     <form method="post" action="{% url 'esborrar_compte' %}">
                         {% csrf_token %}
-                        <button type="submit" class="btn btn-danger px-4 fw-bold" style="border-radius: 12px;">Yes, delete</button>
+                        <button type="submit" class="btn px-4 fw-bold"
+                                style="border-radius: 12px; background: rgba(229,115,115,0.15);
+                                       border: 1px solid #e57373; color: #e57373;">
+                            Yes, delete
+                        </button>
                     </form>
                 </div>
             </div>
@@ -203,9 +259,10 @@
     </div>
 </div>
 
+<!-- Avatar picker modal -->
 <div class="modal fade" id="avatarPickerModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content border-0 shadow" style="border-radius: 20px;">
+        <div class="modal-content border-0 shadow">
             <div class="modal-header border-0">
                 <h5 class="modal-title fw-bold">Choose your avatar</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
