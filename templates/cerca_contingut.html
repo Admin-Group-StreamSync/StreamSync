@@ -40,22 +40,22 @@
                           style="background: var(--bg-surface); color: var(--text-secondary); border: 1px solid var(--border-color);">
                         {{ resultat.any }}
                     </span>
-                    <span class="fw-bold fs-4" style="color: #ffb800;">★ {{ resultat.rating }}</span>
+                    <span class="fw-bold fs-4" style="color: #f0c040;">★ {{ resultat.rating }}</span>
                 </div>
 
                 <!-- Plataformes -->
                 <div class="d-flex flex-wrap gap-2 mb-4">
                     {% for plat in resultat.plataformes_disponibles %}
                         {% if plat == 'CinePlus' %}
-                            <span class="badge" style="background:rgba(229,9,20,0.1); color:#e50914; border:1px solid #e50914; font-size:0.8rem; padding: 6px 12px;">
+                            <span class="badge" style="background:#c0533a; color:white; border:1px solid #c0533a; font-size:0.8rem; padding: 6px 12px;">
                                 <i class="bi bi-camera-reels me-1"></i>{{ plat }}
                             </span>
                         {% elif plat == 'StreamHub' %}
-                            <span class="badge" style="background:rgba(0,113,235,0.1); color:#0071eb; border:1px solid #0071eb; font-size:0.8rem; padding: 6px 12px;">
+                            <span class="badge" style="background:#3e7c8a; color:white; border:1px solid #3e7c8a; font-size:0.8rem; padding: 6px 12px;">
                                 <i class="bi bi-broadcast me-1"></i>{{ plat }}
                             </span>
                         {% elif plat == 'PlayMax' %}
-                            <span class="badge" style="background:rgba(0,179,0,0.1); color:#00b300; border:1px solid #00b300; font-size:0.8rem; padding: 6px 12px;">
+                            <span class="badge" style="background:#3E5C76; color:#F0EBD8; border:1px solid #3E5C76; font-size:0.8rem; padding: 6px 12px;">
                                 <i class="bi bi-play-circle me-1"></i>{{ plat }}
                             </span>
                         {% endif %}

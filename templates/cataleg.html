@@ -32,9 +32,7 @@
         color: var(--text-secondary);
         transition: all 0.2s;
     }
-    input.filter-select-figma {
-        cursor: text;
-    }
+    input.filter-select-figma { cursor: text; }
     .filter-select-figma:focus {
         border-color: var(--accent);
         outline: none;
@@ -114,8 +112,8 @@
         height: 48px;
         border-radius: 12px;
         min-width: 120px;
-        border: 1px solid #e53e3e;
-        color: #e53e3e;
+        border: 1px solid #e57373;
+        color: #e57373;
         background: transparent;
         font-weight: 700;
         display: flex;
@@ -125,9 +123,9 @@
         transition: 0.2s;
     }
     .btn-clear:hover {
-        background: rgba(229, 62, 62, 0.1);
-        color: #fc8181;
-        border-color: #fc8181;
+        background: rgba(229, 115, 115, 0.1);
+        color: #ef9a9a;
+        border-color: #ef9a9a;
     }
 </style>
 {% endblock %}
@@ -147,9 +145,7 @@
                 <i class="bi bi-grid-fill me-2" style="color: var(--accent);"></i>Content Catalog
             {% endif %}
         </h2>
-        <span class="results-badge">
-            {{ page_obj.paginator.count }} results found
-        </span>
+        <span class="results-badge">{{ page_obj.paginator.count }} results found</span>
     </div>
 
     <div class="filter-container">
@@ -261,7 +257,6 @@
         {% endfor %}
     </div>
 
-    <!-- Paginació -->
     {% if page_obj.has_other_pages %}
     <div class="d-flex justify-content-center align-items-center gap-2 mt-5">
 

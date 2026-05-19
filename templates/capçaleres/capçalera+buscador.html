@@ -6,7 +6,6 @@
         --slate:           #748CAB;
         --cream:           #F0EBD8;
 
-        /* Aliases usats per la navbar */
         --bg-main:         var(--deep-black);
         --bg-card:         var(--navy);
         --bg-surface:      rgba(62, 92, 118, 0.2);
@@ -39,9 +38,7 @@
         transition: all 0.3s ease;
         transform: translateX(-50%);
     }
-    .navbar-nav .nav-link:hover::after {
-        width: 80%;
-    }
+    .navbar-nav .nav-link:hover::after { width: 80%; }
 
     .btn-nav-user {
         background: var(--bg-surface);
@@ -77,11 +74,40 @@
         box-shadow: 0 8px 20px rgba(62, 92, 118, 0.4);
     }
 
-    .input-group { transition: all 0.3s ease; }
-    .input-group:hover, .input-group:focus-within {
-        background: rgba(116, 140, 171, 0.1) !important;
-        border-color: var(--accent) !important;
+    /* ── Search bar fix ── */
+    .navbar-search-wrapper {
+        background: var(--deep-black) !important;
+        border-radius: 50px !important;
+        border: 1px solid var(--border-color) !important;
+        transition: all 0.3s ease;
+        overflow: hidden;
+    }
+    .navbar-search-wrapper:hover,
+    .navbar-search-wrapper:focus-within {
+        border-color: var(--slate) !important;
+        background: rgba(13, 19, 33, 0.9) !important;
         transform: scale(1.02);
+        box-shadow: 0 0 0 3px rgba(116, 140, 171, 0.1);
+    }
+    .navbar-search-wrapper .input-group-text {
+        background: transparent !important;
+        border: none !important;
+        color: var(--text-secondary) !important;
+    }
+    .navbar-search-wrapper .form-control {
+        background: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
+        color: var(--cream) !important;
+        caret-color: var(--slate);
+    }
+    .navbar-search-wrapper .form-control::placeholder {
+        color: rgba(154, 175, 196, 0.6) !important;
+    }
+    .navbar-search-wrapper .form-control:focus {
+        background: transparent !important;
+        box-shadow: none !important;
+        color: var(--cream) !important;
     }
 
     .navbar-brand:hover i {
@@ -112,17 +138,14 @@
             <div class="flex-grow-1 d-none d-lg-flex justify-content-center" style="flex-basis: 0;">
                 {% if request.path != '/' %}
                 <form action="{% url 'cerca_contingut' %}" method="GET" style="width: 100%; max-width: 400px;">
-                    <div class="input-group"
-                         style="background: var(--bg-main); border-radius: 50px; border: 1px solid var(--border-color);">
-                        <span class="input-group-text bg-transparent border-0 ps-3"
-                              style="color: var(--text-secondary);">
+                    <div class="input-group navbar-search-wrapper">
+                        <span class="input-group-text ps-3">
                             <i class="bi bi-search"></i>
                         </span>
                         <input type="text" name="q"
-                               class="form-control bg-transparent border-0 py-2 shadow-none"
+                               class="form-control py-2"
                                placeholder="Search movies and series..."
-                               value="{{ query|default:'' }}"
-                               style="color: var(--highlight) !important;">
+                               value="{{ query|default:'' }}">
                     </div>
                 </form>
                 {% endif %}
