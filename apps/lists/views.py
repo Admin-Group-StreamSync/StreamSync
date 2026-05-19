@@ -1,7 +1,7 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.http import Http404
-from django.shortcuts import render, get_object_or_404, redirect
+from django.shortcuts import render, redirect
 
 from apps.contents.models import Pelicula
 from apps.lists.models import Carpeta
@@ -17,37 +17,30 @@ OPTIONS = {
 
 @login_required
 def add_to_list(request, tipus, content_id):
+    folder_id = request.POST.get('carpeta_id') or None
     try:
-        movie = ListService.get_movie_by_id(content_id)
-    except Pelicula.DoesNotExist as exc:
+        ListService.add_content_to_user_list(
+            user=request.user,
+            content_id=content_id,
+            folder_id=folder_id,
+        )
+    except (Pelicula.DoesNotExist, Carpeta.DoesNotExist) as exc:
         raise Http404 from exc
-    folder_id = request.POST.get('carpeta_id')
-    if folder_id:
-        try:
-            folder = ListService.get_user_folder(folder_id=folder_id, user=request.user)
-        except Carpeta.DoesNotExist as exc:
-            raise Http404 from exc
-    else:
-        folder = None
-    ListService.add_to_personal_list(user=request.user, movie=movie, folder=folder)
     messages.success(request, "Afegit a la llista!")
     return redirect('pagina_contingut', tipus=tipus, content_id=content_id)
 
 @login_required
 @cap_manager_permes
 def lists(request):
-    return render(request, 'llistes.html', {
-        'carpetes': request.user.les_meves_carpetes.all(),
-        'elements_solts': ListService.get_user_unfoldered_items(request.user)
-    })
+    return render(request, 'llistes.html', ListService.get_lists_context(request.user))
 
 @login_required
 def folder_detail(request, carpeta_id):
-    folder = get_object_or_404(Carpeta, id=carpeta_id, usuari=request.user)
-    return render(request, 'detall_carpeta.html', {
-        'carpeta': folder,
-        'elements': ListService.get_folder_items(folder)
-    })
+    try:
+        context = ListService.get_folder_detail_context(request.user, carpeta_id)
+    except Carpeta.DoesNotExist as exc:
+        raise Http404 from exc
+    return render(request, 'detall_carpeta.html', context)
 
 @login_required
 def create_list(request):
@@ -63,10 +56,14 @@ def create_list(request):
 
 @login_required
 def edit_list(request, carpeta_id):
-    folder = get_object_or_404(Carpeta, id=carpeta_id, usuari=request.user)
+    try:
+        folder = ListService.get_user_folder_for_edit(request.user, carpeta_id)
+    except Carpeta.DoesNotExist as exc:
+        raise Http404 from exc
     if request.method == "POST":
-        ListService.update_folder(
-            folder=folder,
+        ListService.update_user_folder(
+            user=request.user,
+            folder_id=carpeta_id,
             name=request.POST.get('nom'),
             icon=request.POST.get('icona'),
             color=request.POST.get('color'),
@@ -76,8 +73,10 @@ def edit_list(request, carpeta_id):
 
 @login_required
 def delete_folder(request, carpeta_id):
-    folder = get_object_or_404(Carpeta, id=carpeta_id, usuari=request.user)
-    ListService.delete_folder(folder)
+    try:
+        ListService.delete_user_folder(request.user, carpeta_id)
+    except Carpeta.DoesNotExist as exc:
+        raise Http404 from exc
     return redirect('llistes')
 
 @login_required
