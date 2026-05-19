@@ -117,8 +117,14 @@ def get_all_movies(query=None):
                     obj = map_data(item, port)
                     obj['tipus'] = 'movie'
                     results.append(obj)
-        except Exception:
-            pass
+        except Exception as exc:
+            logging.warning(
+                "Failed to fetch movies from %s with query=%r: %s",
+                base_url,
+                query,
+                exc,
+                exc_info=True,
+            )
     return deduplicate_content(results)  # ✅ Deduplicació
 
 
