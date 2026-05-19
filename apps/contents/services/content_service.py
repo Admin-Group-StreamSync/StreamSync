@@ -47,8 +47,8 @@ def get_tmdb_image(title):
             results = response.json().get("results", [])
             if results and results[0].get("poster_path"):
                 return f"https://image.tmdb.org/t/p/w500{results[0]['poster_path']}"
-    except (requests.RequestException, ValueError):
-        pass
+    except (requests.RequestException, ValueError) as exc:
+        logging.debug("Failed to fetch TMDB image for title '%s': %s", title, exc)
     return 'https://via.placeholder.com/300x450'
 
 
