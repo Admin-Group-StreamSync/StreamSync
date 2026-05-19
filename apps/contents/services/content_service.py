@@ -168,7 +168,7 @@ def get_genres_from_api():
     for base_url, key in API_CONFIG.items():
         try:
             return requests.get(f"{base_url}/genres", headers={'x-api-key': key}, timeout=1).json()
-        except:
+        except requests.RequestException:
             continue
     return []
 
@@ -177,7 +177,7 @@ def get_directors_from_api():
     for base_url, key in API_CONFIG.items():
         try:
             return requests.get(f"{base_url}/directors", headers={'x-api-key': key}, timeout=1).json()
-        except:
+        except (requests.RequestException, ValueError, TypeError):
             continue
     return []
 
@@ -186,6 +186,6 @@ def get_age_ratings_from_api():
     for base_url, key in API_CONFIG.items():
         try:
             return requests.get(f"{base_url}/age-ratings", headers={'x-api-key': key}, timeout=1).json()
-        except:
+        except requests.RequestException:
             continue
     return []
