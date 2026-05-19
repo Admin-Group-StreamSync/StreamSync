@@ -51,12 +51,6 @@ class StreamSyncLoginView(LoginView):
         return response
 
 
-# --- 2. FUNCIONS AUXILIARS I MAPEIG ---
-
-# --- 2. TMDB FUNCTIONS ---
-
-# --- 4. MAIN VIEWS ---
-
 @cap_manager_permes
 def home_page(request):
     movies = get_all_movies()
@@ -69,6 +63,7 @@ def home_page(request):
 
     # 2. Load translation dictionaries from the API (display only)
     genres_api = get_genres_from_api()
+    print("generes_api", genres_api)
     ratings_api = get_age_ratings_from_api()
 
     genre_map = {str(g['id']): g['name'] for g in genres_api}
