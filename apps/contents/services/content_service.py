@@ -118,7 +118,7 @@ def get_all_movies(query=None):
                     obj = map_data(item, port)
                     obj['tipus'] = 'movie'
                     results.append(obj)
-        except:
+        except Exception:
             pass
     return deduplicate_content(results)  # ✅ Deduplicació
 
