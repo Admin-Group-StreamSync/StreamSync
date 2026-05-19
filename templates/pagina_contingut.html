@@ -4,136 +4,68 @@
 
 {% block extra_css %}
 <style>
-    .btn-back {
-        display: inline-flex; align-items: center;
-        color: var(--text-secondary); text-decoration: none;
-        font-weight: 600; transition: 0.3s;
-        padding: 8px 16px; border-radius: 50px;
-    }
-    .btn-back:hover {
-        color: var(--highlight);
-        background: rgba(116, 140, 171, 0.1);
-        transform: translateX(-5px);
-    }
-
-    .poster-container {
-        width: 100%; max-width: 380px; aspect-ratio: 2 / 3;
-        border-radius: 28px; overflow: hidden;
-        box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
-        border: 4px solid var(--bg-surface);
-    }
+    body { background-color: #f8f9fc; font-family: 'Inter', sans-serif; }
+    .btn-back { display: inline-flex; align-items: center; color: #718096; text-decoration: none; font-weight: 600; transition: 0.3s; padding: 8px 16px; border-radius: 50px; }
+    .btn-back:hover { color: #8a2be2; background: #f3f0ff; transform: translateX(-5px); }
+    .poster-container { width: 100%; max-width: 380px; aspect-ratio: 2 / 3; border-radius: 28px; overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); border: 4px solid white; }
     .poster-container img { width: 100%; height: 100%; object-fit: cover; }
-
-    .meta-info-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-        gap: 15px; margin-bottom: 2rem;
-    }
-
-    .meta-item {
-        background: var(--bg-card);
-        padding: 15px; border-radius: 20px;
-        border: 1px solid var(--border-color);
-        display: flex; flex-direction: column;
-        align-items: center; text-align: center; transition: 0.3s;
-    }
-    .meta-item:hover { border-color: var(--accent); }
-    .meta-item i { font-size: 1.5rem; color: var(--accent); margin-bottom: 8px; }
-    .meta-item .label {
-        font-size: 0.65rem; text-transform: uppercase;
-        letter-spacing: 1px; color: var(--text-secondary); font-weight: 800;
-    }
-    .meta-item .value { font-size: 0.9rem; font-weight: 600; color: var(--highlight); }
-
-    .btn-play {
-        background: var(--primary-gradient);
-        color: var(--highlight); border: none;
-        padding: 16px 35px; border-radius: 16px;
-        font-weight: 700; transition: 0.3s;
-        box-shadow: 0 10px 20px rgba(62, 92, 118, 0.3);
-    }
-    .btn-play:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 15px 30px rgba(62, 92, 118, 0.5);
-        color: var(--highlight);
-    }
-
-    .btn-add {
-        background: var(--bg-card);
-        color: var(--accent);
-        border: 2px solid var(--border-color);
-        padding: 16px 35px; border-radius: 16px;
-        font-weight: 700; transition: 0.3s;
-    }
-    .btn-add:hover {
-        background: var(--bg-surface);
-        border-color: var(--accent);
-        color: var(--highlight);
-        transform: translateY(-3px);
-    }
-
-    .review-form-card {
-        background: var(--bg-card);
-        border-radius: 24px;
-        border: 1px solid var(--border-color);
-        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-        padding: 30px;
-    }
-
-    .rating-input {
-        background: var(--bg-surface) !important;
-        border: 2px solid var(--border-color) !important;
-        border-radius: 12px; font-weight: 800;
-        color: var(--highlight) !important; text-align: center;
-    }
-    .rating-input:focus {
-        border-color: var(--accent) !important;
-        box-shadow: 0 0 0 3px rgba(116, 140, 171, 0.2) !important;
-        background: var(--bg-card) !important;
-    }
-
-    .comment-bubble {
-        background: var(--bg-card);
-        border-radius: 20px; padding: 20px;
-        border: 1px solid var(--border-color); transition: 0.3s;
-    }
-    .comment-bubble:hover {
-        border-color: var(--accent);
-        transform: scale(1.01);
-    }
-
+    .meta-info-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 15px; margin-bottom: 2rem; }
+    .meta-item { background: white; padding: 15px; border-radius: 20px; border: 1px solid #edf2f7; display: flex; flex-direction: column; align-items: center; text-align: center; transition: 0.3s; }
+    .meta-item i { font-size: 1.5rem; color: #8a2be2; margin-bottom: 8px; }
+    .meta-item .label { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 1px; color: #a0aec0; font-weight: 800; }
+    .meta-item .value { font-size: 0.9rem; font-weight: 600; color: #2d3748; }
+    .btn-play { background: linear-gradient(135deg, #8a2be2 0%, #d40078 100%); color: white; border: none; padding: 16px 35px; border-radius: 16px; font-weight: 700; transition: 0.3s; box-shadow: 0 10px 20px rgba(138, 43, 226, 0.2); }
+    .btn-play:hover { transform: translateY(-3px); box-shadow: 0 15px 30px rgba(138, 43, 226, 0.4); color: white; }
+    .btn-add { background: white; color: #8a2be2; border: 2px solid #e9d5ff; padding: 16px 35px; border-radius: 16px; font-weight: 700; transition: 0.3s; }
+    .btn-add:hover { background: #f3f0ff; border-color: #8a2be2; color: #8a2be2; transform: translateY(-3px); }
+    .review-form-card { background: white; border-radius: 24px; border: none; box-shadow: 0 10px 30px rgba(0,0,0,0.05); padding: 30px; }
+    .rating-input { background: #f3f0ff; border: 2px solid transparent; border-radius: 12px; font-weight: 800; color: #8a2be2; text-align: center; }
+    .rating-input:focus { border-color: #8a2be2; box-shadow: none; background: white; }
+    .comment-bubble { background: white; border-radius: 20px; padding: 20px; border: 1px solid #edf2f7; transition: 0.3s; }
+    .comment-bubble:hover { border-color: #e9d5ff; transform: scale(1.01); }
     .user-avatar {
-        width: 45px; height: 45px;
-        background: var(--bg-surface);
-        color: var(--highlight);
-        border: 2px solid var(--accent);
-        border-radius: 12px; display: flex;
-        align-items: center; justify-content: center;
-        font-weight: 700; font-size: 1.2rem;
+        width: 45px;
+        height: 45px;
+        background: #8a2be2;
+        color: white;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 1.2rem;
+        overflow: hidden;
+        flex-shrink: 0;
     }
-
-    .btn-delete-review {
-        color: #e53e3e; background: transparent;
-        border: none; padding: 5px;
-        transition: 0.2s; border-radius: 8px;
+    .user-avatar img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
     }
-    .btn-delete-review:hover { background: rgba(229,62,62,0.1); color: #c53030; }
+    .user-avatar-fallback {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .btn-delete-review { color: #e53e3e; background: transparent; border: none; padding: 5px; transition: 0.2s; border-radius: 8px; }
+    .btn-delete-review:hover { background: #fff5f5; color: #c53030; }
+    .badge-series-info { background-color: #00bcd4; color: white; }
 
-    /* Plataformes */
+    /* Platform badge */
+    .plataforma-cineplus { background: #fff0f0; border-color: #e50914 !important; }
+    .plataforma-cineplus i { color: #e50914 !important; }
+    .plataforma-streamhub { background: #f0f4ff; border-color: #0071eb !important; }
+    .plataforma-streamhub i { color: #0071eb !important; }
+    .plataforma-playmax { background: #f0fff4; border-color: #00b300 !important; }
+    .plataforma-playmax i { color: #00b300 !important; }
     .plat-badge { font-size: 0.7rem; font-weight: 600; padding: 4px 10px; border-radius: 8px; border: 1px solid; }
-    .plat-cineplus  { background: rgba(229,9,20,0.1);   color: #e50914; border-color: #e50914; }
-    .plat-streamhub { background: rgba(0,113,235,0.1);  color: #0071eb; border-color: #0071eb; }
-    .plat-playmax   { background: rgba(0,179,0,0.1);    color: #00b300; border-color: #00b300; }
-    .plat-altres    { background: var(--bg-surface);    color: var(--text-secondary); border-color: var(--border-color); }
-
-    .score-box {
-        padding: 12px 20px;
-        background: var(--bg-card);
-        border: 1px solid var(--border-color);
-        border-radius: 16px;
-        display: inline-flex;
-        align-items: center; gap: 15px;
-    }
+    .plat-cineplus { background: #fff0f0; color: #e50914; border-color: #e50914; }
+    .plat-streamhub { background: #f0f4ff; color: #0071eb; border-color: #0071eb; }
+    .plat-playmax { background: #f0fff4; color: #00b300; border-color: #00b300; }
+    .plat-altres { background: #f5f5f5; color: #666; border-color: #ccc; }
 </style>
 {% endblock %}
 
@@ -149,8 +81,7 @@
     <div class="row g-5">
         <div class="col-md-5 col-lg-4">
             <div class="poster-container mx-auto">
-                <img src="{{ item.imatge|default:'https://via.placeholder.com/400x600?text=No+Image' }}"
-                     alt="{{ item.titol }}">
+                <img src="{{ item.imatge|default:'https://via.placeholder.com/400x600?text=No+Image' }}" alt="{{ item.titol }}">
             </div>
         </div>
 
@@ -159,7 +90,7 @@
                 <span class="badge rounded-pill {% if tipus == 'movie' %}bg-primary{% else %}bg-info{% endif %} text-uppercase px-3">
                     {{ tipus }}
                 </span>
-                <span class="fw-bold small" style="color: var(--text-secondary);">
+                <span class="text-muted fw-bold small">
                     <i class="bi bi-calendar3 me-1"></i>
                     {% if tipus == 'series' %}
                         {{ item.start_year|default:item.any }} - {{ item.end_year|default:"Present" }}
@@ -169,22 +100,36 @@
                 </span>
             </div>
 
-            <h1 class="display-3 fw-bold mb-4" style="letter-spacing: -2px; color: var(--highlight);">
-                {{ item.titol }}
-            </h1>
+            <h1 class="display-3 fw-bold text-dark mb-4" style="letter-spacing: -2px;">{{ item.titol }}</h1>
 
             <div class="meta-info-grid">
 
-                <div class="meta-item">
+                <div class="meta-item shadow-sm">
                     <i class="bi bi-megaphone"></i>
                     <span class="label">Director</span>
                     <span class="value text-truncate w-100">{{ item.director_nom|default:"Unknown" }}</span>
                 </div>
 
-                <!-- ✅ Plataformes disponibles -->
-                <div class="meta-item">
+                <!-- Platform -->
+              <!--  <div class="meta-item shadow-sm
+                    {% if item.plataforma == 'CinePlus' %}plataforma-cineplus
+                    {% elif item.plataforma == 'StreamHub' %}plataforma-streamhub
+                    {% elif item.plataforma == 'PlayMax' %}plataforma-playmax
+                    {% endif %}">
+                    {% if item.plataforma == 'CinePlus' %}
+                        <i class="bi bi-camera-reels"></i>
+                    {% elif item.plataforma == 'StreamHub' %}
+                        <i class="bi bi-broadcast"></i>
+                    {% elif item.plataforma == 'PlayMax' %}
+                        <i class="bi bi-play-circle"></i>
+                    {% else %}
+                        <i class="bi bi-tv"></i>
+                    {% endif %}
+                    <span class="label">Platform</span> 
+                    <span class="value">{{ item.plataforma|default:"N/A" }}</span> -->
+                <div class="meta-item shadow-sm">
                     <i class="bi bi-tv"></i>
-                    <span class="label">Available on</span>
+                    <span class="label">Disponible a</span>
                     <div class="d-flex flex-wrap gap-1 justify-content-center mt-2">
                         {% for plat in item.plataformes_disponibles %}
                             {% if plat == 'CinePlus' %}
@@ -203,20 +148,20 @@
                 </div>
 
                 {% if tipus == 'series' %}
-                <div class="meta-item" style="border-color: #748cab;">
-                    <i class="bi bi-layers-half" style="color: var(--accent);"></i>
+                <div class="meta-item shadow-sm" style="border: 1px solid #00bcd4;">
+                    <i class="bi bi-layers-half" style="color: #00bcd4;"></i>
                     <span class="label">Seasons</span>
-                    <span class="value">{{ item.total_seasons|default:"1" }}</span>
+                    <span class="value text-dark">{{ item.total_seasons|default:"1" }}</span>
                 </div>
                 {% endif %}
 
-                <div class="meta-item">
+                <div class="meta-item shadow-sm">
                     <i class="bi bi-grid-1x2"></i>
                     <span class="label">Genre</span>
                     <span class="value">{{ item.genere_nom|default:"N/A" }}</span>
                 </div>
 
-                <div class="meta-item">
+                <div class="meta-item shadow-sm">
                     <i class="bi bi-shield-lock"></i>
                     <span class="label">Age</span>
                     <span class="value">{{ item.edat_nom|default:"N/A" }}</span>
@@ -225,10 +170,10 @@
             </div>
 
             <div class="mb-5">
-                <h5 class="fw-bold mb-3 d-flex align-items-center" style="color: var(--highlight);">
-                    <i class="bi bi-text-left me-2" style="color: var(--accent);"></i> Synopsis
+                <h5 class="fw-bold text-dark mb-3 d-flex align-items-center">
+                    <i class="bi bi-text-left me-2 text-purple"></i> Synopsis
                 </h5>
-                <p class="fs-5 lh-base" style="color: var(--text-secondary); max-width: 800px;">
+                <p class="text-secondary fs-5 lh-base" style="max-width: 800px;">
                     {{ item.sinopsi }}
                 </p>
             </div>
@@ -240,33 +185,23 @@
                     </button>
                 {% else %}
                     <div class="d-flex flex-column gap-2">
-                        <button class="btn-play d-flex align-items-center gap-2" disabled
-                                style="opacity:0.5; cursor:not-allowed;">
+                        <button class="btn-play d-flex align-items-center gap-2" disabled style="opacity:0.5; cursor:not-allowed;">
                             <i class="bi bi-lock-fill fs-3"></i> RESTRICTED CONTENT
                         </button>
-                        <p class="small mb-0" style="color: var(--text-secondary);">
+                        <p class="text-muted small mb-0">
                             <i class="bi bi-info-circle me-1"></i>
                             You must be logged in to play this content.
                         </p>
                         <div class="d-flex gap-2 mt-1">
-                            <a href="{% url 'login' %}"
-                               class="btn fw-bold px-4 rounded-3"
-                               style="border: 1px solid var(--border-color); color: var(--text-secondary); background: var(--bg-card);">
-                                Login
-                            </a>
-                            <a href="{% url 'registre' %}"
-                               class="btn fw-bold px-4 rounded-3"
-                               style="background: var(--primary-gradient); color: var(--highlight); border: none;">
-                                Sign up
-                            </a>
+                            <a href="{% url 'login' %}" class="btn btn-outline-secondary fw-bold px-4 rounded-3">Login</a>
+                            <a href="{% url 'registre' %}" class="btn fw-bold px-4 rounded-3 text-white" style="background:#8a2be2;">Sign up</a>
                         </div>
                     </div>
                 {% endif %}
 
                 {% if user.is_authenticated %}
                     {% if ja_guardada %}
-                        <button class="btn rounded-4 px-4 d-flex align-items-center gap-2 fw-bold" disabled
-                                style="background: var(--bg-surface); color: #4ade80; border: 1px solid #4ade80;">
+                        <button class="btn btn-light border rounded-4 px-4 d-flex align-items-center gap-2 text-success fw-bold" disabled>
                             <i class="bi bi-check-all fs-4"></i> IN YOUR LIST
                         </button>
                     {% else %}
@@ -274,7 +209,7 @@
                             <button class="btn-add gap-2 dropdown-toggle" type="button" data-bs-toggle="dropdown">
                                 <i class="bi bi-plus-lg"></i> SAVE
                             </button>
-                            <ul class="dropdown-menu shadow-lg p-2 mt-2">
+                            <ul class="dropdown-menu shadow-lg border-0 p-2 mt-2">
                                 <li><h6 class="dropdown-header small text-uppercase fw-bold">Choose a folder</h6></li>
                                 {% for folder in carpetes %}
                                 <li>
@@ -288,97 +223,110 @@
                                     </form>
                                 </li>
                                 {% empty %}
-                                <li class="p-3 text-center small" style="color: var(--text-secondary);">You have no folders</li>
+                                <li class="p-3 text-center small text-muted">You have no folders</li>
                                 {% endfor %}
                                 <li><hr class="dropdown-divider"></li>
-                                <li>
-                                    <a class="dropdown-item fw-bold" href="{% url 'crear_llista' %}"
-                                       style="color: var(--accent);">+ New list</a>
-                                </li>
+                                <li><a class="dropdown-item text-purple fw-bold" href="{% url 'crear_llista' %}">+ New list</a></li>
                             </ul>
                         </div>
                     {% endif %}
                 {% endif %}
             </div>
 
-            <div class="score-box">
-                <div class="d-flex align-items-center justify-content-center bg-warning rounded-3 px-3 py-2 fw-bold fs-4"
-                     style="color: #1d2d44;">
+            <div class="p-3 bg-white rounded-4 border d-inline-flex align-items-center gap-3 shadow-sm me-3">
+                <div class="d-flex align-items-center justify-content-center bg-warning rounded-3 px-3 py-2 fw-black fs-4">
                     <i class="bi bi-star-fill me-2"></i> {{ item.rating|default:"0.0" }}
                 </div>
+
                 <div>
-                    <div class="small fw-bold text-uppercase" style="font-size: 0.6rem; color: var(--text-secondary);">
-                        Global Score
+                    <div class="small fw-bold text-uppercase text-muted" style="font-size: 0.6rem;">
+                        Official Rating
                     </div>
-                    <div class="fw-bold" style="color: var(--highlight);">StreamSync Community</div>
+                    <div class="fw-bold text-dark">Providers Score</div>
+                </div>
+            </div>
+            <div class="p-3 bg-white rounded-4 border d-inline-flex align-items-center gap-3 shadow-sm">
+                <div class="d-flex align-items-center justify-content-center bg-primary text-white rounded-3 px-3 py-2 fw-black fs-4">
+                    <i class="bi bi-people-fill me-2"></i> {% if community_rating %}
+                        {{ community_rating }}
+                    {% else %}
+                        -
+                    {% endif %}
+                </div>
+
+                <div>
+                    <div class="small fw-bold text-uppercase text-muted" style="font-size: 0.6rem;">
+                        Community Rating
+                    </div>
+                    <div class="fw-bold text-dark">StreamSync Users</div>
                 </div>
             </div>
         </div>
     </div>
 
-    <hr class="my-5">
+    <hr class="my-5 opacity-10">
 
     <div class="row g-5">
         <div class="col-lg-5">
             <div class="review-form-card">
-                <h4 class="fw-bold mb-4" style="color: var(--highlight);">Write your review</h4>
+                <h4 class="fw-bold mb-4">Write your review</h4>
                 {% if user.is_authenticated %}
                 <form action="{% url 'publicar_ressenya' tipus=tipus content_id=item.id %}" method="POST">
                     {% csrf_token %}
                     <div class="mb-4">
-                        <label class="form-label small fw-bold" style="color: var(--text-secondary);">YOUR SCORE (0-10)</label>
-                        <input type="number" name="puntuacio"
-                               class="form-control form-control-lg rating-input"
+                        <label class="form-label small fw-bold text-muted">YOUR SCORE (0-10)</label>
+                        <input type="number" name="puntuacio" class="form-control form-control-lg rating-input"
                                min="0" max="10" step="1" value="7" required>
                     </div>
                     <div class="mb-4">
-                        <label class="form-label small fw-bold" style="color: var(--text-secondary);">YOUR COMMENT</label>
-                        <textarea name="comentari" class="form-control rounded-4 p-3" rows="4"
-                                  placeholder="What did you think of the plot, characters..."></textarea>
+                        <label class="form-label small fw-bold text-muted">YOUR COMMENT</label>
+                        <textarea name="comentari" class="form-control border-0 bg-light rounded-4 p-3"
+                                  rows="4" placeholder="What did you think of the plot, characters..."></textarea>
                     </div>
+
                     {% if ressenya_usuari %}
                         <button type="submit" class="btn-play w-100 py-3 fw-bold rounded-4 border-0">UPDATE REVIEW</button>
                     {% else %}
                         <button type="submit" class="btn-play w-100 py-3 fw-bold rounded-4 border-0">PUBLISH REVIEW</button>
                     {% endif %}
+
                 </form>
                 {% else %}
-                <div class="text-center py-4 rounded-4" style="background: var(--bg-surface);">
-                    <i class="bi bi-lock fs-2" style="color: var(--text-secondary);"></i>
-                    <p class="mt-2" style="color: var(--text-secondary);">Sign in to comment</p>
-                    <a href="{% url 'login' %}" class="btn btn-sm px-4 fw-bold"
-                       style="border: 1px solid var(--accent); color: var(--accent); background: transparent;">
-                        SIGN IN
-                    </a>
+                <div class="text-center py-4 bg-light rounded-4">
+                    <i class="bi bi-lock fs-2 text-muted"></i>
+                    <p class="mt-2 text-muted">Sign in to comment</p>
+                    <a href="{% url 'login' %}" class="btn btn-sm btn-outline-purple px-4">SIGN IN</a>
                 </div>
                 {% endif %}
             </div>
         </div>
 
         <div class="col-lg-7">
-            <h4 class="fw-bold mb-4" style="color: var(--highlight);">
-                User comments
-                <span class="badge rounded-pill ms-2"
-                      style="background: var(--bg-surface); color: var(--accent); font-size: 0.8rem;">
-                    {{ ressenyes|length }}
-                </span>
-            </h4>
+            <h4 class="fw-bold mb-4">User comments <span class="badge bg-light text-purple rounded-pill">{{ ressenyes|length }}</span></h4>
             <div class="d-flex flex-column gap-3">
                 {% for review in ressenyes %}
-                <div class="comment-bubble">
+                <div class="comment-bubble shadow-sm position-relative">
                     <div class="d-flex align-items-center gap-3 mb-3">
-                        <div class="user-avatar">{{ review.usuari.username|first|upper }}</div>
+                        <div class="user-avatar">
+                            {% if review.usuari.last_name|slice:":15" == "images/avatars/" %}
+                                <img src="/{{ review.usuari.last_name }}" alt="{{ review.usuari.username }} avatar"
+                                     onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                <span class="user-avatar-fallback" style="display:none;">{{ review.usuari.username|first|upper }}</span>
+                            {% else %}
+                                <span class="user-avatar-fallback">{{ review.usuari.username|first|upper }}</span>
+                            {% endif %}
+                        </div>
                         <div class="flex-grow-1">
-                            <h6 class="m-0 fw-bold" style="color: var(--highlight);">{{ review.usuari.username }}</h6>
-                            <small style="color: var(--text-secondary);">{{ review.data_publicacio|date:"d F, Y" }}</small>
+                            <h6 class="m-0 fw-bold">{{ review.usuari.username }}</h6>
+                            <small class="text-muted">{{ review.data_publicacio|date:"d F, Y" }}</small>
                         </div>
                         <div class="d-flex align-items-center gap-2">
                             <div class="badge bg-warning text-dark fs-6 rounded-3 px-3 py-2">
                                 <i class="bi bi-star-fill me-1"></i> {{ review.puntuacio }}
                             </div>
+
                             {% if review.usuari == user %}
-                            <form action="{% url 'eliminar_ressenya' review.id %}" method="POST"
-                                  onsubmit="return confirm('Are you sure you want to delete your review?');">
+                            <form action="{% url 'eliminar_ressenya' review.id %}" method="POST" onsubmit="return confirm('Are you sure you want to delete your review?');">
                                 {% csrf_token %}
                                 <button type="submit" class="btn-delete-review" title="Delete comment">
                                     <i class="bi bi-trash3-fill fs-5"></i>
@@ -387,14 +335,12 @@
                             {% endif %}
                         </div>
                     </div>
-                    <p class="m-0 lh-base" style="color: var(--text-secondary);">"{{ review.comentari }}"</p>
+                    <p class="text-secondary m-0 lh-base">"{{ review.comentari }}"</p>
                 </div>
                 {% empty %}
                 <div class="text-center py-5">
-                    <i class="bi bi-chat-dots fs-1" style="color: var(--border-color);"></i>
-                    <p class="mt-3" style="color: var(--text-secondary);">
-                        There are no comments yet. Be the first to share yours!
-                    </p>
+                    <i class="bi bi-chat-dots fs-1 text-light"></i>
+                    <p class="text-muted mt-3">There are no comments yet. Be the first to share yours!</p>
                 </div>
                 {% endfor %}
             </div>
@@ -403,9 +349,7 @@
 
     <!-- You may also like -->
     <div class="mt-5 pt-5">
-        <h4 class="fw-bold mb-4" style="color: var(--highlight);">
-            <i class="bi bi-stars me-2" style="color: var(--accent);"></i> You may also like
-        </h4>
+        <h4 class="fw-bold mb-4"><i class="bi bi-stars text-purple me-2"></i> You may also like</h4>
         <div class="row row-cols-2 row-cols-md-4 row-cols-lg-5 g-4">
             {% for item in recomanacions %}
                 {% include "components/card_contingut.html" with item=item %}
@@ -413,53 +357,80 @@
         </div>
     </div>
 
+    <script>
+        document.getElementById("submit_view").addEventListener("click", function (e) {
+            e.preventDefault(); // Blocks default action (no reload, no open)
+
+            // 1. Read CSRF security token
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, 10) === ('csrftoken=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(10));
+                        break;
+                    }
+                }
+            }
+
+            // 2. Visual button feedback (no alerts)
+            const btn = this;
+            const originalHTML = btn.innerHTML;
+
+            // Temporarily switch to success check style
+            btn.innerHTML = '<i class="bi bi-check-circle-fill fs-3"></i> VIEW REGISTERED';
+            btn.style.background = '#10b981'; // Success green
+            btn.disabled = true; // Disable to avoid fast double click
+
+            // 3. Send view event to server silently
+            fetch("{% url 'register_view' %}", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": cookieValue
+                },
+                body: JSON.stringify({ "film": "{{ item.id }}" })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if(data.ok) {
+                    console.log("SUCCESS! View tracked. Total:", data.count);
+                } else {
+                    console.error("Server error:", data.error);
+                }
+
+                // 4. Restore button state after 2 seconds
+                setTimeout(() => {
+                    btn.innerHTML = originalHTML;
+                    btn.style.background = ''; // Restore original color (purple)
+                    btn.disabled = false;
+                }, 2000);
+            })
+            .catch(error => {
+                console.error("Connection error:", error);
+                btn.innerHTML = originalHTML;
+                btn.style.background = '';
+                btn.disabled = false;
+            });
+        });
+    </script>
 </div>
 
 {% if user.is_authenticated %}
 <script>
-    document.getElementById("submit_view").addEventListener("click", function (e) {
-        e.preventDefault();
-
-        let cookieValue = null;
-        if (document.cookie && document.cookie !== '') {
-            const cookies = document.cookie.split(';');
-            for (let i = 0; i < cookies.length; i++) {
-                const cookie = cookies[i].trim();
-                if (cookie.substring(0, 10) === ('csrftoken=')) {
-                    cookieValue = decodeURIComponent(cookie.substring(10));
-                    break;
-                }
-            }
-        }
-
-        const btn = this;
-        const originalHTML = btn.innerHTML;
-
-        btn.innerHTML = '<i class="bi bi-check-circle-fill fs-3"></i> VIEW REGISTERED';
-        btn.style.background = '#10b981';
-        btn.disabled = true;
-
+    const token = document.querySelector('meta[name="csrf-token"]').content;
+    document.getElementById("submit_view").addEventListener("click", function () {
         fetch("{% url 'register_view' %}", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-                "X-CSRFToken": cookieValue
+                "X-CSRFToken": token
             },
-            body: JSON.stringify({ "film": "{{ item.id }}" })
+            body: JSON.stringify({ film: "{{ item.id }}" })
         })
         .then(res => res.json())
-        .then(data => {
-            setTimeout(() => {
-                btn.innerHTML = originalHTML;
-                btn.style.background = '';
-                btn.disabled = false;
-            }, 2000);
-        })
-        .catch(error => {
-            btn.innerHTML = originalHTML;
-            btn.style.background = '';
-            btn.disabled = false;
-        });
+        .then(data => console.log(data));
     });
 </script>
 {% endif %}

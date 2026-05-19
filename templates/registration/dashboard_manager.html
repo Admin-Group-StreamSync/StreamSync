@@ -4,37 +4,25 @@
 
 {% block extra_css %}
 <style>
-    :root {
-        --deep-black:  #0D1321;
-        --navy:        #1D2D44;
-        --steel:       #3E5C76;
-        --slate:       #748CAB;
-        --cream:       #F0EBD8;
-        --text-muted:  #9aafc4;
-        --border:      rgba(116, 140, 171, 0.2);
-    }
-
+    /* Blue sub-header stripe */
     .sub-header {
-        background: linear-gradient(135deg, var(--navy) 0%, var(--steel) 100%);
-        color: var(--cream);
+        background-color: #3b5bdb;
+        color: white;
         padding: 35px 0;
         margin-bottom: 30px;
-        border-bottom: 1px solid var(--border);
     }
-    .sub-header h2 { color: var(--cream); }
-    .sub-header p  { color: var(--text-muted); }
 
+    /* Metric cards */
     .stat-card {
-        background: var(--navy);
+        background: #ffffff;
         border-radius: 12px;
         padding: 20px;
-        border: 1px solid var(--border);
-        box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        border: none;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.03);
         height: 100%;
         display: flex;
         flex-direction: column;
     }
-    .stat-card h6, .stat-card h5 { color: var(--cream); }
 
     .stat-header {
         display: flex;
@@ -43,82 +31,85 @@
         margin-bottom: 10px;
     }
 
+    /* Icon containers */
     .icon-box {
-        width: 38px; height: 38px; border-radius: 10px;
-        display: flex; align-items: center; justify-content: center; font-size: 1.2rem;
+        width: 38px;
+        height: 38px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
     }
-    .icon-purple { background: rgba(116, 140, 171, 0.2); color: var(--slate); }
-    .icon-blue   { background: rgba(62, 92, 118, 0.3);  color: #7ab3d4; }
-    .icon-yellow { background: rgba(240, 235, 216, 0.1); color: #d4b896; }
-    .icon-pink   { background: rgba(116, 140, 171, 0.15); color: #a8c5e0; }
-    .icon-green  { background: rgba(62, 92, 118, 0.2);  color: #80b4a0; }
+    .icon-purple { background-color: #f3e8ff; color: #9333ea; }
+    .icon-blue   { background-color: #e0f2fe; color: #0284c7; }
+    .icon-yellow { background-color: #fef9c3; color: #ca8a04; }
+    .icon-pink   { background-color: #fce7f3; color: #db2777; }
+    .icon-green  { background-color: #dcfce7; color: #16a34a; }
 
+    /* Text and trend values */
     .stat-title {
-        color: var(--text-muted);
-        font-size: 0.85rem; font-weight: 600; margin-bottom: 5px;
+        color: #64748b;
+        font-size: 0.85rem;
+        font-weight: 600;
+        margin-bottom: 5px;
     }
     .stat-value {
-        font-size: 1.8rem; font-weight: 800;
-        color: var(--cream); margin: 0; line-height: 1.2;
+        font-size: 1.8rem;
+        font-weight: 800;
+        color: #1e293b;
+        margin: 0;
+        line-height: 1.2;
     }
-    .stat-subtitle { color: var(--text-muted); font-size: 0.75rem; margin-top: 8px; }
-
-    /* Trend badges */
-    .text-success { color: #80c4a8 !important; }
-    .text-danger  { color: #e57373 !important; }
-    .text-muted   { color: var(--text-muted) !important; }
+    .stat-subtitle {
+        color: #94a3b8;
+        font-size: 0.75rem;
+        margin-top: 8px;
+    }
 
     /* Age bars */
-    .age-bar-container { margin-bottom: 18px; }
+    .age-bar-container {
+        margin-bottom: 18px;
+    }
     .age-label-row {
-        display: flex; justify-content: space-between;
-        font-size: 0.85rem; font-weight: 600;
-        color: var(--cream); margin-bottom: 6px;
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: #334155;
+        margin-bottom: 6px;
     }
     .progress-custom {
         height: 10px;
-        background: rgba(13, 19, 33, 0.6);
-        border-radius: 10px; overflow: hidden;
+        background-color: #f1f5f9;
+        border-radius: 10px;
+        overflow: hidden;
+        display: flex; /* Helps position the inner progress bar */
     }
     .progress-custom .progress-bar {
-        height: 100%; border-radius: 10px;
-        transition: width 0.8s ease-in-out;
-    }
-
-    /* Empty state */
-    .empty-state {
-        background: rgba(13, 19, 33, 0.4);
-        border: 2px dashed var(--border);
-        border-radius: 12px;
-        text-align: center;
-        padding: 60px 20px;
-    }
-    .empty-state i { color: var(--text-muted); }
-    .empty-state p { color: var(--text-muted); }
-
-    /* Top content badge */
-    .views-badge {
-        background: var(--primary-gradient, linear-gradient(90deg, #3E5C76, #748CAB));
-        font-size: 0.85rem;
+        height: 100%; /* Ensures color fills the full 10px height */
+        border-radius: 10px;
+        transition: width 0.8s ease-in-out; /* Smooth fill animation */
     }
 </style>
 {% endblock %}
 
 {% block content %}
+<!-- Manager analytics dashboard -->
 <div class="sub-header">
     <div class="container">
         <h2 class="fw-bold mb-1">Analytics Dashboard - {{ plataforma }}</h2>
-        <p class="mb-0" style="font-size: 0.95rem;">
-            Welcome, Manager {{ plataforma }} | Data updated in real time
-        </p>
+        <p class="mb-0 opacity-75" style="font-size: 0.95rem;">Welcome, Manager {{ plataforma }} | Data updated in real time</p>
     </div>
 </div>
-
 <div class="container mb-5">
+    <div class="d-flex justify-content-end">
+        <button class="btn btn-danger" id="downloadPdfBtn" style="margin-bottom: 15px; justify-content: left">
+            <i class="bi bi-file-pdf"></i> Download as PDF
+        </button>
+    </div>
 
-    <!-- KPI Cards -->
     <div class="row row-cols-1 row-cols-md-3 row-cols-lg-5 g-4 mb-4">
-
         <div class="col">
             <div class="stat-card">
                 <div class="stat-header">
@@ -198,22 +189,22 @@
                 <div class="stat-subtitle">User interest</div>
             </div>
         </div>
-
     </div>
 
-    <!-- Charts row 1 -->
+
     <div class="row g-4 mt-2 mb-4">
         <div class="col-lg-7">
             <div class="stat-card p-4">
-                <h6 class="fw-bold mb-4">Views by Genre</h6>
+                <h6 class="fw-bold mb-4" style="color: #1e293b;">Views by Genre</h6>
                 <div style="height: 300px;">
                     <canvas id="barChart"></canvas>
                 </div>
             </div>
         </div>
+
         <div class="col-lg-5">
             <div class="stat-card p-4">
-                <h6 class="fw-bold mb-4">Consumed Content Distribution</h6>
+                <h6 class="fw-bold mb-4" style="color: #1e293b;">Consumed Content Distribution</h6>
                 <div style="height: 300px; display: flex; justify-content: center;">
                     <canvas id="doughnutChart"></canvas>
                 </div>
@@ -221,53 +212,69 @@
         </div>
     </div>
 
-    <!-- Charts row 2 -->
     <div class="row g-4 mt-2 mb-4">
+
         <div class="col-lg-7">
             <div class="stat-card p-4">
-                <h6 class="fw-bold mb-4">Views and Users Evolution</h6>
+                <h6 class="fw-bold mb-4" style="color: #1e293b;">Views and Users Evolution</h6>
                 <div style="height: 300px;">
                     <canvas id="lineChart"></canvas>
                 </div>
             </div>
         </div>
+
         <div class="col-lg-5">
             <div class="stat-card p-4">
-                <h6 class="fw-bold mb-4">Consumed Content by Age Classification</h6>
+                <h6 class="fw-bold mb-4" style="color: #1e293b;">Consumed Content by Age Classification</h6>
                 <div class="pt-2">
 
                     <div class="age-bar-container">
-                        <div class="age-label-row"><span>All</span><span>{{ edats_pct.tots }}%</span></div>
+                        <div class="age-label-row">
+                            <span>All</span>
+                            <span>{{ edats_pct.all }}%</span>
+                        </div>
                         <div class="progress-custom">
-                            <div class="progress-bar" style="width: {{ edats_pct.tots }}%; background: #748CAB;"></div>
+                            <div class="progress-bar" style="width: {{ edats_pct.tots }}%; background-color: #10b981;"></div>
                         </div>
                     </div>
 
                     <div class="age-bar-container">
-                        <div class="age-label-row"><span>7+</span><span>{{ edats_pct.m7 }}%</span></div>
+                        <div class="age-label-row">
+                            <span>7+</span>
+                            <span>{{ edats_pct.m7 }}%</span>
+                        </div>
                         <div class="progress-custom">
-                            <div class="progress-bar" style="width: {{ edats_pct.m7 }}%; background: #3E5C76;"></div>
+                            <div class="progress-bar" style="width: {{ edats_pct.m7 }}%; background-color: #3b82f6;"></div>
                         </div>
                     </div>
 
                     <div class="age-bar-container">
-                        <div class="age-label-row"><span>13+</span><span>{{ edats_pct.m13 }}%</span></div>
+                        <div class="age-label-row">
+                            <span>13+</span>
+                            <span>{{ edats_pct.m13 }}%</span>
+                        </div>
                         <div class="progress-custom">
-                            <div class="progress-bar" style="width: {{ edats_pct.m13 }}%; background: #d4b896;"></div>
+                            <div class="progress-bar" style="width: {{ edats_pct.m13 }}%; background-color: #f59e0b;"></div>
                         </div>
                     </div>
 
                     <div class="age-bar-container">
-                        <div class="age-label-row"><span>16+</span><span>{{ edats_pct.m16 }}%</span></div>
+                        <div class="age-label-row">
+                            <span>16+</span>
+                            <span>{{ edats_pct.m16 }}%</span>
+                        </div>
                         <div class="progress-custom">
-                            <div class="progress-bar" style="width: {{ edats_pct.m16 }}%; background: #e57373;"></div>
+                            <div class="progress-bar" style="width: {{ edats_pct.m16 }}%; background-color: #ef4444;"></div>
                         </div>
                     </div>
 
                     <div class="age-bar-container">
-                        <div class="age-label-row"><span>18+</span><span>{{ edats_pct.m18 }}%</span></div>
+                        <div class="age-label-row">
+                            <span>18+</span>
+                            <span>{{ edats_pct.m18 }}%</span>
+                        </div>
                         <div class="progress-custom">
-                            <div class="progress-bar" style="width: {{ edats_pct.m18 }}%; background: #8b2c2c;"></div>
+                            <div class="progress-bar" style="width: {{ edats_pct.m18 }}%; background-color: #7f1d1d;"></div>
                         </div>
                     </div>
 
@@ -276,17 +283,17 @@
         </div>
     </div>
 
-    <!-- Top 5 -->
+
     <div class="row g-4 mt-2">
         <div class="col-12">
             <div class="stat-card p-4">
-                <h5 class="fw-bold mb-4">Top 5 Most Viewed Titles</h5>
+                <h5 class="fw-bold mb-4" style="color: #1e293b;">Top 5 Most Viewed Titles</h5>
 
                 {% if top_contingut %}
                     <div class="row row-cols-1 row-cols-md-3 row-cols-lg-5 g-3">
                         {% for item in top_contingut %}
                             <div class="col position-relative">
-                                <span class="badge position-absolute top-0 start-50 translate-middle rounded-pill px-3 py-2 z-3 shadow-sm views-badge">
+                                <span class="badge position-absolute top-0 start-50 translate-middle rounded-pill px-3 py-2 z-3 shadow-sm" style="background-color: #8a2be2; font-size: 0.85rem;">
                                     <i class="bi bi-eye-fill me-1"></i> {{ item.vistes_totals|default:"0" }}
                                 </span>
                                 {% include "components/card_contingut.html" with item=item %}
@@ -294,9 +301,9 @@
                         {% endfor %}
                     </div>
                 {% else %}
-                    <div class="empty-state">
-                        <i class="bi bi-bar-chart-line display-4 mb-3 d-block"></i>
-                        <p class="fw-bold mb-0">There is not enough data to show the charts or ranking.</p>
+                    <div class="text-center p-5 rounded" style="background-color: #f8f9fa; border: 2px dashed #cbd5e1;">
+                        <i class="bi bi-bar-chart-line display-4 text-muted mb-3 d-block"></i>
+                        <p class="text-muted fw-bold mb-0">There is not enough data to show the charts or ranking.</p>
                     </div>
                 {% endif %}
             </div>
@@ -306,38 +313,21 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
 <script>
-    const gridColor  = 'rgba(116, 140, 171, 0.12)';
-    const tickColor  = '#9aafc4';
-    const legendColor = '#F0EBD8';
-
-    const sharedScaleX = {
-        grid: { display: false },
-        border: { display: false },
-        ticks: { color: tickColor }
-    };
-    const sharedScaleY = {
-        beginAtZero: true,
-        grid: { borderDash: [4,4], color: gridColor },
-        border: { display: false },
-        ticks: { color: tickColor }
-    };
-    const sharedLegend = {
-        position: 'bottom',
-        labels: { usePointStyle: true, boxWidth: 8, color: legendColor, padding: 20 }
-    };
-
     document.addEventListener("DOMContentLoaded", function() {
+        // Store chart instances globally for capturing
+        window.chartInstances = {};
 
         // 1. Bar chart
-        new Chart(document.getElementById('barChart').getContext('2d'), {
+        const ctxBar = document.getElementById('barChart').getContext('2d');
+        window.chartInstances.barChart = new Chart(ctxBar, {
             type: 'bar',
             data: {
                 labels: {{ grafic_generes_labels|safe }},
                 datasets: [{
                     data: {{ grafic_generes_data|safe }},
-                    backgroundColor: '#3E5C76',
-                    hoverBackgroundColor: '#748CAB',
+                    backgroundColor: '#a855f7',
                     borderRadius: 4,
                     barPercentage: 0.7
                 }]
@@ -345,29 +335,34 @@
             options: {
                 responsive: true, maintainAspectRatio: false,
                 plugins: { legend: { display: false } },
-                scales: { y: sharedScaleY, x: sharedScaleX }
+                scales: {
+                    y: { beginAtZero: true, grid: { borderDash: [4, 4], color: '#f1f5f9' }, border: { display: false } },
+                    x: { grid: { display: false }, border: { display: false } }
+                }
             }
         });
 
         // 2. Doughnut chart
-        new Chart(document.getElementById('doughnutChart').getContext('2d'), {
+        const ctxDoughnut = document.getElementById('doughnutChart').getContext('2d');
+        window.chartInstances.doughnutChart = new Chart(ctxDoughnut, {
             type: 'doughnut',
             data: {
                 labels: ['Movies', 'Series'],
                 datasets: [{
                     data: {{ grafic_tipus_data|safe }},
-                    backgroundColor: ['#3E5C76', '#748CAB'],
+                    backgroundColor: ['#a855f7', '#ec4899'],
                     borderWidth: 0, hoverOffset: 4
                 }]
             },
             options: {
                 responsive: true, maintainAspectRatio: false, cutout: '60%',
-                plugins: { legend: sharedLegend }
+                plugins: { legend: { position: 'bottom', labels: { padding: 20, usePointStyle: true, boxWidth: 8 } } }
             }
         });
 
-        // 3. Line chart
-        new Chart(document.getElementById('lineChart').getContext('2d'), {
+        // 3. Line chart (evolution)
+        const ctxLine = document.getElementById('lineChart').getContext('2d');
+        window.chartInstances.lineChart = new Chart(ctxLine, {
             type: 'line',
             data: {
                 labels: {{ grafic_evolucio_labels|safe }},
@@ -375,38 +370,148 @@
                     {
                         label: 'Views',
                         data: {{ grafic_evolucio_vistes|safe }},
-                        borderColor: '#748CAB',
-                        backgroundColor: 'rgba(116, 140, 171, 0.15)',
-                        fill: true,
-                        tension: 0.4, yAxisID: 'y'
+                        borderColor: '#a855f7', // Purple
+                        backgroundColor: '#a855f7',
+                        tension: 0.4,
+                        yAxisID: 'y'
                     },
                     {
                         label: 'Users',
                         data: {{ grafic_evolucio_usuaris|safe }},
-                        borderColor: '#3E5C76',
-                        backgroundColor: 'rgba(62, 92, 118, 0.15)',
-                        fill: true,
-                        tension: 0.4, yAxisID: 'y1'
+                        borderColor: '#ec4899', // Pink
+                        backgroundColor: '#ec4899',
+                        tension: 0.4,
+                        yAxisID: 'y1'
                     }
                 ]
             },
             options: {
                 responsive: true, maintainAspectRatio: false,
                 interaction: { mode: 'index', intersect: false },
-                plugins: { legend: sharedLegend },
+                plugins: { legend: { position: 'bottom', labels: { usePointStyle: true, boxWidth: 8 } } },
                 scales: {
-                    x: sharedScaleX,
-                    y: { ...sharedScaleY, type: 'linear', display: true, position: 'left' },
+                    x: { grid: { display: false }, border: { display: false } },
+                    y: {
+                        type: 'linear', display: true, position: 'left',
+                        grid: { borderDash: [4, 4], color: '#f1f5f9' }, border: { display: false }
+                    },
                     y1: {
                         type: 'linear', display: true, position: 'right',
-                        grid: { drawOnChartArea: false },
-                        border: { display: false },
-                        ticks: { color: tickColor }
+                        grid: { drawOnChartArea: false }, border: { display: false }
                     }
                 }
             }
         });
 
+        // PDF Download Handler
+        document.getElementById('downloadPdfBtn').addEventListener('click', async function(e) {
+            e.preventDefault();
+
+            const btn = this;
+            const originalText = btn.innerHTML;
+
+            try {
+                // Show loading state
+                btn.disabled = true;
+                btn.innerHTML = '<i class="bi bi-hourglass-split"></i> Generating PDF...';
+
+                // Capture all chart images
+                const chartImages = await captureCharts();
+
+                // Send to backend with chart images
+                const response = await fetch('{% url "download_dashboard_pdf" plataforma %}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]')?.value || ''
+                    },
+                    body: JSON.stringify({
+                        charts: chartImages
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                // Download PDF
+                const blob = await response.blob();
+                downloadBlob(blob, `dashboard_{{ plataforma }}.pdf`);
+
+                // Show success message
+                showNotification('✓ PDF downloaded successfully!', 'success');
+
+            } catch (error) {
+                console.error('PDF generation error:', error);
+                showNotification('✗ Error generating PDF: ' + error.message, 'error');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = originalText;
+            }
+        });
+
+        // Function to capture all charts as base64 images
+        async function captureCharts() {
+            const charts = {};
+
+            try {
+                // Capture doughnut chart (Content Distribution)
+                const doughnutCanvas = document.getElementById('doughnutChart');
+                if (doughnutCanvas) {
+                    charts.grafic_tipus_data = doughnutCanvas.toDataURL('image/png');
+                }
+
+                // Capture bar chart (Genre Distribution)
+                const barCanvas = document.getElementById('barChart');
+                if (barCanvas) {
+                    charts.grafic_generes = barCanvas.toDataURL('image/png');
+                }
+
+                // Capture line chart (Evolution)
+                const lineCanvas = document.getElementById('lineChart');
+                if (lineCanvas) {
+                    charts.grafic_evolucio = lineCanvas.toDataURL('image/png');
+                }
+
+                console.log('Charts captured successfully:', Object.keys(charts));
+                return charts;
+
+            } catch (error) {
+                console.error('Error capturing charts:', error);
+                return charts; // Return what we have
+            }
+        }
+
+        // Utility function to download blob as file
+        function downloadBlob(blob, filename) {
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            document.body.removeChild(a);
+        }
+
+        // Utility function to show notifications
+        function showNotification(message, type) {
+            // Use Bootstrap toast if available, otherwise console
+            if (typeof bootstrap !== 'undefined') {
+                const alertDiv = document.createElement('div');
+                alertDiv.className = `alert alert-${type === 'success' ? 'success' : 'danger'} alert-dismissible fade show`;
+                alertDiv.setAttribute('role', 'alert');
+                alertDiv.innerHTML = `
+                    ${message}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                `;
+                document.body.insertBefore(alertDiv, document.body.firstChild);
+                setTimeout(() => alertDiv.remove(), 4000);
+            } else {
+                console.log(message);
+            }
+        }
     });
 </script>
+
 {% endblock %}
