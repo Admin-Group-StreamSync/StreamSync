@@ -4,61 +4,33 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}StreamSync Manager{% endblock %}</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
 
     <style>
         :root {
-            /* ── StreamSync Color Palette ── */
-            --deep-black:  #0D1321;
-            --navy:        #1D2D44;
-            --steel:       #3E5C76;
-            --slate:       #748CAB;
-            --cream:       #F0EBD8;
-
-            /* ── Aliases de sistema ── */
-            --primary:          var(--steel);
-            --primary-dark:     var(--navy);
-            --accent:           var(--slate);
-            --primary-gradient: linear-gradient(90deg, var(--steel), var(--slate));
-
-            --bg-main:          var(--deep-black);
-            --bg-card:          var(--navy);
-            --bg-surface:       rgba(62, 92, 118, 0.35);
-            --bg-elevated:      #253d58;
-
-            --border-color:     rgba(116, 140, 171, 0.2);
-            --border-hover:     var(--slate);
-
-            --text-main:        var(--cream);
-            --text-secondary:   #9aafc4;
-            --text-muted:       #5e7a96;
-            --highlight:        var(--cream);
-        }
-
-        * {
-            scrollbar-width: thin;
-            scrollbar-color: var(--steel) var(--bg-surface);
+            --ss-darkest:  #0D1321;  /* quasi-negre */
+            --ss-dark:     #1D2D44;  /* blau marí fosc */
+            --ss-mid:      #3E5C76;  /* blau pissarra */
+            --ss-light:    #748CAB;  /* blau cel esmorteït */
+            --ss-cream:    #F0EBD8;  /* crema càlida */
         }
 
         body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--bg-main);
-            color: var(--text-main);
-            min-height: 100vh;
+            background-color: var(--ss-darkest);
+            color: var(--ss-cream);
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
         }
 
-        /* ── Navbar ── */
+        /* Navbar: degradat del blau marí fosc al blau pissarra */
         .navbar-manager {
-            background: linear-gradient(90deg, var(--navy) 0%, var(--steel) 100%);
+            background: linear-gradient(90deg, var(--ss-dark) 0%, var(--ss-mid) 100%);
             padding: 12px 0;
-            box-shadow: 0 2px 16px rgba(0, 0, 0, 0.4);
-            border-bottom: 1px solid var(--border-color);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
         }
 
         .brand-logo {
-            color: var(--text-main);
+            color: var(--ss-cream);
             font-weight: 800;
             font-size: 1.4rem;
             text-decoration: none;
@@ -66,17 +38,17 @@
             align-items: center;
             gap: 10px;
             letter-spacing: -0.5px;
-            transition: opacity 0.2s ease;
+            transition: color 0.2s ease;
         }
         .brand-logo:hover {
-            color: var(--text-main);
-            opacity: 0.85;
+            color: var(--ss-light);
         }
 
+        /* Botó perfil: semitransparent sobre el degradat */
         .profile-btn {
-            background: rgba(240, 235, 216, 0.15);
-            color: var(--text-main);
-            border: 1px solid rgba(240, 235, 216, 0.2);
+            background: rgba(240, 235, 216, 0.12); /* --ss-cream al 12% */
+            color: var(--ss-cream);
+            border: 1px solid rgba(240, 235, 216, 0.25);
             border-radius: 50px;
             padding: 6px 16px 6px 6px;
             font-weight: 600;
@@ -84,11 +56,12 @@
             display: flex;
             align-items: center;
             gap: 10px;
-            transition: background 0.3s ease;
+            transition: background 0.3s ease, border-color 0.3s ease;
         }
         .profile-btn:hover {
-            background: rgba(240, 235, 216, 0.25);
-            color: var(--text-main);
+            background: rgba(240, 235, 216, 0.22);
+            border-color: rgba(240, 235, 216, 0.45);
+            color: var(--ss-cream);
         }
         .profile-btn img {
             border-radius: 50%;
@@ -97,111 +70,32 @@
             object-fit: cover;
         }
 
-        /* ── Dropdown ── */
+        /* Dropdown */
         .dropdown-menu {
-            background-color: var(--bg-elevated) !important;
-            border: 1px solid var(--border-color) !important;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4) !important;
+            background-color: var(--ss-dark);
+            border: 1px solid var(--ss-mid) !important;
         }
         .dropdown-header {
-            color: var(--text-muted) !important;
-            font-size: 0.8rem;
+            color: var(--ss-light);
         }
         .dropdown-divider {
-            border-color: var(--border-color) !important;
+            border-color: var(--ss-mid);
         }
         .dropdown-item {
-            color: var(--text-secondary) !important;
-            transition: background 0.2s;
+            color: var(--ss-cream);
         }
         .dropdown-item:hover {
-            background-color: var(--bg-surface) !important;
-            color: var(--text-main) !important;
+            background-color: var(--ss-mid);
+            color: var(--ss-cream);
         }
         .dropdown-item.text-danger {
-            color: #e57373 !important;
+            color: #e07070 !important;
         }
         .dropdown-item.text-danger:hover {
-            background: rgba(229, 115, 115, 0.1) !important;
-            color: #ef9a9a !important;
+            background-color: rgba(224, 112, 112, 0.15);
+            color: #e07070 !important;
         }
-
-        /* ── Bootstrap overrides ── */
-        .card {
-            background-color: var(--bg-card) !important;
-            border-color: var(--border-color) !important;
-            color: var(--text-main) !important;
-        }
-
-        .card-body {
-            background-color: var(--bg-card) !important;
-        }
-
-        .badge.bg-light {
-            background-color: var(--bg-surface) !important;
-            color: var(--text-main) !important;
-        }
-
-        .text-dark {
-            color: var(--text-main) !important;
-        }
-
-        .text-muted {
-            color: var(--text-muted) !important;
-        }
-
-        .bg-white, .bg-light {
-            background-color: var(--bg-card) !important;
-        }
-
-        .border, .border-top, .border-bottom {
-            border-color: var(--border-color) !important;
-        }
-
-        .form-control, .form-select {
-            background-color: var(--bg-surface) !important;
-            border-color: var(--border-color) !important;
-            color: var(--text-main) !important;
-        }
-
-        .form-control:focus, .form-select:focus {
-            background-color: var(--bg-surface) !important;
-            border-color: var(--slate) !important;
-            box-shadow: 0 0 0 3px rgba(116, 140, 171, 0.2) !important;
-            color: var(--text-main) !important;
-        }
-
-        .form-control::placeholder {
-            color: var(--text-muted) !important;
-        }
-
-        .alert {
-            background-color: var(--bg-surface) !important;
-            border-color: var(--border-color) !important;
-            color: var(--text-main) !important;
-        }
-
-        .modal-content {
-            background-color: var(--bg-card) !important;
-            border-color: var(--border-color) !important;
-        }
-
-        hr {
-            border-color: var(--border-color) !important;
-            opacity: 1 !important;
-        }
-
-        /* ── Links ── */
-        a { color: var(--slate); }
-        a:hover { color: var(--cream); }
-
-        /* ── Scrollbar ── */
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: var(--bg-main); }
-        ::-webkit-scrollbar-thumb { background: var(--steel); border-radius: 3px; }
-        ::-webkit-scrollbar-thumb:hover { background: var(--slate); }
     </style>
-
     {% block extra_css %}{% endblock %}
 </head>
 <body>
@@ -209,21 +103,22 @@
     <nav class="navbar navbar-manager sticky-top">
         <div class="container d-flex justify-content-between align-items-center">
             <a href="{% url 'dashboard_manager' request.user.profile.manager_de %}" class="brand-logo">
-                <i class="bi bi-collection-play-fill fs-3" style="color: var(--slate);"></i> StreamSync
+                <i class="bi bi-collection-play-fill fs-3"></i> StreamSync
             </a>
 
             <div class="dropdown">
-                <button class="profile-btn dropdown-toggle" type="button" id="profileMenu"
-                        data-bs-toggle="dropdown" aria-expanded="false">
-                    <img src="https://ui-avatars.com/api/?name={{ request.user.username }}&background=1D2D44&color=F0EBD8" alt="Avatar">
+                <button class="profile-btn dropdown-toggle" type="button" id="profileMenu" data-bs-toggle="dropdown" aria-expanded="false">
+                    {% if request.user.last_name|slice:":15" == "images/avatars/" %}
+                        <img src="/{{ request.user.last_name }}" alt="Avatar"
+                             onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-block';">
+                        <i class="bi bi-person-circle" style="display:none; font-size: 1.2rem;"></i>
+                    {% else %}
+                        <i class="bi bi-person-circle" style="font-size: 1.2rem;"></i>
+                    {% endif %}
                     Manager
                 </button>
-                <ul class="dropdown-menu dropdown-menu-end rounded-3 mt-2" aria-labelledby="profileMenu">
-                    <li>
-                        <h6 class="dropdown-header">
-                            {{ request.user.username }} ({{ request.user.profile.manager_de }})
-                        </h6>
-                    </li>
+                <ul class="dropdown-menu dropdown-menu-end border-0 shadow-sm rounded-3 mt-2" aria-labelledby="profileMenu">
+                    <li><h6 class="dropdown-header">{{ request.user.username }} ({{ request.user.profile.manager_de }})</h6></li>
                     <li><hr class="dropdown-divider"></li>
                     <li>
                         <form action="{% url 'logout' %}" method="post" class="px-2">
@@ -242,166 +137,6 @@
         {% block content %}{% endblock %}
     </main>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    {% block extra_js %}{% endblock %}
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
-        :root {
-            /* ── StreamSync Color Palette ── */
-            --deep-black:  #0D1321;
-            --navy:        #1D2D44;
-            --steel:       #3E5C76;
-            --slate:       #748CAB;
-            --cream:       #F0EBD8;
-
-            /* ── Aliases de sistema ── */
-            --primary:          var(--steel);
-            --primary-dark:     var(--navy);
-            --accent:           var(--slate);
-            --primary-gradient: linear-gradient(90deg, var(--steel), var(--slate));
-
-            --bg-main:          var(--deep-black);
-            --bg-card:          var(--navy);
-            --bg-surface:       rgba(62, 92, 118, 0.35);
-            --bg-elevated:      #253d58;
-
-            --border-color:     rgba(116, 140, 171, 0.2);
-            --border-hover:     var(--slate);
-
-            --text-main:        var(--cream);
-            --text-secondary:   #9aafc4;
-            --text-muted:       #5e7a96;
-            --highlight:        var(--cream);
-        }
-
-        * {
-            scrollbar-width: thin;
-            scrollbar-color: var(--steel) var(--bg-surface);
-        }
-
-            font-family: 'Inter', sans-serif;
-            background-color: var(--bg-main);
-            color: var(--text-main);
-            min-height: 100vh;
-
-        /* ── Navbar ── */
-            box-shadow: 0 2px 16px rgba(0, 0, 0, 0.4);
-            border-bottom: 1px solid var(--border-color);
-            color: var(--text-main);
-            color: var(--text-main);
-            opacity: 0.85;
-            background: rgba(240, 235, 216, 0.15);
-            color: var(--text-main);
-            border: 1px solid rgba(240, 235, 216, 0.2);
-            background: rgba(240, 235, 216, 0.25);
-            color: var(--text-main);
-
-        /* ── Dropdown ── */
-        .dropdown-menu {
-            background-color: var(--bg-elevated) !important;
-            border: 1px solid var(--border-color) !important;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4) !important;
-        }
-        .dropdown-header {
-            color: var(--text-muted) !important;
-            font-size: 0.8rem;
-        }
-        .dropdown-divider {
-            border-color: var(--border-color) !important;
-        }
-        .dropdown-item {
-            color: var(--text-secondary) !important;
-            transition: background 0.2s;
-        }
-        .dropdown-item:hover {
-            background-color: var(--bg-surface) !important;
-            color: var(--text-main) !important;
-        }
-        .dropdown-item.text-danger {
-            color: #e57373 !important;
-        }
-        .dropdown-item.text-danger:hover {
-            background: rgba(229, 115, 115, 0.1) !important;
-            color: #ef9a9a !important;
-        }
-
-        /* ── Bootstrap overrides ── */
-        .card {
-            background-color: var(--bg-card) !important;
-            border-color: var(--border-color) !important;
-            color: var(--text-main) !important;
-        }
-
-        .card-body {
-            background-color: var(--bg-card) !important;
-        }
-
-        .badge.bg-light {
-            background-color: var(--bg-surface) !important;
-            color: var(--text-main) !important;
-        }
-
-        .text-dark {
-            color: var(--text-main) !important;
-        }
-
-        .text-muted {
-            color: var(--text-muted) !important;
-        }
-
-        .bg-white, .bg-light {
-            background-color: var(--bg-card) !important;
-        }
-
-        .border, .border-top, .border-bottom {
-            border-color: var(--border-color) !important;
-        }
-
-        .form-control, .form-select {
-            background-color: var(--bg-surface) !important;
-            border-color: var(--border-color) !important;
-            color: var(--text-main) !important;
-        }
-
-        .form-control:focus, .form-select:focus {
-            background-color: var(--bg-surface) !important;
-            border-color: var(--slate) !important;
-            box-shadow: 0 0 0 3px rgba(116, 140, 171, 0.2) !important;
-            color: var(--text-main) !important;
-        }
-
-        .form-control::placeholder {
-            color: var(--text-muted) !important;
-        }
-
-        .alert {
-            background-color: var(--bg-surface) !important;
-            border-color: var(--border-color) !important;
-            color: var(--text-main) !important;
-        }
-
-        .modal-content {
-            background-color: var(--bg-card) !important;
-            border-color: var(--border-color) !important;
-        }
-
-        hr {
-            border-color: var(--border-color) !important;
-            opacity: 1 !important;
-        }
-
-        /* ── Links ── */
-        a { color: var(--slate); }
-        a:hover { color: var(--cream); }
-
-        /* ── Scrollbar ── */
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: var(--bg-main); }
-        ::-webkit-scrollbar-thumb { background: var(--steel); border-radius: 3px; }
-        ::-webkit-scrollbar-thumb:hover { background: var(--slate); }
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    {% block extra_js %}{% endblock %}
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
