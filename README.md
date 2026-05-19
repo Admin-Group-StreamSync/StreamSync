@@ -31,6 +31,10 @@ source .venv/bin/activate
 ### Install dependencies
 python -m pip install -r requirements.txt
 
+### Install WeasyPrint
+python -m pip install weasyprint
+WeasyPrint is used to generate analytics dashboard PDF reports from HTML templates.
+
 ### Run migrations
 python manage.py migrate
 
@@ -42,3 +46,7 @@ python manage.py runserver
 
 ## Contributing providers
 See [CONTRIBUTING_PROVIDERS.md](CONTRIBUTING_PROVIDERS.md) for instructions on adding new streaming services.
+
+## Architecture
+See [CLEAN_ARCHITECTURE_GUIDELINES.md](CLEAN_ARCHITECTURE_GUIDELINES.md) for the service-layer refactor rules and clean architecture conventions used in this repository.
+See [SERVICE_NAMING_CONVENTIONS.md](SERVICE_NAMING_CONVENTIONS.md) for service naming standards (`get_`, `create_`, `update_`, `delete_`, `build_`, `calculate_`).

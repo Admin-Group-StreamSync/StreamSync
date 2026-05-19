@@ -441,3 +441,5 @@ class AnalyticsPDFGenerator:
         }
         """
 
+
+__all__ = ["AnalyticsPDFGenerator"]
