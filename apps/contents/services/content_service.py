@@ -153,8 +153,8 @@ def get_all_series(query=None):
                     obj = map_data(item, port)
                     obj['tipus'] = 'series'
                     results.append(obj)
-        except:
-            pass
+        except requests.RequestException as exc:
+            logging.warning("Failed to fetch series from %s: %s", base_url, exc)
     return deduplicate_content(results)  # ✅ Deduplicació
 
 
