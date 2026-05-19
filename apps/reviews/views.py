@@ -1,9 +1,11 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render, redirect, get_object_or_404
+from django.http import Http404
+from django.shortcuts import render, redirect
 
 from apps.contents.models import Pelicula
-from apps.reviews.models import Feedback, Ressenya
+from apps.reviews.models import Ressenya
+from apps.reviews.services import ReviewService
 
 
 # Create your views here.
@@ -16,12 +18,7 @@ def feedback_view(request):
         description = request.POST.get("descripcio")
         rating = request.POST.get("rating")
 
-        Feedback.objects.create(
-            tipus=tipus,
-            titol=title,
-            descripcio=description,
-            rating=rating if rating else None
-        )
+        ReviewService.create_feedback(tipus, title, description, rating)
 
         messages.success(request, "Gràcies per la teva opinió!")
 
@@ -32,18 +29,26 @@ def feedback_view(request):
 
 @login_required
 def delete_review(request, ressenya_id):
-    review = get_object_or_404(Ressenya, id=ressenya_id, usuari=request.user)
+    try:
+        review = ReviewService.get_user_review_by_id(review_id=ressenya_id, user=request.user)
+    except Ressenya.DoesNotExist as exc:
+        raise Http404 from exc
     content_id_value, content_type = review.pelicula.id, review.pelicula.tipus
-    review.delete()
+    ReviewService.delete_review(review)
     return redirect('pagina_contingut', tipus=content_type, content_id=content_id_value)
 
 @login_required
 def publish_review(request, tipus, content_id):
     if request.method == "POST":
-        movie_db = get_object_or_404(Pelicula, id=content_id)
-        Ressenya.objects.update_or_create(
-            usuari=request.user, pelicula=movie_db,
-            defaults={'puntuacio': request.POST.get('puntuacio'), 'comentari': request.POST.get('comentari')}
+        try:
+            movie_db = ReviewService.get_movie_by_id(content_id=content_id)
+        except Pelicula.DoesNotExist as exc:
+            raise Http404 from exc
+        ReviewService.create_or_update_review(
+            user=request.user,
+            movie=movie_db,
+            score=request.POST.get('puntuacio'),
+            comment=request.POST.get('comentari'),
         )
         messages.success(request, "Ressenya publicada!")
     return redirect('pagina_contingut', tipus=tipus, content_id=content_id)

@@ -1,9 +1,11 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.http import Http404
 from django.shortcuts import render, get_object_or_404, redirect
 
 from apps.contents.models import Pelicula
-from apps.lists.models import Carpeta, LlistaPersonal
+from apps.lists.models import Carpeta
+from apps.lists.services import ListService
 from apps.users.decorators.permissions import cap_manager_permes
 
 # Create your views here.
@@ -15,10 +17,19 @@ OPTIONS = {
 
 @login_required
 def add_to_list(request, tipus, content_id):
-    movie = get_object_or_404(Pelicula, id=content_id)
+    try:
+        movie = ListService.get_movie_by_id(content_id)
+    except Pelicula.DoesNotExist as exc:
+        raise Http404 from exc
     folder_id = request.POST.get('carpeta_id')
-    folder = get_object_or_404(Carpeta, id=folder_id, usuari=request.user) if folder_id else None
-    LlistaPersonal.objects.get_or_create(usuari=request.user, pelicula=movie, carpeta=folder)
+    if folder_id:
+        try:
+            folder = ListService.get_user_folder(folder_id=folder_id, user=request.user)
+        except Carpeta.DoesNotExist as exc:
+            raise Http404 from exc
+    else:
+        folder = None
+    ListService.add_to_personal_list(user=request.user, movie=movie, folder=folder)
     messages.success(request, "Afegit a la llista!")
     return redirect('pagina_contingut', tipus=tipus, content_id=content_id)
 
@@ -27,7 +38,7 @@ def add_to_list(request, tipus, content_id):
 def lists(request):
     return render(request, 'llistes.html', {
         'carpetes': request.user.les_meves_carpetes.all(),
-        'elements_solts': LlistaPersonal.objects.filter(usuari=request.user, carpeta__isnull=True)
+        'elements_solts': ListService.get_user_unfoldered_items(request.user)
     })
 
 @login_required
@@ -35,15 +46,17 @@ def folder_detail(request, carpeta_id):
     folder = get_object_or_404(Carpeta, id=carpeta_id, usuari=request.user)
     return render(request, 'detall_carpeta.html', {
         'carpeta': folder,
-        'elements': LlistaPersonal.objects.filter(carpeta=folder)
+        'elements': ListService.get_folder_items(folder)
     })
 
 @login_required
 def create_list(request):
     if request.method == "POST":
-        Carpeta.objects.create(
-            usuari=request.user, nom=request.POST.get('nom'),
-            icona=request.POST.get('icona'), color=request.POST.get('color')
+        ListService.create_folder(
+            user=request.user,
+            name=request.POST.get('nom'),
+            icon=request.POST.get('icona'),
+            color=request.POST.get('color'),
         )
         return redirect('llistes')
     return render(request, 'crear_llista.html', {'opcions': OPTIONS})
@@ -52,18 +65,23 @@ def create_list(request):
 def edit_list(request, carpeta_id):
     folder = get_object_or_404(Carpeta, id=carpeta_id, usuari=request.user)
     if request.method == "POST":
-        folder.nom, folder.icona, folder.color = request.POST.get('nom'), request.POST.get('icona'), request.POST.get('color')
-        folder.save()
+        ListService.update_folder(
+            folder=folder,
+            name=request.POST.get('nom'),
+            icon=request.POST.get('icona'),
+            color=request.POST.get('color'),
+        )
         return redirect('llistes')
     return render(request, 'editar_llista.html', {'carpeta': folder, 'opcions': OPTIONS})
 
 @login_required
 def delete_folder(request, carpeta_id):
-    get_object_or_404(Carpeta, id=carpeta_id, usuari=request.user).delete()
+    folder = get_object_or_404(Carpeta, id=carpeta_id, usuari=request.user)
+    ListService.delete_folder(folder)
     return redirect('llistes')
 
 @login_required
 def remove_from_list(request, tipus, content_id):
-    LlistaPersonal.objects.filter(usuari=request.user, pelicula_id=content_id).delete()
+    ListService.remove_movie_from_user_list(request.user, content_id)
     messages.success(request, "Element eliminat de la llista.")
     return redirect('llistes')

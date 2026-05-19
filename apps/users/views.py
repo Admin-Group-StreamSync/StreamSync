@@ -6,7 +6,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.contrib.auth.forms import PasswordChangeForm
 from dotenv import load_dotenv
-from apps.contents.services import get_all_movies, get_all_series, get_genres_from_api, get_age_ratings_from_api, \
+from apps.contents.services.content_service import get_all_movies, get_all_series, get_genres_from_api, get_age_ratings_from_api, \
     enrich_tmdb_images, OPTIONS
 from apps.users.decorators.permissions import cap_manager_permes
 from apps.users.models.models import   Profile

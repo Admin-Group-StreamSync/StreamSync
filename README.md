@@ -31,6 +31,10 @@ source .venv/bin/activate
 ### Install dependencies
 python -m pip install -r requirements.txt
 
+### Install WeasyPrint
+python -m pip install weasyprint
+WeasyPrint is used to generate analytics dashboard PDF reports from HTML templates.
+
 ### Run migrations
 python manage.py migrate
 

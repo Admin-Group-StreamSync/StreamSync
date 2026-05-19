@@ -5,7 +5,7 @@ from django.shortcuts import render
 from thefuzz import fuzz, process
 
 from apps.contents.models import Pelicula
-from apps.contents.services import get_all_series, get_all_movies, get_directors_from_api, get_genres_from_api, \
+from apps.contents.services.content_service import get_all_series, get_all_movies, get_directors_from_api, get_genres_from_api, \
     get_age_ratings_from_api, get_tmdb_image, enrich_tmdb_images, OPTIONS
 from apps.lists.models import LlistaPersonal
 from apps.reviews.models import Ressenya
