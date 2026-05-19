@@ -21,7 +21,7 @@ def content_detail(request, tipus, content_id):
     item = next((p for p in all_content if str(p['id']) == str(content_id)), None)
 
     if not item:
-        return render(request, '404.html', status=404)
+        return render(request, 'errors/404.html', status=404)
 
     if 'plataformes_disponibles' not in item:
         item['plataformes_disponibles'] = [item.get('plataforma', 'N/A')]

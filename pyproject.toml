@@ -14,3 +14,7 @@ dependencies = [
     "thefuzz>=0.22.1",
     "weasyprint>=68.1",
 ]
+[tool.poetry.dependencies]
+python = ">=3.12,<3.13"
+django = "^6.0.5"
+python-dotenv = "^1.0.1"
