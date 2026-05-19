@@ -1,6 +1,7 @@
 import logging
 import os
 from concurrent.futures import ThreadPoolExecutor
+from urllib.parse import urlparse
 
 import requests
 from dotenv import load_dotenv
@@ -21,6 +22,15 @@ OPTIONS = {
     'plataformas': ['CinePlus', 'StreamHub', 'PlayMax'],
     'idiomas': ['Català', 'Castellano', 'English', 'Français']
 }
+
+
+def extract_source_key(base_url):
+    parsed = urlparse(base_url.strip())
+    if parsed.port:
+        return str(parsed.port)
+    if parsed.netloc:
+        return parsed.netloc
+    return base_url.replace('://', '').strip('/').split('/')[0]
 
 def get_tmdb_image(title):
     try:
@@ -99,7 +109,7 @@ def get_all_movies(query=None):
     results = []
     for base_url, key in API_CONFIG.items():
         headers = {'x-api-key': key}
-        port = base_url.split(':')[-1]
+        port = extract_source_key(base_url)
         params = {'title': query} if query else {}
         try:
             response = requests.get(f"{base_url}/movies", headers=headers, params=params, timeout=2)
@@ -135,7 +145,7 @@ def get_all_series(query=None):
     results = []
     for base_url, key in API_CONFIG.items():
         headers = {'x-api-key': key}
-        port = base_url.split(':')[-1]
+        port = extract_source_key(base_url)
         params = {'title': query} if query else {}
         try:
             response = requests.get(f"{base_url}/series", headers=headers, params=params, timeout=2)
@@ -174,4 +184,3 @@ def get_age_ratings_from_api():
         except:
             continue
     return []
-
