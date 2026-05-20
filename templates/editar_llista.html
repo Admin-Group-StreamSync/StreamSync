@@ -4,56 +4,113 @@
 
 {% block extra_css %}
 <style>
-    :root {
-        --primary-purple: #8a2be2;
-        --soft-purple: #f3e5f5;
+    .edit-wrapper {
+        min-height: 80vh;
+        display: flex;
+        align-items: center;
+        padding: 40px 0;
     }
 
     .edit-card {
-        background: white;
-        border: 1px solid #eee;
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
         border-radius: 32px;
-        box-shadow: 0 20px 50px rgba(0,0,0,0.05);
+        box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .edit-card::before {
+        content: '';
+        position: absolute;
+        top: -80px; right: -80px;
+        width: 200px; height: 200px;
+        background: radial-gradient(circle, rgba(116, 140, 171, 0.1) 0%, transparent 70%);
+        pointer-events: none;
+    }
+
+    .edit-card::after {
+        content: '';
+        position: absolute;
+        bottom: -80px; left: -80px;
+        width: 200px; height: 200px;
+        background: radial-gradient(circle, rgba(62, 92, 118, 0.1) 0%, transparent 70%);
+        pointer-events: none;
+    }
+
+    .header-icon {
+        width: 80px; height: 80px;
+        background: var(--bg-surface);
+        border: 1px solid var(--border-color);
+        border-radius: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 20px;
+        transition: all 0.3s ease;
+        animation: float 3s ease-in-out infinite;
+    }
+
+    @keyframes float {
+        0%, 100% { transform: translateY(0px); }
+        50%       { transform: translateY(-8px); }
+    }
+
+    .header-icon:hover {
+        border-color: var(--accent);
+        box-shadow: 0 0 20px rgba(116, 140, 171, 0.2);
     }
 
     .form-control-figma {
-        background: #f8f9fa;
-        border: 2px solid transparent;
+        background: var(--bg-surface);
+        border: 2px solid var(--border-color);
         border-radius: 16px;
         padding: 15px 20px;
         font-weight: 600;
+        color: var(--highlight);
         transition: all 0.3s ease;
+        width: 100%;
+    }
+
+    .form-control-figma::placeholder {
+        color: var(--text-muted);
     }
 
     .form-control-figma:focus {
-        background: white;
-        border-color: var(--primary-purple);
-        box-shadow: 0 0 0 4px rgba(138, 43, 226, 0.1);
+        background: var(--bg-card);
+        border-color: var(--accent);
+        box-shadow: 0 0 0 4px rgba(116, 140, 171, 0.15);
         outline: none;
+        color: var(--highlight);
     }
 
-    .icon-selector input[type="radio"] {
-        display: none;
-    }
+    .icon-selector input[type="radio"] { display: none; }
 
     .icon-box {
-        width: 60px;
-        height: 60px;
+        width: 60px; height: 60px;
         display: flex;
         align-items: center;
         justify-content: center;
         border-radius: 16px;
-        border: 2px solid #eee;
+        border: 2px solid var(--border-color);
         cursor: pointer;
         transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        color: #666;
+        color: var(--text-secondary);
+        background: var(--bg-surface);
+    }
+
+    .icon-box:hover {
+        border-color: var(--accent);
+        color: var(--accent);
+        transform: scale(1.05);
     }
 
     .icon-selector input[type="radio"]:checked + .icon-box {
-        border-color: var(--primary-purple);
-        background-color: var(--soft-purple);
-        color: var(--primary-purple);
+        border-color: var(--accent);
+        background: rgba(116, 140, 171, 0.15);
+        color: var(--highlight);
         transform: scale(1.1);
+        box-shadow: 0 5px 15px rgba(116, 140, 171, 0.2);
     }
 
     .color-input-wrapper {
@@ -61,58 +118,110 @@
         height: 56px;
         border-radius: 16px;
         overflow: hidden;
-        border: 2px solid #eee;
+        border: 2px solid var(--border-color);
         position: relative;
+        transition: border-color 0.2s;
+    }
+
+    .color-input-wrapper:hover {
+        border-color: var(--accent);
     }
 
     input[type="color"] {
         position: absolute;
-        top: -10px;
-        left: -10px;
-        width: 120%;
-        height: 120%;
+        top: -10px; left: -10px;
+        width: 120%; height: 120%;
         cursor: pointer;
         border: none;
     }
 
     .btn-save {
-        background: linear-gradient(90deg, #8a2be2 0%, #d40078 100%);
+        background: var(--primary-gradient);
         border: none;
-        color: white;
+        color: var(--highlight);
         padding: 16px;
         border-radius: 16px;
         font-weight: 800;
         text-transform: uppercase;
         letter-spacing: 1px;
         transition: all 0.3s ease;
+        width: 100%;
+        position: relative;
+        overflow: hidden;
     }
+
+    .btn-save::before {
+        content: '';
+        position: absolute;
+        top: 0; left: -100%;
+        width: 100%; height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(240, 235, 216, 0.15), transparent);
+        transition: left 0.5s ease;
+    }
+
+    .btn-save:hover::before { left: 100%; }
 
     .btn-save:hover {
         transform: translateY(-3px);
-        box-shadow: 0 10px 20px rgba(138, 43, 226, 0.3);
-        opacity: 0.9;
+        box-shadow: 0 10px 25px rgba(62, 92, 118, 0.4);
+        color: var(--highlight);
     }
 
     .btn-back-figma {
         display: inline-flex;
         align-items: center;
-        color: #718096;
+        color: var(--text-secondary);
         text-decoration: none;
         font-weight: 700;
         transition: all 0.3s ease;
         margin-bottom: 1.5rem;
+        padding: 8px 16px;
+        border-radius: 50px;
     }
 
     .btn-back-figma:hover {
-        color: var(--primary-purple);
+        color: var(--highlight);
+        background: rgba(116, 140, 171, 0.1);
         transform: translateX(-5px);
+    }
+
+    .field-label {
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: var(--text-secondary);
+        margin-bottom: 8px;
+        display: block;
+    }
+
+    .list-preview {
+        background: var(--bg-surface);
+        border: 1px solid var(--border-color);
+        border-radius: 16px;
+        padding: 15px 20px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-top: 20px;
+        transition: all 0.3s;
+    }
+
+    .preview-icon {
+        width: 40px; height: 40px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+        transition: background 0.3s;
     }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="container py-5">
-    <div class="row justify-content-center">
+<div class="container edit-wrapper">
+    <div class="row justify-content-center w-100">
         <div class="col-lg-5 col-md-8">
 
             <a href="{% url 'detall_carpeta' carpeta.id %}" class="btn-back-figma">
@@ -120,53 +229,81 @@
             </a>
 
             <div class="edit-card p-5">
+
                 <div class="text-center mb-5">
-                    <div class="d-inline-block p-3 rounded-circle mb-3" style="background: var(--soft-purple);">
-                        <i class="bi bi-pencil-square fs-1 text-primary" style="color: var(--primary-purple) !important;"></i>
+                    <div class="header-icon">
+                        <i class="bi bi-pencil-square fs-2" style="color: var(--accent);"></i>
                     </div>
-                    <h2 class="fw-bold text-dark">Edit List</h2>
-                    <p class="text-muted">Update your collection details</p>
+                    <h2 class="fw-bold" style="color: var(--highlight);">Edit List</h2>
+                    <p style="color: var(--text-secondary);">Update your collection details</p>
                 </div>
 
-                <form method="POST">
+                <form method="POST" id="editForm">
                     {% csrf_token %}
 
                     <div class="mb-4">
-                        <label class="form-label fw-bold text-dark small text-uppercase">List name</label>
-                        <input type="text" name="nom" class="form-control form-control-figma"
-                               value="{{ carpeta.nom }}" required>
+                        <label class="field-label">List name</label>
+                        <input type="text" name="nom" id="listName"
+                               class="form-control-figma"
+                               value="{{ carpeta.nom }}"
+                               oninput="updatePreview()" required>
                     </div>
 
                     <div class="mb-4">
-                        <label class="form-label fw-bold text-dark small text-uppercase">Choose an icon</label>
+                        <label class="field-label">Choose an icon</label>
                         <div class="d-flex justify-content-between icon-selector">
                             <label>
-                                <input type="radio" name="icona" value="bi-star-fill" {% if carpeta.icona == 'bi-star-fill' %}checked{% endif %}>
+                                <input type="radio" name="icona" value="bi-star-fill"
+                                       {% if carpeta.icona == 'bi-star-fill' %}checked{% endif %}
+                                       onchange="updatePreview()">
                                 <div class="icon-box"><i class="bi bi-star-fill fs-4"></i></div>
                             </label>
                             <label>
-                                <input type="radio" name="icona" value="bi-heart-fill" {% if carpeta.icona == 'bi-heart-fill' %}checked{% endif %}>
+                                <input type="radio" name="icona" value="bi-heart-fill"
+                                       {% if carpeta.icona == 'bi-heart-fill' %}checked{% endif %}
+                                       onchange="updatePreview()">
                                 <div class="icon-box"><i class="bi bi-heart-fill fs-4"></i></div>
                             </label>
                             <label>
-                                <input type="radio" name="icona" value="bi-rocket-takeoff-fill" {% if carpeta.icona == 'bi-rocket-takeoff-fill' %}checked{% endif %}>
+                                <input type="radio" name="icona" value="bi-rocket-takeoff-fill"
+                                       {% if carpeta.icona == 'bi-rocket-takeoff-fill' %}checked{% endif %}
+                                       onchange="updatePreview()">
                                 <div class="icon-box"><i class="bi bi-rocket-takeoff-fill fs-4"></i></div>
                             </label>
                             <label>
-                                <input type="radio" name="icona" value="bi-lightning-fill" {% if carpeta.icona == 'bi-lightning-fill' %}checked{% endif %}>
+                                <input type="radio" name="icona" value="bi-lightning-fill"
+                                       {% if carpeta.icona == 'bi-lightning-fill' %}checked{% endif %}
+                                       onchange="updatePreview()">
                                 <div class="icon-box"><i class="bi bi-lightning-fill fs-4"></i></div>
                             </label>
                             <label>
-                                <input type="radio" name="icona" value="bi-bookmark-fill" {% if carpeta.icona == 'bi-bookmark-fill' %}checked{% endif %}>
+                                <input type="radio" name="icona" value="bi-bookmark-fill"
+                                       {% if carpeta.icona == 'bi-bookmark-fill' %}checked{% endif %}
+                                       onchange="updatePreview()">
                                 <div class="icon-box"><i class="bi bi-bookmark-fill fs-4"></i></div>
                             </label>
                         </div>
                     </div>
 
-                    <div class="mb-5">
-                        <label class="form-label fw-bold text-dark small text-uppercase">Folder color</label>
+                    <div class="mb-4">
+                        <label class="field-label">Folder color</label>
                         <div class="color-input-wrapper">
-                            <input type="color" name="color" value="{{ carpeta.color }}">
+                            <input type="color" name="color" id="colorPicker"
+                                   value="{{ carpeta.color }}" oninput="updatePreview()">
+                        </div>
+                    </div>
+
+                    <!-- ✅ Preview en temps real -->
+                    <div class="list-preview mb-4" id="listPreview">
+                        <div class="preview-icon" id="previewIcon"
+                             style="background: {{ carpeta.color }}30;">
+                            <i class="bi {{ carpeta.icona }}" id="previewIconClass"
+                               style="color: {{ carpeta.color }};"></i>
+                        </div>
+                        <div>
+                            <div class="fw-bold" id="previewName"
+                                 style="color: var(--highlight);">{{ carpeta.nom }}</div>
+                            <div class="small" style="color: var(--text-secondary);">Preview</div>
                         </div>
                     </div>
 
@@ -180,4 +317,18 @@
         </div>
     </div>
 </div>
+
+<script>
+    function updatePreview() {
+        const name = document.getElementById('listName').value || '{{ carpeta.nom }}';
+        const color = document.getElementById('colorPicker').value;
+        const selectedIcon = document.querySelector('input[name="icona"]:checked');
+        const iconClass = selectedIcon ? selectedIcon.value : '{{ carpeta.icona }}';
+
+        document.getElementById('previewName').innerText = name;
+        document.getElementById('previewIconClass').className = `bi ${iconClass}`;
+        document.getElementById('previewIconClass').style.color = color;
+        document.getElementById('previewIcon').style.background = color + '30';
+    }
+</script>
 {% endblock %}

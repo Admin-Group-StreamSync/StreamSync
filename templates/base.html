@@ -12,17 +12,41 @@
 
     <style>
         :root {
-            --primary-gradient: linear-gradient(90deg, #8a2be2 0%, #d40078 100%);
-            --figma-bg: #ffffff;
-            --figma-gray: #f8f9fa;
-            --figma-border: #eeeeee;
-            --text-main: #1a1a1a;
-            --text-muted: #666666;
+            /* ── StreamSync Color Palette ── */
+            --deep-black:  #0D1321;
+            --navy:        #1D2D44;
+            --steel:       #3E5C76;
+            --slate:       #748CAB;
+            --cream:       #F0EBD8;
+
+            /* ── Aliases de sistema (usats per tots els templates) ── */
+            --primary:          var(--steel);
+            --primary-dark:     var(--navy);
+            --accent:           var(--slate);
+            --primary-gradient: linear-gradient(90deg, var(--steel), var(--slate));
+
+            --bg-main:          var(--deep-black);
+            --bg-card:          var(--navy);
+            --bg-surface:       rgba(62, 92, 118, 0.35);
+            --bg-elevated:      #253d58;
+
+            --border-color:     rgba(116, 140, 171, 0.2);
+            --border-hover:     var(--slate);
+
+            --text-main:        var(--cream);
+            --text-secondary:   #9aafc4;
+            --text-muted:       #5e7a96;
+            --highlight:        var(--cream);
+        }
+
+        * {
+            scrollbar-width: thin;
+            scrollbar-color: var(--steel) var(--bg-surface);
         }
 
         body {
             font-family: 'Inter', sans-serif;
-            background-color: var(--figma-bg);
+            background-color: var(--bg-main);
             color: var(--text-main);
             display: flex;
             flex-direction: column;
@@ -33,10 +57,11 @@
             flex-grow: 1;
         }
 
+        /* ── Cards de contingut ── */
         .card-streaming-figma {
-            background: white;
+            background: var(--bg-card);
             border-radius: 20px;
-            border: 1px solid var(--figma-border);
+            border: 1px solid var(--border-color);
             overflow: hidden;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             height: 100%;
@@ -48,7 +73,8 @@
 
         .card-streaming-figma:hover {
             transform: translateY(-10px);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.08);
+            border-color: var(--slate);
+            box-shadow: 0 20px 40px rgba(62, 92, 118, 0.35);
         }
 
         .poster-wrapper {
@@ -80,15 +106,15 @@
             font-weight: 800;
             z-index: 2;
             text-transform: uppercase;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.4);
         }
 
         .rating-tag {
             position: absolute;
             bottom: 12px;
             right: 12px;
-            background: rgba(255, 255, 255, 0.9);
-            color: #ffb800;
+            background: rgba(0, 0, 0, 0.75);
+            color: #f0c040;
             padding: 4px 10px;
             border-radius: 8px;
             font-weight: 800;
@@ -104,6 +130,7 @@
             flex-grow: 1;
             display: flex;
             flex-direction: column;
+            background: var(--bg-card);
         }
 
         .movie-title-api {
@@ -117,13 +144,13 @@
         .movie-meta-api {
             font-size: 0.85rem;
             font-weight: 600;
-            color: var(--text-muted);
+            color: var(--text-secondary);
             margin-bottom: 10px;
         }
 
         .desc-api {
             font-size: 0.85rem;
-            color: #888;
+            color: var(--text-muted);
             display: -webkit-box;
             -webkit-line-clamp: 2;
             -webkit-box-orient: vertical;
@@ -132,8 +159,8 @@
         }
 
         .genre-tag-api {
-            background: var(--figma-gray);
-            color: #999;
+            background: var(--bg-surface);
+            color: var(--text-secondary);
             padding: 4px 12px;
             border-radius: 8px;
             font-size: 0.7rem;
@@ -143,15 +170,15 @@
 
         .filter-select-figma {
             appearance: none;
-            background: white;
-            border: 1px solid var(--figma-border);
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
             border-radius: 12px;
             padding: 12px 15px;
             font-size: 0.9rem;
             font-weight: 600;
-            color: var(--text-muted);
+            color: var(--text-secondary);
             cursor: pointer;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%23666' viewBox='0 0 16 16'%3E%3Cpath d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3E%3C/svg%3E");
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%23748CAB' viewBox='0 0 16 16'%3E%3Cpath d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3E%3C/svg%3E");
             background-repeat: no-repeat;
             background-position: right 15px center;
             background-size: 12px;
@@ -159,21 +186,109 @@
         }
 
         .filter-select-figma:focus {
-            border-color: #8a2be2;
+            border-color: var(--slate);
             outline: none;
-            box-shadow: 0 0 0 4px rgba(138, 43, 226, 0.1);
+            box-shadow: 0 0 0 4px rgba(116, 140, 171, 0.2);
         }
 
-        /* COOKIE POPUP */
+        /* ── Bootstrap overrides ── */
+        .card {
+            background-color: var(--bg-card) !important;
+            border-color: var(--border-color) !important;
+            color: var(--text-main) !important;
+        }
 
+        .card-body {
+            background-color: var(--bg-card) !important;
+        }
+
+        .badge.bg-light {
+            background-color: var(--bg-surface) !important;
+            color: var(--text-main) !important;
+        }
+
+        .text-dark {
+            color: var(--text-main) !important;
+        }
+
+        .text-muted {
+            color: var(--text-muted) !important;
+        }
+
+        .bg-white, .bg-light {
+            background-color: var(--bg-card) !important;
+        }
+
+        .border, .border-top, .border-bottom {
+            border-color: var(--border-color) !important;
+        }
+
+        .dropdown-menu {
+            background-color: var(--bg-elevated) !important;
+            border-color: var(--border-color) !important;
+        }
+
+        .dropdown-item {
+            color: var(--text-secondary) !important;
+        }
+
+        .dropdown-item:hover {
+            background-color: var(--bg-surface) !important;
+            color: var(--text-main) !important;
+        }
+
+        .form-control, .form-select {
+            background-color: var(--bg-surface) !important;
+            border-color: var(--border-color) !important;
+            color: var(--text-main) !important;
+        }
+
+        .form-control:focus, .form-select:focus {
+            background-color: var(--bg-surface) !important;
+            border-color: var(--slate) !important;
+            box-shadow: 0 0 0 3px rgba(116, 140, 171, 0.2) !important;
+            color: var(--text-main) !important;
+        }
+
+        .form-control::placeholder {
+            color: var(--text-muted) !important;
+        }
+
+        .alert {
+            background-color: var(--bg-surface) !important;
+            border-color: var(--border-color) !important;
+            color: var(--text-main) !important;
+        }
+
+        .modal-content {
+            background-color: var(--bg-card) !important;
+            border-color: var(--border-color) !important;
+        }
+
+        hr {
+            border-color: var(--border-color) !important;
+            opacity: 1 !important;
+        }
+
+        /* ── Scrollbar ── */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: var(--bg-main); }
+        ::-webkit-scrollbar-thumb { background: var(--steel); border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--slate); }
+
+        /* ── Links ── */
+        a { color: var(--slate); }
+        a:hover { color: var(--cream); }
+
+        /* ── Cookie popup ── */
         .cookie-popup {
             position: fixed;
             bottom: 20px;
             left: 50%;
             transform: translateX(-50%);
             width: min(92%, 700px);
-            background: white;
-            border: 1px solid var(--figma-border);
+            background: var(--bg-elevated);
+            border: 1px solid var(--border-color);
             border-radius: 20px;
             padding: 20px;
             z-index: 9999;
@@ -188,22 +303,12 @@
         }
 
         @media (max-width: 768px) {
-            .cookie-content {
-                flex-direction: column;
-                align-items: flex-start;
-            }
+            .cookie-content { flex-direction: column; align-items: flex-start; }
         }
 
         @keyframes fadeUp {
-            from {
-                opacity: 0;
-                transform: translateX(-50%) translateY(20px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateX(-50%) translateY(0);
-            }
+            from { opacity: 0; transform: translateX(-50%) translateY(20px); }
+            to   { opacity: 1; transform: translateX(-50%) translateY(0); }
         }
     </style>
 
@@ -218,58 +323,34 @@
     </header>
 
     <main>
-        {% if messages %}
-        <div class="container mt-3">
-            {% for message in messages %}
-            <div class="alert alert-{{ message.tags|default:'info' }} alert-dismissible fade show mb-2" role="alert">
-                {{ message }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-            {% endfor %}
-        </div>
-        {% endif %}
         {% block content %}
         {% endblock %}
     </main>
 
-    <footer class="mt-auto py-4" style="border-top: 1px solid var(--figma-border); background: var(--figma-gray);">
-        <div class="container d-flex justify-content-between align-items-center">
+    <footer class="mt-auto py-4" style="border-top: 1px solid var(--border-color); background: var(--bg-card);">
+        <div class="container d-flex justify-content-between align-items-center flex-wrap gap-3">
             <div>
-                <strong>StreamSync</strong> © 2026
+                <strong style="color: var(--text-main);">StreamSync</strong>
+                <span style="color: var(--text-muted);">© 2026</span>
             </div>
-
-            <div class="text-muted">
-                <a href="{% url 'feedback' %}" class="text-decoration-none">
+            <div>
+                <a href="{% url 'feedback' %}" class="text-decoration-none" style="color: var(--slate);">
                     We value your feedback!
                 </a>
             </div>
-
-            <div class="text-muted small d-flex flex-wrap gap-3">
-
-                <a href="{% url 'legal_privacy' %}" class="text-decoration-none text-muted">
-                    Privacy
-                </a>
-
-                <a href="{% url 'legal_cookies' %}" class="text-decoration-none text-muted">
-                    Cookies
-                </a>
-
-                <a href="{% url 'legal_terms' %}" class="text-decoration-none text-muted">
-                    Terms of use
-                </a>
-
-                <a href="{% url 'legal_content_disclaimer' %}" class="text-decoration-none text-muted">
-                    Legal disclaimer
-                </a>
-
+            <div class="small d-flex flex-wrap gap-3">
+                <a href="{% url 'legal_privacy' %}" class="text-decoration-none" style="color: var(--text-muted);">Privacy</a>
+                <a href="{% url 'legal_cookies' %}" class="text-decoration-none" style="color: var(--text-muted);">Cookies</a>
+                <a href="{% url 'legal_terms' %}" class="text-decoration-none" style="color: var(--text-muted);">Terms of use</a>
+                <a href="{% url 'legal_content_disclaimer' %}" class="text-decoration-none" style="color: var(--text-muted);">Legal disclaimer</a>
             </div>
-
         </div>
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
     {% block extra_js %}{% endblock %}
+
     <script>
         function acceptCookies() {
             localStorage.setItem("cookieConsent", "accepted");
@@ -283,7 +364,6 @@
 
         document.addEventListener("DOMContentLoaded", function () {
             const consent = localStorage.getItem("cookieConsent");
-
             if (consent) {
                 document.getElementById("cookiePopup").style.display = "none";
             }
@@ -291,22 +371,25 @@
     </script>
 
 </body>
+
     <!-- COOKIE POPUP -->
     <div id="cookiePopup" class="cookie-popup shadow-lg">
         <div class="cookie-content">
             <div>
-                <h6 class="mb-1 fw-bold">🍪 Aquest lloc utilitza cookies</h6>
-                <p class="mb-0 small text-muted">
+                <h6 class="mb-1 fw-bold" style="color: var(--text-main);">🍪 Aquest lloc utilitza cookies</h6>
+                <p class="mb-0 small" style="color: var(--text-muted);">
                     Utilitzem cookies per millorar l'experiència d'usuari i analitzar trànsit.
                 </p>
             </div>
-
             <div class="d-flex gap-2 mt-3 mt-md-0">
-                <button class="btn btn-outline-secondary btn-sm" onclick="rejectCookies()">
+                <button class="btn btn-sm"
+                        style="border: 1px solid var(--border-color); color: var(--text-secondary); background: transparent;"
+                        onclick="rejectCookies()">
                     Rebutjar
                 </button>
-
-                <button class="btn btn-dark btn-sm" onclick="acceptCookies()">
+                <button class="btn btn-sm"
+                        style="background: var(--primary-gradient); color: var(--cream); border: none;"
+                        onclick="acceptCookies()">
                     Acceptar
                 </button>
             </div>
