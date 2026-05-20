@@ -4,24 +4,71 @@
 
 {% block extra_css %}
 <style>
-    .login-container { display: flex; justify-content: center; align-items: center; min-height: 90vh; background: #fff; padding: 20px; }
-    .login-card { width: 100%; max-width: 450px; background: white; border-radius: 20px; padding: 40px; box-shadow: 0 10px 40px rgba(0,0,0,0.05); border: 1px solid #f2f2f2; text-align: center; }
+    .login-container {
+        display: flex; justify-content: center; align-items: center;
+        min-height: 90vh; padding: 20px;
+        background: var(--bg-main);
+    }
+
+    .login-card {
+        width: 100%; max-width: 450px;
+        background: var(--bg-card);
+        border-radius: 20px; padding: 40px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+        border: 1px solid var(--border-color);
+        text-align: center;
+    }
+
     .form-group-custom { text-align: left; margin-bottom: 20px; }
-    .form-group-custom label { font-weight: 700; font-size: 0.8rem; color: #555; text-transform: uppercase; margin-bottom: 5px; display: block; }
-    .form-control-figma { width: 100%; padding: 12px; border-radius: 12px; border: 1px solid #ddd; outline: none; transition: 0.3s; }
-    .form-control-figma:focus { border-color: #8a2be2; box-shadow: 0 0 0 3px rgba(138, 43, 226, 0.1); }
-    .btn-gradient { width: 100%; padding: 14px; border-radius: 12px; border: none; background: linear-gradient(90deg, #8a2be2, #d40078); color: white; font-weight: 700; cursor: pointer; transition: 0.3s; }
+    .form-group-custom label {
+        font-weight: 700; font-size: 0.8rem; color: var(--text-secondary);
+        text-transform: uppercase; margin-bottom: 5px; display: block;
+    }
+
+    .form-control-figma {
+        width: 100%; padding: 12px; border-radius: 12px;
+        border: 1px solid var(--border-color);
+        background: var(--bg-main);
+        color: var(--cream);
+        outline: none; transition: 0.3s;
+    }
+    .form-control-figma::placeholder { color: var(--text-muted); }
+    .form-control-figma:focus {
+        border-color: var(--slate);
+        box-shadow: 0 0 0 3px rgba(116, 140, 171, 0.15);
+    }
+
+    .btn-gradient {
+        width: 100%; padding: 14px; border-radius: 12px; border: none;
+        background: var(--primary-gradient);
+        color: var(--cream); font-weight: 700; cursor: pointer; transition: 0.3s;
+    }
     .btn-gradient:hover { opacity: 0.9; transform: translateY(-1px); }
-    .error-box { background: #fff0f0; border: 1px solid #ffbaba; color: #d8000c; padding: 12px; border-radius: 10px; margin-bottom: 20px; font-size: 0.85rem; text-align: left; }
+
+    .error-box {
+        background: rgba(229, 115, 115, 0.1);
+        border: 1px solid rgba(229, 115, 115, 0.3);
+        color: #ef9a9a;
+        padding: 12px; border-radius: 10px;
+        margin-bottom: 20px; font-size: 0.85rem; text-align: left;
+    }
+
+    .login-card h3 { color: var(--cream); }
+    .login-card .text-muted { color: var(--text-secondary) !important; }
+    .login-card .register-link { color: var(--slate); font-weight: 700; text-decoration: none; }
+    .login-card .register-link:hover { color: var(--cream); }
 </style>
 {% endblock %}
 
 {% block content %}
-<!-- Login card -->
 <div class="login-container">
     <div class="login-card">
+
         <!-- Brand icon -->
-        <div class="mx-auto mb-3" style="width: 45px; height: 45px; background: linear-gradient(135deg, #8a2be2, #d40078); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: white;">
+        <div class="mx-auto mb-3"
+             style="width: 45px; height: 45px; background: var(--primary-gradient);
+                    border-radius: 10px; display: flex; align-items: center;
+                    justify-content: center; color: var(--cream);">
             <i class="bi bi-film"></i>
         </div>
 
@@ -53,7 +100,8 @@
         </form>
 
         <p class="mt-4 small text-muted">
-            Don't have an account? <a href="{% url 'registre' %}" class="text-primary fw-bold text-decoration-none">Register here</a>
+            Don't have an account?
+            <a href="{% url 'registre' %}" class="register-link">Register here</a>
         </p>
     </div>
 </div>

@@ -63,7 +63,6 @@ def home_page(request):
 
     # 2. Load translation dictionaries from the API (display only)
     genres_api = get_genres_from_api()
-    print("generes_api", genres_api)
     ratings_api = get_age_ratings_from_api()
 
     genre_map = {str(g['id']): g['name'] for g in genres_api}
@@ -96,7 +95,6 @@ def home_page(request):
             profile_recommendations = enrich_tmdb_images(enrich(top4))  # ✅ TMDB in parallel
 
         except Exception as e:
-            print(f"Error filtering preferences: {e}")
             profile_recommendations = []
 
     tendencies = enrich_tmdb_images(enrich(all_content[:4]))  # ✅ TMDB in parallel

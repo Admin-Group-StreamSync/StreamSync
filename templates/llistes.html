@@ -4,25 +4,20 @@
 
 {% block extra_css %}
 <style>
-    body {
-        background-color: #f8f9fc;
-        min-height: 100vh;
-        font-family: 'Inter', system-ui, -apple-system, sans-serif;
-    }
-
-    .btn-back {
+    .btn-back-figma {
         display: inline-flex;
         align-items: center;
-        color: #718096;
+        color: var(--text-secondary);
         text-decoration: none;
-        font-weight: 600;
-        transition: 0.3s;
+        font-weight: 700;
+        transition: all 0.3s ease;
+        margin-bottom: 1.5rem;
         padding: 8px 16px;
         border-radius: 50px;
     }
-    .btn-back:hover {
-        color: #8a2be2;
-        background: #f3f0ff;
+    .btn-back-figma:hover {
+        color: var(--highlight);
+        background: rgba(116, 140, 171, 0.1);
         transform: translateX(-5px);
     }
 
@@ -34,11 +29,10 @@
     .main-title {
         font-size: 2.8rem;
         letter-spacing: -2px;
-        color: #1a1a1a;
+        color: var(--highlight);
         margin-bottom: 0.5rem;
     }
 
-    /* 3D folders */
     .folder-wrapper {
         perspective: 1000px;
         margin-bottom: 1rem;
@@ -58,8 +52,8 @@
         position: absolute;
         inset: 0;
         border-radius: 28px;
-        background: white;
-        border: 1px solid #e2e8f0;
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
         transition: all 0.4s cubic-bezier(0.2, 1, 0.3, 1);
     }
 
@@ -69,63 +63,74 @@
     .folder-front {
         position: absolute;
         inset: 0;
-        background: white;
+        background: var(--bg-card);
         border-radius: 28px;
-        border: 1px solid #e2e8f0;
+        border: 1px solid var(--border-color);
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: center;
         z-index: 3;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.2);
         transition: all 0.4s cubic-bezier(0.2, 1, 0.3, 1);
         overflow: hidden;
     }
 
     .folder-wrapper:hover .folder-front {
         transform: translateY(-12px);
-        border-color: #8a2be2;
-        box-shadow: 0 20px 40px rgba(138, 43, 226, 0.12);
+        border-color: var(--accent);
+        box-shadow: 0 20px 40px rgba(116, 140, 171, 0.2);
     }
 
     .folder-wrapper:hover .bg-2 {
         opacity: 1;
         transform: translate(10px, -10px);
-        background: #f8f6ff;
+        background: var(--bg-surface);
     }
 
     .folder-wrapper:hover .bg-1 {
         opacity: 0.6;
         transform: translate(18px, -18px);
-        background: #fcfaff;
+        background: var(--bg-elevated);
     }
 
     .add-new {
-        border: 2px dashed #cbd5e0;
-        background: #ffffff !important;
+        border: 2px dashed var(--border-color) !important;
+        background: var(--bg-card) !important;
+    }
+
+    .folder-wrapper:hover .add-new {
+        border-color: var(--accent) !important;
     }
 
     .list-name {
         margin-top: 1.2rem;
         font-weight: 700;
-        color: #2d3748;
+        color: var(--text-secondary);
         font-size: 1.1rem;
         text-align: center;
         transition: color 0.3s;
     }
 
     .folder-wrapper:hover .list-name {
-        color: #8a2be2;
+        color: var(--highlight);
     }
 
     .delete-link {
         transition: 0.3s;
         opacity: 0.6;
         font-weight: 600;
+        text-decoration: none;
+        color: #e53e3e !important;
     }
     .delete-link:hover {
         opacity: 1;
-        color: #dc3545 !important;
+        color: #fc8181 !important;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 80px 0;
     }
 </style>
 {% endblock %}
@@ -134,14 +139,14 @@
 <div class="container lists-container">
 
     <div class="mb-4">
-        <a href="{% url 'pagina_principal' %}" class="btn-back">
-            <i class="bi bi-arrow-left-circle-fill fs-5 me-2"></i> Back to Home
+        <a href="{% url 'pagina_principal' %}" class="btn-back-figma">
+            <i class="bi bi-arrow-left me-2"></i> Back to Home
         </a>
     </div>
 
     <div class="text-center mb-5">
         <h1 class="main-title fw-bold">My Lists</h1>
-        <p class="text-muted fs-5">All your personal collections in one place.</p>
+        <p class="fs-5" style="color: var(--text-secondary);">All your personal collections in one place.</p>
     </div>
 
     <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5 g-5 justify-content-center">
@@ -150,12 +155,14 @@
             <a href="{% url 'crear_llista' %}" class="folder-wrapper text-decoration-none">
                 <div class="folder-card">
                     <div class="folder-front add-new">
-                        <div class="bg-light border rounded-circle d-flex align-items-center justify-content-center shadow-sm mb-3" style="width: 65px; height: 65px;">
-                            <i class="bi bi-plus-lg text-primary fs-3"></i>
+                        <div class="d-flex align-items-center justify-content-center rounded-circle mb-3"
+                             style="width: 65px; height: 65px; background: var(--bg-surface); border: 1px solid var(--border-color);">
+                            <i class="bi bi-plus-lg fs-3" style="color: var(--accent);"></i>
                         </div>
-                        <span class="fw-bold text-muted small">NEW LIST</span>
+                        <span class="fw-bold small" style="color: var(--text-secondary);">NEW LIST</span>
                     </div>
                 </div>
+                <p class="list-name">Create list</p>
             </a>
         </div>
 
@@ -168,10 +175,11 @@
                         <div class="folder-bg bg-2"></div>
                         <div class="folder-front">
                             <div class="rounded-circle d-flex align-items-center justify-content-center mb-3"
-                                 style="background: {{ folder.color }}15; width: 75px; height: 75px; border: 1px solid {{ folder.color }}30;">
+                                 style="background: {{ folder.color }}20; width: 75px; height: 75px; border: 1px solid {{ folder.color }}40;">
                                 <i class="bi {{ folder.icona }}" style="color: {{ folder.color }}; font-size: 2.2rem;"></i>
                             </div>
-                            <span class="badge rounded-pill bg-white text-dark border px-3 py-2 shadow-sm" style="font-size: 0.75rem;">
+                            <span class="badge rounded-pill px-3 py-2"
+                                  style="font-size: 0.75rem; background: var(--bg-surface); color: var(--text-secondary); border: 1px solid var(--border-color);">
                                 {{ folder.elements.count }} items
                             </span>
                         </div>
@@ -179,19 +187,24 @@
                     <p class="list-name">{{ folder.nom }}</p>
                 </a>
 
-                <a href="{% url 'eliminar_carpeta' folder.id %}" class="delete-link text-danger small text-decoration-none"
+                <a href="{% url 'eliminar_carpeta' folder.id %}" class="delete-link small"
                    onclick="return confirm('Are you sure you want to delete this list?')">
                     <i class="bi bi-trash3-fill me-1"></i> Delete
                 </a>
             </div>
         </div>
         {% endfor %}
+
     </div>
 
     {% if not carpetes %}
-    <div class="text-center mt-5 py-5">
-        <i class="bi bi-folder2-open display-1 text-muted opacity-25"></i>
-        <p class="text-muted mt-3">You have not created a custom list yet.</p>
+    <div class="empty-state">
+        <i class="bi bi-folder2-open display-1" style="color: var(--border-color);"></i>
+        <p class="mt-3" style="color: var(--text-secondary);">You have not created a custom list yet.</p>
+        <a href="{% url 'crear_llista' %}" class="btn mt-2 fw-bold px-4 rounded-pill"
+           style="background: var(--primary-gradient); color: var(--highlight); border: none;">
+            Create your first list
+        </a>
     </div>
     {% endif %}
 
