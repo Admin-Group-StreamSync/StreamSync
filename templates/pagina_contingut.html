@@ -41,7 +41,7 @@
     }
     .meta-item .value { font-size: 0.9rem; font-weight: 600; color: var(--highlight); }
 
-    /* ✅ Plataformes com botons grans */
+    /* ── Platforms ── */
     .platforms-section {
         background: var(--bg-card);
         border-radius: 24px;
@@ -56,29 +56,27 @@
 
     .platform-row {
         display: flex;
-        flex-wrap: wrap;
+        flex-wrap: nowrap;
         gap: 14px;
-        justify-content: flex-start;  /* ✅ S'alineen a l'esquerra, no s'estiren */
     }
 
     .btn-play-platform {
         display: flex;
         align-items: center;
-        gap: 14px;
-        padding: 18px 28px;
+        gap: 10px;
+        padding: 18px 16px;
         border-radius: 18px;
         border: none;
         cursor: pointer;
         font-weight: 800;
-        font-size: 1rem;
+        font-size: 0.95rem;
         transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        flex: 0 0 auto;        /* ✅ No creix */
-        width: 260px;          /* ✅ Sempre la mateixa amplada */
-        min-width: 260px;
-        max-width: 260px;
+        width: calc(33.333% - 10px);
+        flex: 0 0 calc(33.333% - 10px);
         position: relative;
         overflow: hidden;
         text-decoration: none;
+        white-space: nowrap;
     }
 
     .btn-play-platform::before {
@@ -89,103 +87,90 @@
         background: linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent);
         transition: left 0.5s ease;
     }
-
     .btn-play-platform:hover::before { left: 100%; }
-
-    .btn-play-platform:hover {
-        transform: translateY(-4px);
-        box-shadow: 0 15px 30px rgba(0,0,0,0.3);
-    }
-
+    .btn-play-platform:hover { transform: translateY(-4px); box-shadow: 0 15px 30px rgba(0,0,0,0.3); }
     .btn-play-platform:active { transform: translateY(0); }
 
     .plat-btn-cineplus {
         background: linear-gradient(135deg, #8b2500 0%, #c0533a 100%);
-        color: white;
-        box-shadow: 0 6px 20px rgba(192, 83, 58, 0.3);
+        color: white; box-shadow: 0 6px 20px rgba(192, 83, 58, 0.3);
     }
     .plat-btn-cineplus:hover { box-shadow: 0 15px 30px rgba(192, 83, 58, 0.5); color: white; }
 
     .plat-btn-streamhub {
         background: linear-gradient(135deg, #1a4a52 0%, #3e7c8a 100%);
-        color: white;
-        box-shadow: 0 6px 20px rgba(62, 124, 138, 0.3);
+        color: white; box-shadow: 0 6px 20px rgba(62, 124, 138, 0.3);
     }
     .plat-btn-streamhub:hover { box-shadow: 0 15px 30px rgba(62, 124, 138, 0.5); color: white; }
 
     .plat-btn-playmax {
         background: var(--primary-gradient);
-        color: var(--highlight);
-        box-shadow: 0 6px 20px rgba(62, 92, 118, 0.3);
+        color: var(--highlight); box-shadow: 0 6px 20px rgba(62, 92, 118, 0.3);
     }
     .plat-btn-playmax:hover { box-shadow: 0 15px 30px rgba(62, 92, 118, 0.5); color: var(--highlight); }
 
     .plat-btn-altres {
-        background: var(--bg-surface);
-        color: var(--text-secondary);
+        background: var(--bg-surface); color: var(--text-secondary);
         border: 1px solid var(--border-color);
     }
 
     .platform-btn-icon {
-        width: 44px; height: 44px;
-        border-radius: 12px;
+        width: 44px; height: 44px; border-radius: 12px;
         background: rgba(255,255,255,0.15);
         display: flex; align-items: center; justify-content: center;
-        font-size: 1.3rem;
-        flex-shrink: 0;
+        font-size: 1.3rem; flex-shrink: 0;
     }
 
-    .platform-btn-text { display: flex; flex-direction: column; text-align: left; }
+    .platform-btn-text {
+        display: flex; flex-direction: column; text-align: left; flex-shrink: 0;
+        min-width: 0; overflow: hidden;
+    }
     .platform-btn-label { font-size: 0.7rem; font-weight: 600; opacity: 0.8; text-transform: uppercase; letter-spacing: 0.5px; }
     .platform-btn-name { font-size: 1.1rem; font-weight: 800; }
 
     .platform-btn-play {
         margin-left: auto;
         display: flex; align-items: center; gap: 6px;
-        font-size: 0.85rem; font-weight: 700;
-        opacity: 0.9;
+        font-size: 0.75rem; font-weight: 700; opacity: 0.9;
+        flex-shrink: 0; white-space: nowrap;
     }
 
-    /* Locked state */
+    @media (max-width: 1200px) {
+        .platform-btn-play span { display: none; }
+    }
+
     .platforms-locked {
         background: var(--bg-surface);
         border: 1px dashed var(--border-color);
-        border-radius: 18px;
-        padding: 20px 24px;
-        width: 100%;
+        border-radius: 18px; padding: 20px 24px; width: 100%;
     }
 
-    /* Botons d'acció principals */
+    /* ── Buttons ── */
     .btn-add {
         background: var(--bg-card); color: var(--accent);
         border: 1px solid var(--border-color);
-        padding: 16px 35px; border-radius: 16px; font-weight: 700; transition: 0.3s;
-        cursor: pointer;
+        padding: 16px 35px; border-radius: 16px; font-weight: 700; transition: 0.3s; cursor: pointer;
     }
     .btn-add:hover {
         background: rgba(116, 140, 171, 0.1);
-        border-color: var(--accent); color: var(--highlight);
-        transform: translateY(-3px);
+        border-color: var(--accent); color: var(--highlight); transform: translateY(-3px);
     }
 
     .in-list-btn {
         background: rgba(128, 196, 160, 0.15);
         border: 1px solid rgba(128,196,160,0.3);
-        color: #80c4a0; border-radius: 16px;
-        padding: 16px 35px; font-weight: 700;
+        color: #80c4a0; border-radius: 16px; padding: 16px 35px; font-weight: 700;
     }
 
-    /* Rating boxes */
+    /* ── Ratings ── */
     .rating-box {
         background: var(--bg-card); border-radius: 16px;
         border: 1px solid var(--border-color);
-        padding: 12px 20px;
-        display: inline-flex; align-items: center; gap: 12px;
+        padding: 12px 20px; display: inline-flex; align-items: center; gap: 12px;
     }
     .rating-badge {
         display: flex; align-items: center; justify-content: center;
-        border-radius: 10px; padding: 8px 14px;
-        font-weight: 800; font-size: 1.2rem;
+        border-radius: 10px; padding: 8px 14px; font-weight: 800; font-size: 1.2rem;
     }
     .rating-badge-official { background: rgba(240, 192, 64, 0.2); color: #f0c040; }
     .rating-badge-community { background: rgba(62, 92, 118, 0.4); color: var(--accent); }
@@ -195,7 +180,7 @@
     }
     .rating-box .label-main { font-weight: 700; color: var(--highlight); font-size: 0.95rem; }
 
-    /* Review form */
+    /* ── Review form ── */
     .review-form-card {
         background: var(--bg-card); border-radius: 24px;
         border: 1px solid var(--border-color);
@@ -225,7 +210,7 @@
         box-shadow: 0 0 0 3px rgba(116, 140, 171, 0.15) !important;
     }
 
-    /* Comment bubbles */
+    /* ── Comments ── */
     .comment-bubble {
         background: var(--bg-card); border-radius: 20px; padding: 20px;
         border: 1px solid var(--border-color); transition: 0.3s;
@@ -233,10 +218,8 @@
     .comment-bubble:hover { border-color: var(--accent); transform: scale(1.01); }
 
     .user-avatar {
-        width: 45px; height: 45px;
-        background: var(--bg-surface);
-        color: var(--highlight);
-        border: 1px solid var(--border-color);
+        width: 45px; height: 45px; background: var(--bg-surface);
+        color: var(--highlight); border: 1px solid var(--border-color);
         border-radius: 12px; display: flex; align-items: center;
         justify-content: center; font-weight: 700; font-size: 1.2rem;
         overflow: hidden; flex-shrink: 0;
@@ -248,6 +231,7 @@
     }
     .btn-delete-review:hover { background: rgba(229,115,115,0.1); color: #ef9a9a; }
 
+    /* ── Dropdown ── */
     .dropdown-menu {
         background: var(--bg-elevated) !important;
         border: 1px solid var(--border-color) !important;
@@ -264,8 +248,7 @@
         background: var(--primary-gradient);
         color: var(--highlight); border: none;
         padding: 16px 35px; border-radius: 16px; font-weight: 700;
-        transition: 0.3s; box-shadow: 0 10px 20px rgba(62, 92, 118, 0.3);
-        cursor: pointer;
+        transition: 0.3s; box-shadow: 0 10px 20px rgba(62, 92, 118, 0.3); cursor: pointer;
     }
     .btn-play-main:hover {
         transform: translateY(-3px);
@@ -340,7 +323,6 @@
                 </div>
             </div>
 
-            <!-- ✅ Sinopsi -->
             <div class="mb-4">
                 <h5 class="fw-bold mb-3 d-flex align-items-center" style="color: var(--highlight);">
                     <i class="bi bi-text-left me-2" style="color: var(--accent);"></i> Synopsis
@@ -350,7 +332,7 @@
                 </p>
             </div>
 
-            <!-- ✅ Plataformes amb botons grans de play -->
+            <!-- Platforms -->
             <div class="platforms-section">
                 <span class="section-label">
                     <i class="bi bi-tv me-1"></i> Play on
@@ -360,62 +342,54 @@
                 <div class="platform-row">
                     {% for plat in item.plataformes_disponibles %}
                         {% if plat == 'CinePlus' %}
-                        <button class="btn-play-platform plat-btn-cineplus submit-view-btn"
-                                data-film="{{ item.id }}">
-                            <div class="platform-btn-icon">
-                                <i class="bi bi-camera-reels"></i>
-                            </div>
+                        <button class="btn-play-platform plat-btn-cineplus submit-view-btn" data-film="{{ item.id }}">
+                            <div class="platform-btn-icon"><i class="bi bi-camera-reels"></i></div>
                             <div class="platform-btn-text">
                                 <span class="platform-btn-label">Watch on</span>
                                 <span class="platform-btn-name">CinePlus</span>
                             </div>
                             <div class="platform-btn-play">
-                                <i class="bi bi-play-fill fs-5"></i> Play Now
+                                <i class="bi bi-play-fill fs-5"></i>
+                                <span>Play Now</span>
                             </div>
                         </button>
 
                         {% elif plat == 'StreamHub' %}
-                        <button class="btn-play-platform plat-btn-streamhub submit-view-btn"
-                                data-film="{{ item.id }}">
-                            <div class="platform-btn-icon">
-                                <i class="bi bi-broadcast"></i>
-                            </div>
+                        <button class="btn-play-platform plat-btn-streamhub submit-view-btn" data-film="{{ item.id }}">
+                            <div class="platform-btn-icon"><i class="bi bi-broadcast"></i></div>
                             <div class="platform-btn-text">
                                 <span class="platform-btn-label">Watch on</span>
                                 <span class="platform-btn-name">StreamHub</span>
                             </div>
                             <div class="platform-btn-play">
-                                <i class="bi bi-play-fill fs-5"></i> Play Now
+                                <i class="bi bi-play-fill fs-5"></i>
+                                <span>Play Now</span>
                             </div>
                         </button>
 
                         {% elif plat == 'PlayMax' %}
-                        <button class="btn-play-platform plat-btn-playmax submit-view-btn"
-                                data-film="{{ item.id }}">
-                            <div class="platform-btn-icon">
-                                <i class="bi bi-play-circle"></i>
-                            </div>
+                        <button class="btn-play-platform plat-btn-playmax submit-view-btn" data-film="{{ item.id }}">
+                            <div class="platform-btn-icon"><i class="bi bi-play-circle"></i></div>
                             <div class="platform-btn-text">
                                 <span class="platform-btn-label">Watch on</span>
                                 <span class="platform-btn-name">PlayMax</span>
                             </div>
                             <div class="platform-btn-play">
-                                <i class="bi bi-play-fill fs-5"></i> Play Now
+                                <i class="bi bi-play-fill fs-5"></i>
+                                <span>Play Now</span>
                             </div>
                         </button>
 
                         {% else %}
-                        <button class="btn-play-platform plat-btn-altres submit-view-btn"
-                                data-film="{{ item.id }}">
-                            <div class="platform-btn-icon">
-                                <i class="bi bi-tv"></i>
-                            </div>
+                        <button class="btn-play-platform plat-btn-altres submit-view-btn" data-film="{{ item.id }}">
+                            <div class="platform-btn-icon"><i class="bi bi-tv"></i></div>
                             <div class="platform-btn-text">
                                 <span class="platform-btn-label">Watch on</span>
                                 <span class="platform-btn-name">{{ plat }}</span>
                             </div>
                             <div class="platform-btn-play">
-                                <i class="bi bi-play-fill fs-5"></i> Play Now
+                                <i class="bi bi-play-fill fs-5"></i>
+                                <span>Play Now</span>
                             </div>
                         </button>
                         {% endif %}
@@ -428,11 +402,10 @@
                 </div>
 
                 {% else %}
-                <!-- ✅ No autenticat -->
                 <div class="platforms-locked">
                     <div class="d-flex align-items-center gap-3 mb-3">
                         <i class="bi bi-lock-fill fs-4" style="color: var(--text-muted);"></i>
-                        <p class="mb-0 fw-600" style="color: var(--text-secondary);">
+                        <p class="mb-0" style="color: var(--text-secondary);">
                             Sign in to play content on any platform
                         </p>
                     </div>
@@ -450,7 +423,6 @@
                 {% endif %}
             </div>
 
-            <!-- ✅ Guardar a llista -->
             <div class="d-flex flex-wrap gap-3 mb-5">
                 {% if user.is_authenticated %}
                     {% if ja_guardada %}
@@ -489,7 +461,6 @@
                 {% endif %}
             </div>
 
-            <!-- ✅ Rating boxes -->
             <div class="d-flex flex-wrap gap-3">
                 <div class="rating-box">
                     <div class="rating-badge rating-badge-official">
@@ -535,17 +506,14 @@
                                   rows="4" placeholder="What did you think of the plot, characters..."></textarea>
                     </div>
                     {% if ressenya_usuari %}
-                        <button type="submit" class="btn-play-main w-100 py-3 fw-bold rounded-4 border-0">
-                            UPDATE REVIEW
-                        </button>
+                        <button type="submit" class="btn-play-main w-100 py-3 fw-bold rounded-4 border-0">UPDATE REVIEW</button>
                     {% else %}
-                        <button type="submit" class="btn-play-main w-100 py-3 fw-bold rounded-4 border-0">
-                            PUBLISH REVIEW
-                        </button>
+                        <button type="submit" class="btn-play-main w-100 py-3 fw-bold rounded-4 border-0">PUBLISH REVIEW</button>
                     {% endif %}
                 </form>
                 {% else %}
-                <div class="text-center py-4 rounded-4" style="background: var(--bg-surface); border: 1px solid var(--border-color);">
+                <div class="text-center py-4 rounded-4"
+                     style="background: var(--bg-surface); border: 1px solid var(--border-color);">
                     <i class="bi bi-lock fs-2" style="color: var(--text-secondary);"></i>
                     <p class="mt-2" style="color: var(--text-secondary);">Sign in to comment</p>
                     <a href="{% url 'login' %}" class="btn fw-bold px-4 rounded-3"
@@ -569,9 +537,7 @@
                 {% for review in ressenyes %}
                 <div class="comment-bubble">
                     <div class="d-flex align-items-center gap-3 mb-3">
-                        <div class="user-avatar">
-                            {{ review.usuari.username|first|upper }}
-                        </div>
+                        <div class="user-avatar">{{ review.usuari.username|first|upper }}</div>
                         <div class="flex-grow-1">
                             <h6 class="m-0 fw-bold" style="color: var(--highlight);">{{ review.usuari.username }}</h6>
                             <small style="color: var(--text-secondary);">{{ review.data_publicacio|date:"d F, Y" }}</small>
@@ -606,7 +572,6 @@
         </div>
     </div>
 
-    <!-- You may also like -->
     <div class="mt-5 pt-5">
         <h4 class="fw-bold mb-4" style="color: var(--highlight);">
             <i class="bi bi-stars me-2" style="color: var(--accent);"></i> You may also like
