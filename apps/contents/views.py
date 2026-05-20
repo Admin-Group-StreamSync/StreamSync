@@ -18,7 +18,7 @@ from apps.users.decorators.permissions import cap_manager_permes
 
 @cap_manager_permes
 def content_detail(request, tipus, content_id):
-    # 1. Carreguem el contingut segons el tipus de la URL
+    # 1. Carreguem el contingut segons el tipus de la URL a
     all_content = get_all_series() if tipus == 'series' else get_all_movies()
 
     # ✅ SOLUCIÓ DEFINITIVA: Busquem per la ID completa de Render que ve de la URL
