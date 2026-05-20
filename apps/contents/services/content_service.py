@@ -64,9 +64,19 @@ def enrich_tmdb_images(items):
 
 # --- 3. DATA MAPPING ---
 
-def map_data(item, port):
-    platforms = {"8080": "CinePlus", "8081": "StreamHub", "8082": "PlayMax"}
+def map_data(item, port, base_url=""):
+    # Mapeig basat en el text de la URL de Render o en els ports antics (per si de cas)
+    url_str = str(base_url).lower()
+    port_str = str(port).lower()
 
+    if "movies-api-1" in url_str or "8080" in port_str:
+        platform_name = "CinePlus"
+    elif "movies-api-2" in url_str or "8081" in port_str:
+        platform_name = "StreamHub"
+    elif "movies-api-3" in url_str or "8082" in port_str:
+        platform_name = "PlayMax"
+    else:
+        platform_name = "Altres"
 
     title = item.get('title') or item.get('titol') or "Sense títol"
     synopsis = item.get('synopsis') or "Sense sinopsi disponible."
@@ -81,7 +91,7 @@ def map_data(item, port):
         'total_seasons': item.get('total_seasons'),
         'rating': item.get('rating', '0.0'),
         'imatge': item.get('imatge') or 'https://via.placeholder.com/300x450',
-        'plataforma': platforms.get(port, "Altres"),
+        'plataforma': platform_name,  # Assigna correctament CinePlus, StreamHub o PlayMax
         'genre_id': item.get('genre_id'),
         'director_id': item.get('director_id'),
         'age_rating_id': item.get('age_rating_id'),
@@ -114,7 +124,8 @@ def get_all_movies(query=None):
             response = requests.get(f"{base_url}/movies", headers=headers, params=params, timeout=2)
             if response.status_code == 200:
                 for item in response.json():
-                    obj = map_data(item, port)
+                    # ✅ Passem base_url per poder identificar la plataforma correctament
+                    obj = map_data(item, port, base_url=base_url)
                     obj['tipus'] = 'movie'
                     results.append(obj)
         except Exception as exc:
@@ -125,7 +136,7 @@ def get_all_movies(query=None):
                 exc,
                 exc_info=True,
             )
-    return deduplicate_content(results)  # ✅ Deduplicació
+    return deduplicate_content(results)
 
 
 def enrich_api_data(content_list):
@@ -156,12 +167,13 @@ def get_all_series(query=None):
             response = requests.get(f"{base_url}/series", headers=headers, params=params, timeout=2)
             if response.status_code == 200:
                 for item in response.json():
-                    obj = map_data(item, port)
+                    # ✅ Passem base_url per poder identificar la plataforma correctament
+                    obj = map_data(item, port, base_url=base_url)
                     obj['tipus'] = 'series'
                     results.append(obj)
         except requests.RequestException as exc:
             logging.warning("Failed to fetch series from %s: %s", base_url, exc)
-    return deduplicate_content(results)  # ✅ Deduplicació
+    return deduplicate_content(results)
 
 
 def get_genres_from_api():
