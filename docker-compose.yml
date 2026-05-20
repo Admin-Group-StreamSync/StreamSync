@@ -6,6 +6,12 @@ services:
     # Build the image using the Dockerfile in the current directory (./Dockerfile)
     build: .
 
+    command: > 
+      sh -c "
+      python3 -m pip install --upgrade pip &&
+      pip install -r requirements.txt
+      "
+    
     # Map port 8000 on your machine to port 8000 in the container
     # Access the app at http://localhost:8000
     ports:

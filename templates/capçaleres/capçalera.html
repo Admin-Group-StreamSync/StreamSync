@@ -66,6 +66,13 @@
         box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2) !important;
         background-color: #ffffff !important;
     }
+    .profile-avatar-top {
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        object-fit: cover;
+        margin-right: 6px;
+    }
 
     /* 4. Search bar animation (highlight effect) */
     .input-group {
@@ -123,7 +130,14 @@
                         <li class="nav-item ms-2">
                             {% if user.is_authenticated %}
                                 <a class="btn btn-light rounded-pill px-4 py-2 fw-bold text-primary shadow-sm" href="{% url 'pagina_perfil1' %}">
-                                    <i class="bi bi-person-circle me-1"></i> {{ user.username }}
+                                    {% if user.last_name|slice:":15" == "images/avatars/" %}
+                                        <img src="/{{ user.last_name }}" alt="Avatar" class="profile-avatar-top"
+                                             onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-block';">
+                                        <i class="bi bi-person-circle me-1" style="display:none;"></i>
+                                    {% else %}
+                                        <i class="bi bi-person-circle me-1"></i>
+                                    {% endif %}
+                                    {{ user.username }}
                                 </a>
                             {% else %}
                                 <a class="btn btn-light rounded-pill px-4 py-2 fw-bold text-primary shadow-sm" href="{% url 'login' %}">Login</a>
