@@ -78,8 +78,8 @@ def map_data(item, port, base_url=""):
     else:
         platform_name = "Altres"
 
-    title = item.get('title') or item.get('titol') or "Sense títol"
-    synopsis = item.get('synopsis') or "Sense sinopsi disponible."
+    title = item.get('title') or item.get('titol') or "No title"
+    synopsis = item.get('synopsis') or "No synopsis available."
     content_year = item.get('year') or item.get('start_year') or 0
 
     return {
