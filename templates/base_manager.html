@@ -9,11 +9,19 @@
 
     <style>
         :root {
+            /* Paleta original del Manager */
             --ss-darkest:  #0D1321;  /* quasi-negre */
             --ss-dark:     #1D2D44;  /* blau marí fosc */
             --ss-mid:      #3E5C76;  /* blau pissarra */
             --ss-light:    #748CAB;  /* blau cel esmorteït */
             --ss-cream:    #F0EBD8;  /* crema càlida */
+
+            /* Mapatge automàtic de les variables de la teva capçalera preferida */
+            --highlight: var(--ss-cream);
+            --accent: var(--ss-light);
+            --bg-surface: rgba(240, 235, 216, 0.08);
+            --bg-card: var(--ss-dark);
+            --border-color: var(--ss-mid);
         }
 
         body {
@@ -22,55 +30,52 @@
             font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
         }
 
-        /* Navbar: degradat del blau marí fosc al blau pissarra */
-        .navbar-manager {
-            background: linear-gradient(90deg, var(--ss-dark) 0%, var(--ss-mid) 100%);
-            padding: 12px 0;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
+        /* ── Estils importats i adaptats de la teva capçalera ── */
+        .navbar-brand {
+            transition: transform 0.3s ease;
+        }
+        .navbar-brand:hover {
+            transform: scale(1.03);
+        }
+        .navbar-brand i {
+            display: inline-block;
+            transition: transform 0.4s ease, color 0.3s ease;
+            color: var(--accent);
+        }
+        .navbar-brand:hover i {
+            animation: clapper-action 0.6s ease;
+            color: var(--highlight);
+        }
+        @keyframes clapper-action {
+            0%   { transform: rotate(0deg); }
+            30%  { transform: rotate(-15deg); }
+            60%  { transform: rotate(5deg); }
+            100% { transform: rotate(0deg); }
         }
 
-        .brand-logo {
-            color: var(--ss-cream);
-            font-weight: 800;
-            font-size: 1.4rem;
+        /* Estil de botó de l'usuari (Manager) */
+        .btn-nav-user {
+            background: var(--bg-surface);
+            border: 1px solid var(--accent);
+            color: var(--highlight) !important;
+            border-radius: 50px;
+            padding: 8px 20px;
+            font-weight: 700;
+            font-size: 0.85rem;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             text-decoration: none;
             display: flex;
             align-items: center;
-            gap: 10px;
-            letter-spacing: -0.5px;
-            transition: color 0.2s ease;
+            gap: 6px;
         }
-        .brand-logo:hover {
-            color: var(--ss-light);
-        }
-
-        /* Botó perfil: semitransparent sobre el degradat */
-        .profile-btn {
-            background: rgba(240, 235, 216, 0.12); /* --ss-cream al 12% */
-            color: var(--ss-cream);
-            border: 1px solid rgba(240, 235, 216, 0.25);
-            border-radius: 50px;
-            padding: 6px 16px 6px 6px;
-            font-weight: 600;
-            font-size: 0.9rem;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            transition: background 0.3s ease, border-color 0.3s ease;
-        }
-        .profile-btn:hover {
-            background: rgba(240, 235, 216, 0.22);
-            border-color: rgba(240, 235, 216, 0.45);
-            color: var(--ss-cream);
-        }
-        .profile-btn img {
-            border-radius: 50%;
-            width: 28px;
-            height: 28px;
-            object-fit: cover;
+        .btn-nav-user:hover, .btn-nav-user[aria-expanded="true"] {
+            transform: scale(1.05);
+            border-color: var(--highlight);
+            color: var(--highlight) !important;
+            box-shadow: 0 5px 20px rgba(116, 140, 171, 0.25);
         }
 
-        /* Dropdown */
+        /* Elements del menú desplegable (Dropdown) */
         .dropdown-menu {
             background-color: var(--ss-dark);
             border: 1px solid var(--ss-mid) !important;
@@ -100,35 +105,49 @@
 </head>
 <body>
 
-    <nav class="navbar navbar-manager sticky-top">
-        <div class="container d-flex justify-content-between align-items-center">
-            <a href="{% url 'dashboard_manager' request.user.profile.manager_de %}" class="brand-logo">
-                <i class="bi bi-collection-play-fill fs-3"></i> StreamSync
-            </a>
+    <nav class="navbar navbar-expand-lg navbar-dark py-3 shadow-sm sticky-top"
+         style="background: var(--bg-card); border-bottom: 1px solid var(--border-color);">
+        <div class="container-fluid px-4">
+            <div class="d-flex align-items-center justify-content-between w-100">
 
-            <div class="dropdown">
-                <button class="profile-btn dropdown-toggle" type="button" id="profileMenu" data-bs-toggle="dropdown" aria-expanded="false">
-                    {% if request.user.last_name|slice:":15" == "images/avatars/" %}
-                        <img src="/{{ request.user.last_name }}" alt="Avatar"
-                             onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-block';">
-                        <i class="bi bi-person-circle" style="display:none; font-size: 1.2rem;"></i>
-                    {% else %}
-                        <i class="bi bi-person-circle" style="font-size: 1.2rem;"></i>
-                    {% endif %}
-                    Manager
-                </button>
-                <ul class="dropdown-menu dropdown-menu-end border-0 shadow-sm rounded-3 mt-2" aria-labelledby="profileMenu">
-                    <li><h6 class="dropdown-header">{{ request.user.username }} ({{ request.user.profile.manager_de }})</h6></li>
-                    <li><hr class="dropdown-divider"></li>
-                    <li>
-                        <form action="{% url 'logout' %}" method="post" class="px-2">
-                            {% csrf_token %}
-                            <button type="submit" class="dropdown-item text-danger rounded fw-bold">
-                                <i class="bi bi-box-arrow-right me-2"></i> Sign Out
-                            </button>
-                        </form>
-                    </li>
-                </ul>
+                <div class="flex-grow-1" style="flex-basis: 0;">
+                    <a class="navbar-brand fw-bold d-flex align-items-center fs-4 m-0 text-decoration-none"
+                       href="{% url 'dashboard_manager' request.user.profile.manager_de %}" style="color: var(--highlight);">
+                        <i class="bi bi-clapperboard-fill me-2 fs-3"></i>
+                        <span style="letter-spacing: -0.5px;">StreamSync</span>
+                    </a>
+                </div>
+
+                <div class="flex-grow-1 d-none d-lg-flex justify-content-center" style="flex-basis: 0;"></div>
+
+                <div class="flex-grow-1 d-flex justify-content-end align-items-center" style="flex-basis: 0;">
+                    <div class="dropdown">
+                        <button class="btn-nav-user dropdown-toggle border-0" type="button" id="profileMenu" data-bs-toggle="dropdown" aria-expanded="false">
+                            {% if request.user.last_name|slice:":15" == "images/avatars/" %}
+                                <img src="/{{ request.user.last_name }}" alt="Avatar" class="rounded-circle" style="width: 24px; height: 24px; object-fit: cover;"
+                                     onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-block';">
+                                <i class="bi bi-person-circle" style="display:none;"></i>
+                            {% else %}
+                                <i class="bi bi-person-circle"></i>
+                            {% endif %}
+                            <span>Manager</span>
+                        </button>
+
+                        <ul class="dropdown-menu dropdown-menu-end border-0 shadow-sm rounded-3 mt-2" aria-labelledby="profileMenu">
+                            <li><h6 class="dropdown-header">{{ request.user.username }} ({{ request.user.profile.manager_de }})</h6></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <form action="{% url 'logout' %}" method="post" class="px-2">
+                                    {% csrf_token %}
+                                    <button type="submit" class="dropdown-item text-danger rounded fw-bold">
+                                        <i class="bi bi-box-arrow-right me-2"></i> Sign Out
+                                    </button>
+                                </form>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
             </div>
         </div>
     </nav>
