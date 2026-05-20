@@ -294,36 +294,64 @@ def calculate_user_trend(platform_name):
 # ============================================================================
 
 def get_top_content(platform_name, limit=5):
-    """
-    Retrieve top viewed content for a platform.
-
-    Args:
-        platform_name (str): Platform identifier.
-        limit (int): Maximum number of items to return. Defaults to 5.
-
-    Returns:
-        list: List of content dictionaries with view counts.
-    """
     content = Pelicula.objects.filter(plataforma=platform_name)
     top_content_db = content.annotate(
         vistes_totals=Sum('views__count')
     ).order_by('-vistes_totals')[:limit]
 
+    try:
+        all_api_content = get_all_movies() + get_all_series()
+        genres_api = get_genres_from_api()
+        ratings_api = get_age_ratings_from_api()
+        genre_map  = {str(g['id']): g['name'] for g in genres_api}
+        rating_map = {
+            str(r['id']): (r.get('description') or r.get('name') or r.get('title') or 'N/A')
+            for r in ratings_api
+        }
+    except Exception as e:
+        logger.error(f"Error fetching API data for top content: {str(e)}")
+        all_api_content = []
+        genre_map  = {}
+        rating_map = {}
+
     result = []
     for item in top_content_db:
+        # Extreu la part numèrica de l'ID: '1_7' → '7', 'movies-api-1_7' → '7'
+        item_numeric_id = str(item.id).split('_')[-1]
+
+        api_item = next(
+            (x for x in all_api_content
+             if str(x['id']).split('_')[-1] == item_numeric_id
+             and x.get('plataforma') == platform_name),
+            None
+        )
+
+        genere_nom    = ''
+        edat_nom      = ''
+        genre_id      = ''
+        age_rating_id = ''
+
+        if api_item:
+            genre_id      = str(api_item.get('genre_id', ''))
+            age_rating_id = str(api_item.get('age_rating_id', ''))
+            genere_nom    = genre_map.get(genre_id, '')
+            edat_nom      = rating_map.get(age_rating_id, '')
+
         result.append({
-            'id': item.id,
-            'titol': item.titol,
-            'imatge': item.imatge,
-            'any': item.any,
-            'tipus': item.tipus,
-            'rating': item.valoracio,
-            'vistes_totals': item.vistes_totals or 0,
-            'genre_id': '',
-            'age_rating_id': '',
-            'genere_nom': '',
-            'edat_nom': '',
-            'director_nom': ''
+            'id':                    item.id,
+            'titol':                 item.titol,
+            'imatge':                item.imatge,
+            'any':                   item.any,
+            'tipus':                 item.tipus,
+            'rating':                item.valoracio,
+            'vistes_totals':         item.vistes_totals or 0,
+            'plataforma':            item.plataforma,
+            'plataformes_disponibles': [item.plataforma] if item.plataforma else [],
+            'genre_id':              genre_id,
+            'age_rating_id':         age_rating_id,
+            'genere_nom':            genere_nom,
+            'edat_nom':              edat_nom,
+            'director_nom':          '',
         })
 
     logger.info(f"Retrieved top {limit} content for platform {platform_name}")

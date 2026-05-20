@@ -1,6 +1,10 @@
 <div class="col">
+    {% if no_link %}
+    <div class="text-decoration-none">
+    {% else %}
     <a href="{% url 'pagina_contingut' item.tipus item.id %}" class="text-decoration-none">
-        <div class="card h-100 border-0 rounded-4 overflow-hidden card-hover-effect">
+    {% endif %}
+        <div class="card h-100 border-0 rounded-4 overflow-hidden {% if not no_link %}card-hover-effect{% else %}card-static{% endif %}">
             <div class="position-relative" style="aspect-ratio: 2/3; background-color: var(--deep-black);">
                 <img src="{{ item.imatge }}" class="card-img-top w-100 h-100" alt="{{ item.titol }}" style="object-fit: cover;">
 
@@ -48,7 +52,11 @@
                 </div>
             </div>
         </div>
+    {% if no_link %}
+    </div>
+    {% else %}
     </a>
+    {% endif %}
 </div>
 
 <style>
@@ -59,10 +67,16 @@
     .card-hover-effect {
         transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
         border: 1px solid var(--border-color) !important;
+        cursor: pointer;
     }
     .card-hover-effect:hover {
         transform: translateY(-5px);
         box-shadow: 0 10px 24px rgba(0, 0, 0, 0.4) !important;
         border-color: var(--slate) !important;
+    }
+
+    .card-static {
+        border: 1px solid var(--border-color) !important;
+        cursor: default;
     }
 </style>

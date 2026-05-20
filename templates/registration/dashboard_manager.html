@@ -19,9 +19,7 @@
         padding: 35px 0;
         margin-bottom: 30px;
     }
-    .sub-header p {
-        color: rgba(240, 235, 216, 0.7);
-    }
+    .sub-header p { color: rgba(240, 235, 216, 0.7); }
 
     .stat-card {
         background: var(--ss-dark);
@@ -42,40 +40,19 @@
     }
 
     .icon-box {
-        width: 38px;
-        height: 38px;
-        border-radius: 10px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
+        width: 38px; height: 38px; border-radius: 10px;
+        display: flex; align-items: center; justify-content: center;
         font-size: 1.2rem;
     }
+    .icon-purple { background-color: rgba(99,102,241,0.18);  color: #818CF8; }
+    .icon-blue   { background-color: rgba(14,165,233,0.18);  color: #38BDF8; }
+    .icon-yellow { background-color: rgba(245,158,11,0.18);  color: #FCD34D; }
+    .icon-pink   { background-color: rgba(244,63,94,0.18);   color: #FB7185; }
+    .icon-green  { background-color: rgba(16,185,129,0.18);  color: #34D399; }
 
-    /* Icons colors — one for each metric */
-    .icon-purple { background-color: rgba(99,102,241,0.18);  color: #818CF8; } /* Views    → indigo  */
-    .icon-blue   { background-color: rgba(14,165,233,0.18);  color: #38BDF8; } /* Users    → sky     */
-    .icon-yellow { background-color: rgba(245,158,11,0.18);  color: #FCD34D; } /* Rating   → amber   */
-    .icon-pink   { background-color: rgba(244,63,94,0.18);   color: #FB7185; } /* Reviews  → rose    */
-    .icon-green  { background-color: rgba(16,185,129,0.18);  color: #34D399; } /* Saved    → emerald */
-
-    .stat-title {
-        color: var(--ss-light);
-        font-size: 0.85rem;
-        font-weight: 600;
-        margin-bottom: 5px;
-    }
-    .stat-value {
-        font-size: 1.8rem;
-        font-weight: 800;
-        color: var(--ss-cream);
-        margin: 0;
-        line-height: 1.2;
-    }
-    .stat-subtitle {
-        color: rgba(240, 235, 216, 0.45);
-        font-size: 0.75rem;
-        margin-top: 8px;
-    }
+    .stat-title { color: var(--ss-light); font-size: 0.85rem; font-weight: 600; margin-bottom: 5px; }
+    .stat-value { font-size: 1.8rem; font-weight: 800; color: var(--ss-cream); margin: 0; line-height: 1.2; }
+    .stat-subtitle { color: rgba(240, 235, 216, 0.45); font-size: 0.75rem; margin-top: 8px; }
 
     .chart-title { color: var(--ss-cream) !important; }
 
@@ -84,36 +61,25 @@
     .text-muted   { color: var(--ss-light) !important; }
 
     #downloadPdfBtn {
-        background-color: var(--ss-mid);
-        border: none;
-        color: var(--ss-cream);
-        font-weight: 600;
+        background-color: var(--ss-mid); border: none;
+        color: var(--ss-cream); font-weight: 600;
         transition: background-color 0.2s ease;
     }
-    #downloadPdfBtn:hover {
-        background-color: var(--ss-light);
-        color: var(--ss-darkest);
-    }
+    #downloadPdfBtn:hover { background-color: var(--ss-light); color: var(--ss-darkest); }
 
     .age-bar-container { margin-bottom: 18px; }
     .age-label-row {
-        display: flex;
-        justify-content: space-between;
-        font-size: 0.85rem;
-        font-weight: 600;
-        color: var(--ss-cream);
-        margin-bottom: 6px;
+        display: flex; justify-content: space-between;
+        font-size: 0.85rem; font-weight: 600;
+        color: var(--ss-cream); margin-bottom: 6px;
     }
     .progress-custom {
         height: 10px;
         background-color: rgba(116, 140, 171, 0.2);
-        border-radius: 10px;
-        overflow: hidden;
-        display: flex;
+        border-radius: 10px; overflow: hidden; display: flex;
     }
     .progress-custom .progress-bar {
-        height: 100%;
-        border-radius: 10px;
+        height: 100%; border-radius: 10px;
         transition: width 0.8s ease-in-out;
     }
 
@@ -143,7 +109,6 @@
     <!-- Metric cards -->
     <div class="row row-cols-1 row-cols-md-3 row-cols-lg-5 g-4 mb-4">
 
-        <!-- Views -->
         <div class="col">
             <div class="stat-card">
                 <div class="stat-header">
@@ -160,7 +125,6 @@
             </div>
         </div>
 
-        <!-- Active Users -->
         <div class="col">
             <div class="stat-card">
                 <div class="stat-header">
@@ -177,7 +141,6 @@
             </div>
         </div>
 
-        <!-- Rating -->
         <div class="col">
             <div class="stat-card">
                 <div class="stat-header">
@@ -194,7 +157,6 @@
             </div>
         </div>
 
-        <!-- Reviews -->
         <div class="col">
             <div class="stat-card">
                 <div class="stat-header">
@@ -211,7 +173,6 @@
             </div>
         </div>
 
-        <!-- Saved -->
         <div class="col">
             <div class="stat-card">
                 <div class="stat-header">
@@ -267,45 +228,35 @@
                 <div class="pt-2">
 
                     <div class="age-bar-container">
-                        <div class="age-label-row">
-                            <span>All</span><span>{{ edats_pct.all }}%</span>
-                        </div>
+                        <div class="age-label-row"><span>All</span><span>{{ edats_pct.all }}%</span></div>
                         <div class="progress-custom">
                             <div class="progress-bar" style="width: {{ edats_pct.all }}%; background-color: var(--acc-sky);"></div>
                         </div>
                     </div>
 
                     <div class="age-bar-container">
-                        <div class="age-label-row">
-                            <span>7+</span><span>{{ edats_pct.m7 }}%</span>
-                        </div>
+                        <div class="age-label-row"><span>7+</span><span>{{ edats_pct.m7 }}%</span></div>
                         <div class="progress-custom">
                             <div class="progress-bar" style="width: {{ edats_pct.m7 }}%; background-color: var(--acc-emerald);"></div>
                         </div>
                     </div>
 
                     <div class="age-bar-container">
-                        <div class="age-label-row">
-                            <span>13+</span><span>{{ edats_pct.m13 }}%</span>
-                        </div>
+                        <div class="age-label-row"><span>13+</span><span>{{ edats_pct.m13 }}%</span></div>
                         <div class="progress-custom">
                             <div class="progress-bar" style="width: {{ edats_pct.m13 }}%; background-color: var(--acc-amber);"></div>
                         </div>
                     </div>
 
                     <div class="age-bar-container">
-                        <div class="age-label-row">
-                            <span>16+</span><span>{{ edats_pct.m16 }}%</span>
-                        </div>
+                        <div class="age-label-row"><span>16+</span><span>{{ edats_pct.m16 }}%</span></div>
                         <div class="progress-custom">
                             <div class="progress-bar" style="width: {{ edats_pct.m16 }}%; background-color: var(--acc-violet);"></div>
                         </div>
                     </div>
 
                     <div class="age-bar-container">
-                        <div class="age-label-row">
-                            <span>18+</span><span>{{ edats_pct.m18 }}%</span>
-                        </div>
+                        <div class="age-label-row"><span>18+</span><span>{{ edats_pct.m18 }}%</span></div>
                         <div class="progress-custom">
                             <div class="progress-bar" style="width: {{ edats_pct.m18 }}%; background-color: var(--acc-rose);"></div>
                         </div>
@@ -329,7 +280,7 @@
                                       style="background-color: var(--ss-mid); color: var(--ss-cream); font-size: 0.85rem;">
                                     <i class="bi bi-eye-fill me-1"></i> {{ item.vistes_totals|default:"0" }}
                                 </span>
-                                {% include "components/card_contingut.html" with item=item %}
+                                {% include "components/card_contingut.html" with item=item no_link=True %}
                             </div>
                         {% endfor %}
                     </div>
@@ -353,23 +304,18 @@
         mid:     '#3E5C76',
         light:   '#748CAB',
         cream:   '#F0EBD8',
-
-        /* accent palette */
         indigo:  '#4361EE',
         sky:     '#4CC9F0',
         emerald: '#10B981',
         amber:   '#FFBA0A',
         violet:  '#8B5CF6',
         rose:    '#F43F5E',
-
-        /* hover variants */
         indigoH:  '#818CF8',
         skyH:     '#38BDF8',
         emeraldH: '#34D399',
         amberH:   '#FCD34D',
         violetH:  '#A78BFA',
         roseH:    '#FB7185',
-
         gridLine:  'rgba(116, 140, 171, 0.15)',
         tickColor: '#748CAB',
     };
@@ -383,7 +329,7 @@
     document.addEventListener("DOMContentLoaded", function() {
         window.chartInstances = {};
 
-        // 1. Bar chart — Views by Genre
+        // 1. Bar chart
         const ctxBar = document.getElementById('barChart').getContext('2d');
         window.chartInstances.barChart = new Chart(ctxBar, {
             type: 'bar',
@@ -404,21 +350,16 @@
                 }],
             },
             options: {
-                responsive: true,
-                maintainAspectRatio: false,
+                responsive: true, maintainAspectRatio: false,
                 plugins: { legend: { display: false } },
                 scales: {
                     y: { ...axisDefaults, beginAtZero: true },
-                    x: {
-                        ticks:  { color: SS.tickColor },
-                        grid:   { display: false },
-                        border: { display: false },
-                    },
+                    x: { ticks: { color: SS.tickColor }, grid: { display: false }, border: { display: false } },
                 },
             },
         });
 
-        // 2. Doughnut chart — Content Distribution
+        // 2. Doughnut chart
         const ctxDoughnut = document.getElementById('doughnutChart').getContext('2d');
         window.chartInstances.doughnutChart = new Chart(ctxDoughnut, {
             type: 'doughnut',
@@ -428,30 +369,21 @@
                     data: {{ grafic_tipus_data|safe }},
                     backgroundColor:      [SS.indigo,  SS.violet],
                     hoverBackgroundColor: [SS.indigoH, SS.violetH],
-                    borderColor:  SS.dark,
-                    borderWidth:  3,
-                    hoverOffset:  8,
+                    borderColor: SS.dark, borderWidth: 3, hoverOffset: 8,
                 }],
             },
             options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                cutout: '62%',
+                responsive: true, maintainAspectRatio: false, cutout: '62%',
                 plugins: {
                     legend: {
                         position: 'bottom',
-                        labels: {
-                            padding: 20,
-                            usePointStyle: true,
-                            boxWidth: 8,
-                            color: SS.cream,
-                        },
+                        labels: { padding: 20, usePointStyle: true, boxWidth: 8, color: SS.cream },
                     },
                 },
             },
         });
 
-        // 3. Line chart — Evolution
+        // 3. Line chart
         const ctxLine = document.getElementById('lineChart').getContext('2d');
         window.chartInstances.lineChart = new Chart(ctxLine, {
             type: 'line',
@@ -460,27 +392,22 @@
                 datasets: [
                     {
                         label: 'Views',
-                        data:  {{ grafic_evolucio_vistes|safe }},
-                        borderColor:          SS.sky,
-                        backgroundColor:      SS.sky,
+                        data: {{ grafic_evolucio_vistes|safe }},
+                        borderColor: SS.sky, backgroundColor: SS.sky,
                         pointBackgroundColor: SS.sky,
-                        tension: 0.4,
-                        yAxisID: 'y',
+                        tension: 0.4, yAxisID: 'y',
                     },
                     {
                         label: 'Users',
-                        data:  {{ grafic_evolucio_usuaris|safe }},
-                        borderColor:          SS.violet,
-                        backgroundColor:      SS.violet,
+                        data: {{ grafic_evolucio_usuaris|safe }},
+                        borderColor: SS.violet, backgroundColor: SS.violet,
                         pointBackgroundColor: SS.violet,
-                        tension: 0.4,
-                        yAxisID: 'y1',
+                        tension: 0.4, yAxisID: 'y1',
                     },
                 ],
             },
             options: {
-                responsive: true,
-                maintainAspectRatio: false,
+                responsive: true, maintainAspectRatio: false,
                 interaction: { mode: 'index', intersect: false },
                 plugins: {
                     legend: {
@@ -489,17 +416,12 @@
                     },
                 },
                 scales: {
-                    x: {
-                        ticks:  { color: SS.tickColor },
-                        grid:   { display: false },
-                        border: { display: false },
-                    },
+                    x: { ticks: { color: SS.tickColor }, grid: { display: false }, border: { display: false } },
                     y:  { ...axisDefaults, type: 'linear', display: true, position: 'left' },
                     y1: {
-                        ticks:  { color: SS.tickColor },
+                        ticks: { color: SS.tickColor },
                         type: 'linear', display: true, position: 'right',
-                        grid:   { drawOnChartArea: false },
-                        border: { display: false },
+                        grid: { drawOnChartArea: false }, border: { display: false },
                     },
                 },
             },
@@ -554,8 +476,7 @@
         function downloadBlob(blob, filename) {
             const url = window.URL.createObjectURL(blob);
             const a = document.createElement('a');
-            a.href = url;
-            a.download = filename;
+            a.href = url; a.download = filename;
             document.body.appendChild(a);
             a.click();
             window.URL.revokeObjectURL(url);
