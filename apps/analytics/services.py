@@ -12,7 +12,7 @@ from django.utils import timezone
 
 from apps.analytics.models import Views
 from apps.contents.models import Pelicula
-from apps.contents.services import (
+from apps.contents.services.content_service import (
     get_all_movies,
     get_all_series,
     get_age_ratings_from_api,
@@ -614,3 +614,21 @@ def build_dashboard_context(platform_name):
     except Exception as e:
         logger.error(f"Error building dashboard context: {str(e)}")
         raise
+
+
+class AnalyticsService:
+    """
+    Facade for analytics domain operations.
+
+    Keeps a clean interface while preserving function-level organization.
+    """
+
+    add_view = staticmethod(add_view)
+    build_dashboard_context = staticmethod(build_dashboard_context)
+
+
+__all__ = [
+    "AnalyticsService",
+    "add_view",
+    "build_dashboard_context",
+]

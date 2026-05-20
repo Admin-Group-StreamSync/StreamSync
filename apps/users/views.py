@@ -6,11 +6,12 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.contrib.auth.forms import PasswordChangeForm
 from dotenv import load_dotenv
-from apps.contents.services import get_all_movies, get_all_series, get_genres_from_api, get_age_ratings_from_api, \
+from apps.contents.services.content_service import get_all_movies, get_all_series, get_genres_from_api, get_age_ratings_from_api, \
     enrich_tmdb_images, OPTIONS
 from apps.users.decorators.permissions import cap_manager_permes
 from apps.users.models.models import   Profile
 from apps.users.forms.forms import UserRegistrationForm, UserUpdateForm
+from apps.users.services import UserService
 
 # 1. LOAD CONFIGURATION
 from django.shortcuts import redirect
@@ -50,12 +51,6 @@ class StreamSyncLoginView(LoginView):
         return response
 
 
-# --- 2. FUNCIONS AUXILIARS I MAPEIG ---
-
-# --- 2. TMDB FUNCTIONS ---
-
-# --- 4. MAIN VIEWS ---
-
 @cap_manager_permes
 def home_page(request):
     movies = get_all_movies()
@@ -68,6 +63,7 @@ def home_page(request):
 
     # 2. Load translation dictionaries from the API (display only)
     genres_api = get_genres_from_api()
+    print("generes_api", genres_api)
     ratings_api = get_age_ratings_from_api()
 
     genre_map = {str(g['id']): g['name'] for g in genres_api}
@@ -166,11 +162,12 @@ def crear_cuenta(request):
 
 @login_required
 def profile_page1(request):
-    form = UserUpdateForm(request.POST or None, instance=request.user)
+    current_user = UserService.get_user_by_id(request.user.id)
+    form = UserUpdateForm(request.POST or None, instance=current_user)
     if request.method == 'POST' and form.is_valid():
         form.save()
         messages.success(request, "Perfil actualitzat!")
-    current_avatar = request.user.last_name if request.user.last_name in ALLOWED_AVATARS else ""
+    current_avatar = current_user.last_name if current_user.last_name in ALLOWED_AVATARS else ""
     return render(request, 'registration/pagina_perfil1.html', {
         'form': form,
         'avatars': ALLOWED_AVATARS,
@@ -187,8 +184,9 @@ def update_avatar(request):
         messages.error(request, "Avatar no vàlid.")
         return redirect('pagina_perfil1')
 
-    request.user.last_name = avatar_path
-    request.user.save(update_fields=['last_name'])
+    current_user = UserService.get_user_by_id(request.user.id)
+    current_user.last_name = avatar_path
+    current_user.save(update_fields=['last_name'])
     messages.success(request, "Avatar actualitzat!")
     return redirect('pagina_perfil1')
 
@@ -236,6 +234,7 @@ def cambiar_password(request):
 @login_required
 def delete_account(request):
     if request.method == 'POST':
-        request.user.delete()
+        current_user = UserService.get_user_by_id(request.user.id)
+        current_user.delete()
         return redirect('pagina_principal')
     return render(request, 'registration/esborrar_compte.html')
