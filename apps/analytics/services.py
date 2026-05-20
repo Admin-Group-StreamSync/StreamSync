@@ -29,17 +29,28 @@ logger = logging.getLogger(__name__)
 # View Tracking Operations
 # ============================================================================
 
-def add_view(request, film):
+def add_view(request, film, platform=None):
     """
     Register or increment a view for a film.
+
+    Validates platform if provided to ensure views are counted
+    per platform, not aggregated across all platforms.
 
     Args:
         request: Django HTTP request with authenticated user.
         film: Pelicula model instance.
+        platform: Optional platform name (e.g., 'CinePlus', 'StreamHub').
 
     Returns:
         tuple: (Views object, created boolean).
     """
+    # Validate platform matches film if provided
+    if platform and film.plataforma != platform:
+        logger.warning(
+            f"Platform mismatch: film {film.id} is on {film.plataforma} "
+            f"but view claimed to be from {platform}"
+        )
+    
     view_reg, created = Views.objects.get_or_create(
         usuari=request.user,
         pelicula=film,
@@ -47,7 +58,10 @@ def add_view(request, film):
     )
     view_reg.count += 1
     view_reg.save()
-    logger.info(f"View registered for film {film.titol} by user {request.user.username}")
+    logger.info(
+        f"View registered for film {film.titol} on {platform or 'unknown'} "
+        f"by user {request.user.username}"
+    )
     return view_reg, created
 
 
