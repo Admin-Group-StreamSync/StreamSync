@@ -1,5 +1,5 @@
 .venv/
-db.sqlite3
+#db.sqlite3
 .env
 .vscode/
 venv
@@ -28,7 +28,7 @@ __pycache__/
 # uv (uv.lock is NOT ignored -- it should be committed for reproducible builds)
 
 # Docker
-#db.sqlite3-journal
+db.sqlite3-journal
 
 
 #*_initial.py
