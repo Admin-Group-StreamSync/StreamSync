@@ -14,10 +14,7 @@ from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
 
 from apps.contents.models import Pelicula
-from apps.analytics.services import (
-    add_view,
-    build_dashboard_context
-)
+from apps.analytics.services import AnalyticsService
 from apps.analytics.pdf_service import AnalyticsPDFGenerator
 
 logger = logging.getLogger(__name__)
@@ -52,7 +49,7 @@ def dashboard_manager(request, plataforma_nom):
 
     try:
         # Build complete dashboard context via service layer
-        context = build_dashboard_context(plataforma_nom)
+        context = AnalyticsService.build_dashboard_context(plataforma_nom)
 
         # Add template rendering fields
         context['pelicules'] = Pelicula.objects.filter(plataforma=plataforma_nom)
@@ -80,10 +77,10 @@ def dashboard_manager(request, plataforma_nom):
 @login_required
 def register_view(request):
     """
-    Register a view/play action for authenticated user.
+    Register a view/play action for authenticated user on a specific platform.
 
     API endpoint that increments the view counter for a film.
-    Expects JSON POST with film ID.
+    Expects JSON POST with film ID and optional platform name.
 
     Args:
         request: Django HTTP request with authenticated user.
@@ -101,6 +98,7 @@ def register_view(request):
         # Parse incoming JSON data
         data = json.loads(request.body)
         film_id = data.get("film")
+        platform = data.get("platform")  # Get platform name
 
         if not film_id:
             return JsonResponse(
@@ -111,21 +109,22 @@ def register_view(request):
         # Fetch and validate film
         film = get_object_or_404(Pelicula, id=film_id)
 
-        # Register view via service layer
-        view_reg, created = add_view(request, film)
+        # Register view via service layer with platform info
+        view_reg, created = AnalyticsService.add_view(request, film, platform)
 
         logger.info(
-            f"View registered for film {film.titol} "
+            f"View registered for film {film.titol} on platform {platform or 'unspecified'} "
             f"by user {request.user.username}. Total: {view_reg.count}"
         )
 
         return JsonResponse({
             "ok": True,
-            "count": view_reg.count
+            "count": view_reg.count,
+            "platform": platform
         })
 
     except Pelicula.DoesNotExist:
-        logger.warning(f"View registration: Film not found with ID {data.get('film')}")
+        logger.warning(f"View registration: Film not found")
         return JsonResponse(
             {"error": "Film not found."},
             status=404
@@ -178,7 +177,7 @@ def download_dashboard_pdf(request, plataforma_nom):
         chart_images = data.get('charts', {})
 
         # Build dashboard context
-        context = build_dashboard_context(plataforma_nom)
+        context = AnalyticsService.build_dashboard_context(plataforma_nom)
 
         # Generate PDF
         pdf_bytes = AnalyticsPDFGenerator.generate_dashboard_pdf(
@@ -215,4 +214,3 @@ def download_dashboard_pdf(request, plataforma_nom):
             {"error": f"PDF generation failed: {str(error)}"},
             status=500
         )
-
