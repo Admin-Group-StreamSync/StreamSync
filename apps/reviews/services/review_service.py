@@ -22,7 +22,8 @@ class ReviewService:
 
     @staticmethod
     def get_movie_by_id(content_id):
-        return Pelicula.objects.get(id=content_id)
+        _, movie_id = content_id.rsplit("_", 1)
+        return Pelicula.objects.get(id=movie_id)
 
     @staticmethod
     def create_or_update_review(user, movie, score, comment):
@@ -31,3 +32,4 @@ class ReviewService:
             pelicula=movie,
             defaults={"puntuacio": score, "comentari": comment},
         )
+
