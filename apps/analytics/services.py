@@ -46,7 +46,8 @@ def add_view(request, film):
         defaults={"count": 0}
     )
     view_reg.count += 1
-    view_reg.save()
+    view_reg.visualization_date = timezone.now()
+    view_reg.save(update_fields=["count", "visualization_date"])
     logger.info(f"View registered for film {film.titol} by user {request.user.username}")
     return view_reg, created
 
@@ -79,6 +80,10 @@ def get_platform_metrics(platform_name):
         pelicula__in=content
     ).count()
 
+    total_views = Views.objects.filter(
+        pelicula__in=content
+    ).aggregate(total=Sum('count'))['total'] or 0
+
     interested_users = sum(
         1 for profile in Profile.objects.all()
         if platform_name in profile.plataformes
@@ -87,6 +92,7 @@ def get_platform_metrics(platform_name):
     return {
         'average_rating': review_stats['mitjana'] or 0,
         'total_reviews': review_stats['total'],
+        'total_views': total_views,
         'total_saved': saved_count,
         'interested_users': interested_users,
         'content_count': content.count()
@@ -588,7 +594,7 @@ def build_dashboard_context(platform_name):
         return {
             'plataforma': platform_name,
             'metricas': {
-                'total_views': view_trend['current'],
+                'total_views': metrics['total_views'],
                 'nota_mitjana': round(metrics['average_rating'], 1),
                 'total_ressenyes': metrics['total_reviews'],
                 'total_guardados': metrics['total_saved'],
