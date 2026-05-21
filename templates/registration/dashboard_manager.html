@@ -4,6 +4,15 @@
 
 {% block extra_css %}
 <style>
+    :root {
+        --acc-indigo:  #6366F1;
+        --acc-sky:     #0EA5E9;
+        --acc-emerald: #10B981;
+        --acc-amber:   #F59E0B;
+        --acc-violet:  #8B5CF6;
+        --acc-rose:    #F43F5E;
+    }
+
     /* Sub-header amb blau marí fosc */
     .sub-header {
         background: linear-gradient(90deg, var(--ss-dark) 0%, var(--ss-mid) 100%);
@@ -270,7 +279,7 @@
                             <span>{{ edats_pct.all }}%</span>
                         </div>
                         <div class="progress-custom">
-                            <div class="progress-bar" style="width: {{ edats_pct.all }}%; background-color: #748CAB;"></div>
+                            <div class="progress-bar" style="width: {{ edats_pct.all }}%; background-color: var(--acc-sky);"></div>
                         </div>
                     </div>
 
@@ -280,7 +289,7 @@
                             <span>{{ edats_pct.m7 }}%</span>
                         </div>
                         <div class="progress-custom">
-                            <div class="progress-bar" style="width: {{ edats_pct.m7 }}%; background-color: #3E5C76;"></div>
+                            <div class="progress-bar" style="width: {{ edats_pct.m7 }}%; background-color: var(--acc-emerald);"></div>
                         </div>
                     </div>
 
@@ -290,7 +299,7 @@
                             <span>{{ edats_pct.m13 }}%</span>
                         </div>
                         <div class="progress-custom">
-                            <div class="progress-bar" style="width: {{ edats_pct.m13 }}%; background-color: #F0EBD8;"></div>
+                            <div class="progress-bar" style="width: {{ edats_pct.m13 }}%; background-color: var(--acc-amber);"></div>
                         </div>
                     </div>
 
@@ -300,7 +309,7 @@
                             <span>{{ edats_pct.m16 }}%</span>
                         </div>
                         <div class="progress-custom">
-                            <div class="progress-bar" style="width: {{ edats_pct.m16 }}%; background-color: #1D2D44;"></div>
+                            <div class="progress-bar" style="width: {{ edats_pct.m16 }}%; background-color: var(--acc-violet);"></div>
                         </div>
                     </div>
 
@@ -310,7 +319,7 @@
                             <span>{{ edats_pct.m18 }}%</span>
                         </div>
                         <div class="progress-custom">
-                            <div class="progress-bar" style="width: {{ edats_pct.m18 }}%; background-color: #0D1321;"></div>
+                            <div class="progress-bar" style="width: {{ edats_pct.m18 }}%; background-color: var(--acc-rose);"></div>
                         </div>
                     </div>
 
@@ -358,6 +367,23 @@
         mid:     '#3E5C76',
         light:   '#748CAB',
         cream:   '#F0EBD8',
+
+        // Accent palette
+        indigo:  '#6366F1',
+        sky:     '#0EA5E9',
+        emerald: '#10B981',
+        amber:   '#F59E0B',
+        violet:  '#8B5CF6',
+        rose:    '#F43F5E',
+
+        // Hover variants
+        indigoH:  '#818CF8',
+        skyH:     '#38BDF8',
+        emeraldH: '#34D399',
+        amberH:   '#FCD34D',
+        violetH:  '#A78BFA',
+        roseH:    '#FB7185',
+
         // Versió amb opacitat per a fons de grids
         gridLine: 'rgba(116, 140, 171, 0.15)',
         tickColor: '#748CAB',
@@ -381,9 +407,15 @@
                 labels: {{ grafic_generes_labels|safe }},
                 datasets: [{
                     data: {{ grafic_generes_data|safe }},
-                    backgroundColor: SS.mid,
-                    hoverBackgroundColor: SS.light,
-                    borderRadius: 4,
+                    backgroundColor: [
+                        SS.indigo, SS.sky, SS.emerald,
+                        SS.amber,  SS.violet, SS.rose,
+                    ],
+                    hoverBackgroundColor: [
+                        SS.indigoH, SS.skyH, SS.emeraldH,
+                        SS.amberH,  SS.violetH, SS.roseH,
+                    ],
+                    borderRadius: 6,
                     barPercentage: 0.7
                 }]
             },
@@ -412,16 +444,17 @@
                 labels: ['Movies', 'Series'],
                 datasets: [{
                     data: {{ grafic_tipus_data|safe }},
-                    backgroundColor: [SS.mid, SS.light],
+                    backgroundColor: [SS.indigo, SS.amber],
+                    hoverBackgroundColor: [SS.indigoH, SS.amberH],
                     borderColor: SS.dark,
                     borderWidth: 3,
-                    hoverOffset: 6
+                    hoverOffset: 8
                 }]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                cutout: '60%',
+                cutout: '62%',
                 plugins: {
                     legend: {
                         position: 'bottom',
@@ -446,18 +479,18 @@
                     {
                         label: 'Views',
                         data: {{ grafic_evolucio_vistes|safe }},
-                        borderColor: SS.light,
-                        backgroundColor: SS.light,
-                        pointBackgroundColor: SS.light,
+                        borderColor: SS.sky,
+                        backgroundColor: SS.sky,
+                        pointBackgroundColor: SS.sky,
                         tension: 0.4,
                         yAxisID: 'y'
                     },
                     {
                         label: 'Users',
                         data: {{ grafic_evolucio_usuaris|safe }},
-                        borderColor: SS.cream,
-                        backgroundColor: SS.cream,
-                        pointBackgroundColor: SS.cream,
+                        borderColor: SS.amber,
+                        backgroundColor: SS.amber,
+                        pointBackgroundColor: SS.amber,
                         tension: 0.4,
                         yAxisID: 'y1'
                     }
