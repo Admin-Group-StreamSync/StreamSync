@@ -329,7 +329,7 @@
     document.addEventListener("DOMContentLoaded", function() {
         window.chartInstances = {};
 
-        // 1. Bar chart
+        // 1. Bar chart — Views by Genre
         const ctxBar = document.getElementById('barChart').getContext('2d');
         window.chartInstances.barChart = new Chart(ctxBar, {
             type: 'bar',
@@ -350,8 +350,11 @@
                 }],
             },
             options: {
-                responsive: true, maintainAspectRatio: false,
-                plugins: { legend: { display: false } },
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }
+                },
                 scales: {
                     y: { ...axisDefaults, beginAtZero: true },
                     x: { ticks: { color: SS.tickColor }, grid: { display: false }, border: { display: false } },
@@ -359,7 +362,7 @@
             },
         });
 
-        // 2. Doughnut chart
+        // 2. Doughnut chart — Content Distribution
         const ctxDoughnut = document.getElementById('doughnutChart').getContext('2d');
         window.chartInstances.doughnutChart = new Chart(ctxDoughnut, {
             type: 'doughnut',
@@ -407,7 +410,8 @@
                 ],
             },
             options: {
-                responsive: true, maintainAspectRatio: false,
+                responsive: true,
+                maintainAspectRatio: false,
                 interaction: { mode: 'index', intersect: false },
                 plugins: {
                     legend: {
