@@ -64,7 +64,7 @@ def content_detail(request, tipus, content_id):
         defaults={
             "titol": item['titol'],
             "any": item['any'],
-            "valoracio": float(item.get('rating', 0)),
+            "valoracio": float(item.get('rating') or 0),
             "imatge": item.get('imatge'),
             "tipus": tipus,
             "plataforma": item.get('plataforma')
