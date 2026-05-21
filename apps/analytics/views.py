@@ -8,7 +8,6 @@ import json
 import logging
 from datetime import datetime
 
-from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
@@ -40,10 +39,6 @@ def dashboard_manager(request, plataforma_nom):
     """
     # Authorization check
     if request.user.profile.manager_de != plataforma_nom:
-        messages.error(
-            request,
-            "You do not have permission to manage this platform."
-        )
         logger.warning(
             f"Unauthorized dashboard access attempt by {request.user.username} "
             f"for platform {plataforma_nom}"
@@ -73,7 +68,6 @@ def dashboard_manager(request, plataforma_nom):
         logger.error(
             f"Dashboard generation error for platform {plataforma_nom}: {str(error)}"
         )
-        messages.error(request, "Error loading dashboard. Please try again later.")
         return redirect('pagina_principal')
 
 
@@ -83,7 +77,7 @@ def register_view(request):
     Register a view/play action for authenticated user.
 
     API endpoint that increments the view counter for a film.
-    Expects JSON POST with film ID.
+    Expects JSON POST with film ID and selected platform.
 
     Args:
         request: Django HTTP request with authenticated user.
@@ -101,6 +95,7 @@ def register_view(request):
         # Parse incoming JSON data
         data = json.loads(request.body)
         film_id = data.get("film")
+        platform_name = data.get("platform")
 
         if not film_id:
             return JsonResponse(
@@ -112,15 +107,16 @@ def register_view(request):
         film = get_object_or_404(Pelicula, id=film_id)
 
         # Register view via service layer
-        view_reg, created = add_view(request, film)
+        view_reg, created = add_view(request, film, platform_name)
 
         logger.info(
-            f"View registered for film {film.titol} "
+            f"View registered for film {film.titol} on {view_reg.plataforma} "
             f"by user {request.user.username}. Total: {view_reg.count}"
         )
 
         return JsonResponse({
             "ok": True,
+            "platform": view_reg.plataforma,
             "count": view_reg.count
         })
 
@@ -215,4 +211,3 @@ def download_dashboard_pdf(request, plataforma_nom):
             {"error": f"PDF generation failed: {str(error)}"},
             status=500
         )
-

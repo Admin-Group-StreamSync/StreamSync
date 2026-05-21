@@ -551,14 +551,7 @@
         }
 
         function showNotification(message, type) {
-            if (typeof bootstrap !== 'undefined') {
-                const alertDiv = document.createElement('div');
-                alertDiv.className = `alert alert-${type === 'success' ? 'success' : 'danger'} alert-dismissible fade show`;
-                alertDiv.setAttribute('role', 'alert');
-                alertDiv.innerHTML = `${message}<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>`;
-                document.body.insertBefore(alertDiv, document.body.firstChild);
-                setTimeout(() => alertDiv.remove(), 4000);
-            }
+            console[type === 'success' ? 'info' : 'error'](message);
         }
     });
 </script>

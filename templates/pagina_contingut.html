@@ -342,7 +342,7 @@
                 <div class="platform-row">
                     {% for plat in item.plataformes_disponibles %}
                         {% if plat == 'CinePlus' %}
-                        <button class="btn-play-platform plat-btn-cineplus submit-view-btn" data-film="{{ item.id }}">
+                        <button class="btn-play-platform plat-btn-cineplus submit-view-btn" data-film="{{ item.id }}" data-platform="{{ plat }}">
                             <div class="platform-btn-icon"><i class="bi bi-camera-reels"></i></div>
                             <div class="platform-btn-text">
                                 <span class="platform-btn-label">Watch on</span>
@@ -355,7 +355,7 @@
                         </button>
 
                         {% elif plat == 'StreamHub' %}
-                        <button class="btn-play-platform plat-btn-streamhub submit-view-btn" data-film="{{ item.id }}">
+                        <button class="btn-play-platform plat-btn-streamhub submit-view-btn" data-film="{{ item.id }}" data-platform="{{ plat }}">
                             <div class="platform-btn-icon"><i class="bi bi-broadcast"></i></div>
                             <div class="platform-btn-text">
                                 <span class="platform-btn-label">Watch on</span>
@@ -368,7 +368,7 @@
                         </button>
 
                         {% elif plat == 'PlayMax' %}
-                        <button class="btn-play-platform plat-btn-playmax submit-view-btn" data-film="{{ item.id }}">
+                        <button class="btn-play-platform plat-btn-playmax submit-view-btn" data-film="{{ item.id }}" data-platform="{{ plat }}">
                             <div class="platform-btn-icon"><i class="bi bi-play-circle"></i></div>
                             <div class="platform-btn-text">
                                 <span class="platform-btn-label">Watch on</span>
@@ -381,7 +381,7 @@
                         </button>
 
                         {% else %}
-                        <button class="btn-play-platform plat-btn-altres submit-view-btn" data-film="{{ item.id }}">
+                        <button class="btn-play-platform plat-btn-altres submit-view-btn" data-film="{{ item.id }}" data-platform="{{ plat }}">
                             <div class="platform-btn-icon"><i class="bi bi-tv"></i></div>
                             <div class="platform-btn-text">
                                 <span class="platform-btn-label">Watch on</span>
@@ -599,7 +599,7 @@
         return cookieValue;
     }
 
-    function registerView(filmId, btn) {
+    function registerView(filmId, platformName, btn) {
         const originalHTML = btn.innerHTML;
         btn.innerHTML = '<i class="bi bi-check-circle-fill me-2"></i> Done!';
         btn.disabled = true;
@@ -607,7 +607,7 @@
         fetch("{% url 'register_view' %}", {
             method: "POST",
             headers: { "Content-Type": "application/json", "X-CSRFToken": getCsrfToken() },
-            body: JSON.stringify({ "film": filmId })
+            body: JSON.stringify({ "film": filmId, "platform": platformName })
         })
         .then(res => res.json())
         .then(() => {
@@ -625,7 +625,7 @@
     document.querySelectorAll('.submit-view-btn').forEach(btn => {
         btn.addEventListener('click', function (e) {
             e.preventDefault();
-            registerView(this.dataset.film, this);
+            registerView(this.dataset.film, this.dataset.platform, this);
         });
     });
 </script>

@@ -7,7 +7,7 @@ following Clean Architecture principles with clear separation of concerns.
 import logging
 from datetime import timedelta
 
-from django.db.models import Avg, Count, Sum
+from django.db.models import Avg, Count, Q, Sum
 from django.utils import timezone
 
 from apps.analytics.models import Views
@@ -29,27 +29,41 @@ logger = logging.getLogger(__name__)
 # View Tracking Operations
 # ============================================================================
 
-def add_view(request, film):
+def add_view(request, film, platform_name=None):
     """
     Register or increment a view for a film.
 
     Args:
         request: Django HTTP request with authenticated user.
         film: Pelicula model instance.
+        platform_name: Platform selected by the user when pressing play.
 
     Returns:
         tuple: (Views object, created boolean).
     """
+    selected_platform = platform_name or film.plataforma
     view_reg, created = Views.objects.get_or_create(
         usuari=request.user,
         pelicula=film,
+        plataforma=selected_platform,
         defaults={"count": 0}
     )
     view_reg.count += 1
     view_reg.visualization_date = timezone.now()
     view_reg.save(update_fields=["count", "visualization_date"])
-    logger.info(f"View registered for film {film.titol} by user {request.user.username}")
+    logger.info(
+        f"View registered for film {film.titol} on {selected_platform} "
+        f"by user {request.user.username}"
+    )
     return view_reg, created
+
+
+def _platform_views(platform_name):
+    return Views.objects.filter(
+        Q(plataforma=platform_name) |
+        Q(plataforma__isnull=True, pelicula__plataforma=platform_name) |
+        Q(plataforma='', pelicula__plataforma=platform_name)
+    )
 
 
 # ============================================================================
@@ -80,9 +94,7 @@ def get_platform_metrics(platform_name):
         pelicula__in=content
     ).count()
 
-    total_views = Views.objects.filter(
-        pelicula__in=content
-    ).aggregate(total=Sum('count'))['total'] or 0
+    total_views = _platform_views(platform_name).aggregate(total=Sum('count'))['total'] or 0
 
     interested_users = sum(
         1 for profile in Profile.objects.all()
@@ -129,18 +141,15 @@ def calculate_view_trend(platform_name):
     Returns:
         dict: Current views, previous views, and trend percentage.
     """
-    content = Pelicula.objects.filter(plataforma=platform_name)
     now = timezone.now()
     thirty_days_ago = now - timedelta(days=30)
     sixty_days_ago = now - timedelta(days=60)
 
-    current_views = Views.objects.filter(
-        pelicula__in=content,
+    current_views = _platform_views(platform_name).filter(
         visualization_date__gte=thirty_days_ago
     ).aggregate(total=Sum('count'))['total'] or 0
 
-    previous_views = Views.objects.filter(
-        pelicula__in=content,
+    previous_views = _platform_views(platform_name).filter(
         visualization_date__gte=sixty_days_ago,
         visualization_date__lt=thirty_days_ago
     ).aggregate(total=Sum('count'))['total'] or 0
@@ -310,9 +319,17 @@ def get_top_content(platform_name, limit=5):
     Returns:
         list: List of content dictionaries with view counts.
     """
-    content = Pelicula.objects.filter(plataforma=platform_name)
-    top_content_db = content.annotate(
-        vistes_totals=Sum('views__count')
+    top_content_db = Pelicula.objects.filter(
+        views__in=_platform_views(platform_name)
+    ).annotate(
+        vistes_totals=Sum(
+            'views__count',
+            filter=(
+                Q(views__plataforma=platform_name) |
+                Q(views__plataforma__isnull=True, plataforma=platform_name) |
+                Q(views__plataforma='', plataforma=platform_name)
+            )
+        )
     ).order_by('-vistes_totals')[:limit]
 
     result = []
@@ -350,15 +367,11 @@ def get_content_type_distribution(platform_name):
     Returns:
         dict: Views count for movies and series.
     """
-    content = Pelicula.objects.filter(plataforma=platform_name)
-
-    movies_views = Views.objects.filter(
-        pelicula__in=content,
+    movies_views = _platform_views(platform_name).filter(
         pelicula__tipus='movie'
     ).aggregate(total=Sum('count'))['total'] or 0
 
-    series_views = Views.objects.filter(
-        pelicula__in=content,
+    series_views = _platform_views(platform_name).filter(
         pelicula__tipus='series'
     ).aggregate(total=Sum('count'))['total'] or 0
 
@@ -383,15 +396,13 @@ def get_genre_distribution(platform_name, limit=6):
     Returns:
         dict: Genre names and their view counts.
     """
-    content = Pelicula.objects.filter(plataforma=platform_name)
-
     try:
         all_api_content = get_all_movies() + get_all_series()
         genres_api = get_genres_from_api()
         genre_map = {str(g['id']): g['name'] for g in genres_api}
 
         views_per_genre = {}
-        views_data = Views.objects.filter(pelicula__in=content)
+        views_data = _platform_views(platform_name)
 
         for view in views_data:
             api_item = next(
@@ -443,7 +454,6 @@ def get_evolution_data(platform_name):
     Returns:
         dict: Labels, views data, and users data for the 4 months.
     """
-    content = Pelicula.objects.filter(plataforma=platform_name)
     now = timezone.now()
     month_names = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
                    'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
@@ -458,8 +468,7 @@ def get_evolution_data(platform_name):
         month_name = month_names[end_date.month - 1]
         labels.append(month_name)
 
-        month_views = Views.objects.filter(
-            pelicula__in=content,
+        month_views = _platform_views(platform_name).filter(
             visualization_date__gte=start_date,
             visualization_date__lt=end_date
         ).aggregate(total=Sum('count'))['total'] or 0
@@ -495,8 +504,6 @@ def get_age_rating_distribution(platform_name):
     Returns:
         dict: Percentage distribution of views by age rating.
     """
-    content = Pelicula.objects.filter(plataforma=platform_name)
-
     try:
         all_api_content = get_all_movies() + get_all_series()
         ratings_api = get_age_ratings_from_api()
@@ -510,7 +517,7 @@ def get_age_rating_distribution(platform_name):
         age_distribution = {'All': 0, '7+': 0, '13+': 0, '16+': 0, '18+': 0}
         total_views = 0
 
-        views_data = Views.objects.filter(pelicula__in=content)
+        views_data = _platform_views(platform_name)
 
         for view in views_data:
             api_item = next(
