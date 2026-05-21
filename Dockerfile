@@ -1,27 +1,29 @@
-# Use Python 3.12 as the base image (slim = smaller size, no extra tools)
 FROM python:3.12-slim
 
-## Install uv
-#COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    gcc \
+    libpango-1.0-0 \
+    libpangoft2-1.0-0 \
+    libpangocairo-1.0-0 \
+    libcairo2 \
+    libgdk-pixbuf-xlib-2.0-0 \
+    libffi-dev \
+    shared-mime-info \
+    && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
 COPY requirements.txt ./
 
-RUN python3 -m pip install --upgrade pip &&  \
+RUN pip install --upgrade pip && \
     pip install --no-cache-dir -r requirements.txt
 
-# Copy the entire project into the container
 COPY . .
 
-# Tell Docker this container will listen on port 8000
+RUN python manage.py collectstatic --noinput || true
+
+ENV PORT=8000
+
 EXPOSE 8000
 
-# Command that runs when the container starts:
-# 1. Apply database migrations (create/update tables)
-# 2. Start Django's development server on all interfaces (0.0.0.0)
-CMD ["gunicorn", "StreamSync.wsgi:application", "--bind", "0.0.0.0:8000"]
-
-
-# 127.0.0.1 = only reachable from inside the container (default, won't work with Docker)
-# 0.0.0.0 = listen on all interfaces, so the host machine can reach the container
+CMD ["sh", "-c", "python manage.py migrate --noinput && gunicorn StreamSync.wsgi:application --bind 0.0.0.0:${PORT} --workers 2 --timeout 120"]

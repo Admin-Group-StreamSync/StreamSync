@@ -1,5 +1,5 @@
 .venv/
-db.sqlite3
+#db.sqlite3
 .env
 .vscode/
 venv
@@ -31,6 +31,6 @@ __pycache__/
 db.sqlite3-journal
 
 
-*_initial.py
+#*_initial.py
 
 **/reports/*.json
