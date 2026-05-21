@@ -1,14 +1,17 @@
+from types import SimpleNamespace
+
+from django.contrib.auth.models import User
 from django.test import TestCase
 
-# Create your tests here.
-
-from django.test import TestCase
+from apps.analytics.models import Views
 from apps.analytics.services import (
+    add_view,
     get_platform_metrics,
     calculate_view_trend,
     get_top_content,
     build_dashboard_context
 )
+from apps.contents.models import Pelicula
 
 
 class TestAnalyticsServices(TestCase):
@@ -42,3 +45,24 @@ class TestAnalyticsServices(TestCase):
         required_keys = ['plataforma', 'metricas', 'tendencias', 'top_contingut']
         for key in required_keys:
             self.assertIn(key, context)
+
+    def test_views_are_counted_for_selected_platform(self):
+        """A title available on several platforms must count the selected play platform."""
+        user = User.objects.create_user(username='viewer', password='pass')
+        film = Pelicula.objects.create(
+            id='movie-1',
+            titol='Shared Movie',
+            plataforma='CinePlus',
+            tipus='movie'
+        )
+        request = SimpleNamespace(user=user)
+
+        add_view(request, film, 'StreamHub')
+        add_view(request, film, 'PlayMax')
+        add_view(request, film, 'PlayMax')
+
+        self.assertEqual(Views.objects.get(plataforma='StreamHub').count, 1)
+        self.assertEqual(Views.objects.get(plataforma='PlayMax').count, 2)
+        self.assertEqual(get_platform_metrics('StreamHub')['total_views'], 1)
+        self.assertEqual(get_platform_metrics('PlayMax')['total_views'], 2)
+        self.assertEqual(get_platform_metrics('CinePlus')['total_views'], 0)

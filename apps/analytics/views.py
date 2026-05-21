@@ -8,7 +8,6 @@ import json
 import logging
 from datetime import datetime
 
-from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
@@ -37,10 +36,6 @@ def dashboard_manager(request, plataforma_nom):
     """
     # Authorization check
     if request.user.profile.manager_de != plataforma_nom:
-        messages.error(
-            request,
-            "You do not have permission to manage this platform."
-        )
         logger.warning(
             f"Unauthorized dashboard access attempt by {request.user.username} "
             f"for platform {plataforma_nom}"
@@ -70,7 +65,6 @@ def dashboard_manager(request, plataforma_nom):
         logger.error(
             f"Dashboard generation error for platform {plataforma_nom}: {str(error)}"
         )
-        messages.error(request, "Error loading dashboard. Please try again later.")
         return redirect('pagina_principal')
 
 
