@@ -1,8 +1,9 @@
+#content_services.py
 import logging
 import os
 from concurrent.futures import ThreadPoolExecutor
 from urllib.parse import urlparse
-
+from apps.contents import services as _svc_module
 import requests
 from dotenv import load_dotenv
 
@@ -53,13 +54,16 @@ def get_tmdb_image(title):
 
 
 def enrich_tmdb_images(items):
+    from concurrent.futures import as_completed
+
     def load_image(item):
         item['imatge'] = get_tmdb_image(item['titol'])
         return item
 
     with ThreadPoolExecutor(max_workers=10) as executor:
-        items = list(executor.map(load_image, items))
-    return items
+        futures = [executor.submit(load_image, item) for item in items]
+        results = [f.result() for f in futures]
+    return results
 
 
 # --- 3. DATA MAPPING ---
