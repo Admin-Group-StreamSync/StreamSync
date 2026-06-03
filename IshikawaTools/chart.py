@@ -76,7 +76,7 @@ def generate_diagram():
     plt.title("Pareto Chart: Issue Analysis", fontsize=14, fontweight='bold')
     plt.tight_layout()
 
-    plt.savefig('pareto_report.png')
+    plt.savefig('IshikawaTools/pareto_report.png')
     print("Chart generated: pareto_report.png")
 
 
