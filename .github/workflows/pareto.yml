@@ -38,7 +38,7 @@ jobs:
     - name: get graphics
       working-directory: ./IshikawaTools
       run: |
-        python IshikawaTools/chart.py
+        python chart.py
         
 
     - name: Upload chart
