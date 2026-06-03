@@ -54,7 +54,7 @@ def add_view(request, film, platform=None):
     view_reg, created = Views.objects.get_or_create(
         usuari=request.user,
         pelicula=film,
-        plataforma=selected_platform,
+        plataforma=platform,
         defaults={"count": 0}
     )
     view_reg.count += 1

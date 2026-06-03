@@ -2,7 +2,11 @@ from django.test import TestCase
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.db.utils import IntegrityError
-from users.models import Profile, Pelicula, Carpeta, LlistaPersonal, Ressenya, Views
+from apps.users.models import Profile
+from apps.reviews.models import Pelicula, Ressenya
+from apps.analytics.models import Views
+from apps.lists.models import Carpeta,LlistaPersonal
+
 
 class ProfileModelTestCase(TestCase):
     def test_profile_creation_signal(self):

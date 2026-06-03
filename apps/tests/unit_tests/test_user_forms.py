@@ -1,5 +1,5 @@
 from django.test import TestCase
-from users.forms import RegistroUsuarioForm
+from apps.users.forms.forms import UserRegistrationForm
 from django.contrib.auth.models import User
 
 class RegistroUsuarioFormTestCase(TestCase):
@@ -14,7 +14,7 @@ class RegistroUsuarioFormTestCase(TestCase):
             'password': 'testpassword',
             'password2': 'testpassword'
         }
-        form = RegistroUsuarioForm(data=form_data)
+        form = UserRegistrationForm(data=form_data)
         self.assertTrue(form.is_valid())
 
     def test_duplicate_email(self):
@@ -29,6 +29,6 @@ class RegistroUsuarioFormTestCase(TestCase):
             'password': 'testpassword',
             'password2': 'testpassword'
         }
-        form = RegistroUsuarioForm(data=form_data)
+        form = UserRegistrationForm(data=form_data)
         self.assertFalse(form.is_valid())
         self.assertIn('email', form.errors)
