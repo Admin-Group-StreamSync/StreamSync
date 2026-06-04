@@ -16,12 +16,12 @@ from unittest.mock import patch
 import json
 
 # Service layer mock paths (clean architecture)
-_MOVIES = "apps.contents.services.get_all_movies"
-_SERIES = "apps.contents.services.get_all_series"
-_GENRES = "apps.contents.services.get_genres_from_api"
-_RATINGS = "apps.contents.services.get_age_ratings_from_api"
-_DIRECTORS = "apps.contents.services.get_directors_from_api"
-_ENRICH = "apps.contents.services.enrich_tmdb_images"
+_MOVIES = "apps.contents.views.get_all_movies"
+_SERIES = "apps.contents.views.get_all_series"
+_GENRES = "apps.contents.views.get_genres_from_api"
+_RATINGS = "apps.contents.views.get_age_ratings_from_api"
+_DIRECTORS = "apps.contents.views.get_directors_from_api"
+_ENRICH = "apps.contents.views.enrich_tmdb_images"
 
 class AuthViewTestCase(TestCase):
     def setUp(self):
@@ -99,8 +99,18 @@ class MainViewsTestCase(TestCase):
     @patch(_MOVIES)
     def test_catalogo_pagination(self, mock_movies):
         """catalogo: Test pagination returns 12 items per page."""
-        mock_movies.return_value = [{'id': f'm{i}', 'titol': f'Movie {i}'} for i in range(20)]
-        
+        mock_movies.return_value = [
+            {
+                'id': f'm{i}',
+                'titol': f'Movie {i}',
+                'tipus': 'movie',
+                'genre_id': '1',
+                'age_rating_id': '1',
+                'director_id': '1',
+                'rating': '5.0',
+                'plataforma': 'CinePlus'
+            } for i in range(20)
+        ]
         response = self.client.get(reverse('catalogo'))
         self.assertEqual(len(response.context['contenidos']), 12)
 
@@ -108,8 +118,10 @@ class MainViewsTestCase(TestCase):
     def test_catalogo_filtering(self, mock_movies):
         """catalogo: Test filtering by platform, genre, age rating, director and rating."""
         mock_movies.return_value = [
-            {'id': 'f1', 'titol': 'Action Movie', 'plataforma': 'CinePlus', 'genre_id': '1', 'age_rating_id': '3', 'director_id': '10', 'rating': '9.0'},
-            {'id': 'f2', 'titol': 'Comedy Movie', 'plataforma': 'StreamHub', 'genre_id': '2', 'age_rating_id': '1', 'director_id': '11', 'rating': '7.0'}
+            {'id': 'f1', 'titol': 'Action Movie', 'plataforma': 'CinePlus', 'genre_id': '1', 'age_rating_id': '3',
+             'director_id': '10', 'rating': '9.0', 'tipus': 'movie'},
+            {'id': 'f2', 'titol': 'Comedy Movie', 'plataforma': 'StreamHub', 'genre_id': '2', 'age_rating_id': '1',
+             'director_id': '11', 'rating': '7.0', 'tipus': 'movie'}
         ]
 
         # Filter by platform
@@ -121,8 +133,10 @@ class MainViewsTestCase(TestCase):
     @patch(_SERIES)
     def test_detall_contingut_movie_and_series(self, mock_series, mock_movies):
         """detall_contingut: Test page loads correctly for both movies and series."""
-        mock_movies.return_value = [{'id': '8080_1', 'titol': 'Test Movie', 'any': 2022, 'plataforma': 'CinePlus'}]
-        mock_series.return_value = [{'id': '8081_1', 'titol': 'Test Series', 'any': 2021, 'plataforma': 'StreamHub'}]
+        mock_movies.return_value = [
+            {'id': '8080_1', 'titol': 'Test Movie', 'any': 2022, 'plataforma': 'CinePlus', 'tipus': 'movie'}]
+        mock_series.return_value = [
+            {'id': '8081_1', 'titol': 'Test Series', 'any': 2021, 'plataforma': 'StreamHub', 'tipus': 'series'}]
         
         # Movie detail
         response_movie = self.client.get(reverse('pagina_contingut', args=['movie', '8080_1']))
@@ -137,7 +151,8 @@ class MainViewsTestCase(TestCase):
     @patch(_MOVIES)
     def test_cerca_contingut_fuzzy_search(self, mock_movies):
         """cerca_contingut: Test fuzzy search returns the correct result."""
-        mock_movies.return_value = [{'id': 'm1', 'titol': 'The Shawshank Redemption'}]
+
+        mock_movies.return_value = [{'id': 'm1', 'titol': 'The Shawshank Redemption', 'tipus': 'movie'}]
         response = self.client.get(reverse('cerca_contingut'), {'q': 'Shawshank'})
         self.assertContains(response, 'The Shawshank Redemption')
 
