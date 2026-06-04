@@ -11,7 +11,7 @@ class RegistroUsuarioFormTestCase(TestCase):
             'username': 'testuser',
             'first_name': 'Test User',
             'email': 'testuser@example.com',
-            'password': 'testpassword',
+            'password1': 'testpassword',
             'password2': 'testpassword'
         }
         form = UserRegistrationForm(data=form_data)
@@ -26,7 +26,7 @@ class RegistroUsuarioFormTestCase(TestCase):
             'username': 'testuser',
             'first_name': 'Test User',
             'email': 'testuser@example.com',
-            'password': 'testpassword',
+            'password1': 'testpassword',
             'password2': 'testpassword'
         }
         form = UserRegistrationForm(data=form_data)

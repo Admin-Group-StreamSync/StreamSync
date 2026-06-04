@@ -14,7 +14,7 @@ class ProfileModelTestCase(TestCase):
         user = User.objects.create_user(username='test_signal_user', password='password')
         self.assertTrue(hasattr(user, 'profile'))
         self.assertIsInstance(user.profile, Profile)
-        self.assertEqual(str(user.profile), f"Perfil de {user.username} (User)")
+        self.assertEqual(str(user.profile), f"Profile of {user.username}")
 
     def test_profile_manager_de_choices(self):
         """Profile: Test manager_de field validation."""

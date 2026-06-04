@@ -11,6 +11,12 @@ class UserRegistrationForm(UserCreationForm):
         model = User
         fields = ['username', 'first_name', 'email']
 
+    def clean_email(self):
+        email = self.cleaned_data.get('email')
+        if User.objects.filter(email=email).exists():
+            raise forms.ValidationError("This email is already registered.")
+        return email
+
 class UserUpdateForm(forms.ModelForm):
     first_name = forms.CharField(max_length=100, required=True, label="Full name")
     username = forms.CharField(max_length=150, required=True, label="Username")
@@ -19,8 +25,8 @@ class UserUpdateForm(forms.ModelForm):
         model = User
         fields = ['username', 'first_name']
 
-def clean_email(self):
-    email = self.cleaned_data.get('email')
-    if User.objects.filter(email=email).exists():
-        raise forms.ValidationError("This email is already registered.")
-    return email
+    def clean_email(self):
+        email = self.cleaned_data.get('email')
+        if User.objects.filter(email=email).exists():
+            raise forms.ValidationError("This email is already registered.")
+        return email

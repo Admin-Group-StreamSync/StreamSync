@@ -38,17 +38,17 @@ class AuthViewTestCase(TestCase):
     def test_login_displays_success_message(self):
         """Authentication: Test that login displays a success message."""
         response = self.client.post(self.login_url, {'username': 'testauth', 'password': 'password123'}, follow=True)
-        self.assertContains(response, "Benvingut/da de nou, testauth!")
+        self.assertContains(response, "Hi, testauth!")
 
     def test_registration_saves_preferences(self):
         """crear_cuenta: Test successful registration saves user preferences to profile."""
         form_data = {
             'username': 'newprefuser', 'first_name': 'Pref', 'email': 'pref@test.com',
-            'password': 'newpass', 'password2': 'newpass',
+            'password1': 'newpass1234', 'password2': 'newpass1234',
             'tipus': ['movie', 'series'], 'plataformes': ['CinePlus'],
             'generos': ['1', '3'], 'edats': ['2']
         }
-        self.client.post(reverse('crear_cuenta'), form_data)
+        self.client.post(reverse('registre'), form_data)
         user = User.objects.get(username='newprefuser')
         self.assertEqual(user.profile.tipus, ['movie', 'series'])
         self.assertEqual(user.profile.plataformes, ['CinePlus'])
@@ -58,13 +58,21 @@ class AuthViewTestCase(TestCase):
     def test_password_change_updates_session(self):
         """Authentication: Test that password change updates the session correctly."""
         self.client.login(username='testauth', password='password123')
-        session_hash_before = self.client.session.get(get_session_auth_hash())
-        
+
+        # Hash antes del cambio
+        session_hash_before = self.client.session.get('_auth_user_hash')
+
+        # Cambiar contraseña
         self.client.post(reverse('cambiar_password'), {
-            'old_password': 'password123', 'new_password1': 'newpassword', 'new_password2': 'newpassword'
+            'old_password': 'password123',
+            'new_password1': 'Newpassword123',
+            'new_password2': 'Newpassword123',
         })
-        
-        session_hash_after = self.client.session.get(get_session_auth_hash())
+
+        # Hash después del cambio
+        session_hash_after = self.client.session.get('_auth_user_hash')
+
+        # Debe haber cambiado
         self.assertNotEqual(session_hash_before, session_hash_after)
 
 class MainViewsTestCase(TestCase):
@@ -103,7 +111,7 @@ class MainViewsTestCase(TestCase):
             {'id': 'f1', 'titol': 'Action Movie', 'plataforma': 'CinePlus', 'genre_id': '1', 'age_rating_id': '3', 'director_id': '10', 'rating': '9.0'},
             {'id': 'f2', 'titol': 'Comedy Movie', 'plataforma': 'StreamHub', 'genre_id': '2', 'age_rating_id': '1', 'director_id': '11', 'rating': '7.0'}
         ]
-        
+
         # Filter by platform
         response = self.client.get(reverse('catalogo'), {'plataforma': 'CinePlus'})
         self.assertContains(response, 'Action Movie')
