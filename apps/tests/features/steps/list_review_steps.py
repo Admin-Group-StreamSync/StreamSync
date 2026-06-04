@@ -57,11 +57,16 @@ def step_movie_in_list(context, pk):
 @given('I have already reviewed movie "{pk}" with score {score:d}')
 def step_already_reviewed(context, pk, score):
     user = User.objects.filter(username="lr_user").first()
-    movie = Pelicula.objects.get(id=pk)
-    Ressenya.objects.update_or_create(
+    movie = Pelicula.objects.get(id=str(pk))
+    review, created  =Ressenya.objects.update_or_create(
         usuari=user, pelicula=movie,
-        defaults={"puntuacio": score}
+        defaults={
+            "puntuacio": score
+        }
     )
+    print("Created:", created)
+    print("Review:", review.id)
+    print("All reviews:", list(Ressenya.objects.values()))
 
 
 # ---------------------------------------------------------------------------
@@ -147,8 +152,11 @@ def step_movie_not_in_list(context, pk):
 @then('a review exists for movie "{pk}" with score {score:d}')
 def step_review_exists(context, pk, score):
     user = User.objects.filter(username="lr_user").first()
+    print("USER:", user)
     movie = Pelicula.objects.get(id=pk)
     r = Ressenya.objects.filter(usuari=user, pelicula=movie).first()
+    for r in Ressenya.objects.all():
+        print(r.usuari, r.pelicula_id, r.puntuacio)
     assert r is not None, f"No review found for movie {pk}"
     assert r.puntuacio == score, f"Expected score {score}, got {r.puntuacio}"
 
