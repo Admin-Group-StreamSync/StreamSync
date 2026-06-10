@@ -197,15 +197,6 @@
 
             <!-- Step 3: language, genres, and age rating -->
             <div id="step3" class="hidden">
-                <p class="step-section-label">Languages</p>
-                <div class="selection-grid">
-                    {% for language in opcions.idiomes %}
-                    <label class="select-item">
-                        <input type="checkbox" name="idiomas" value="{{ language }}" class="checkbox-hidden" onchange="mark(this)">
-                        {{ language }}
-                    </label>
-                    {% endfor %}
-                </div>
 
                 <p class="step-section-label mt-4">Favorite genres</p>
                 <div class="selection-grid" style="grid-template-columns: 1fr 1fr 1fr;">
@@ -235,6 +226,24 @@
 </div>
 
 <script>
+    // Bloqueja Enter perquè no enviï el formulari directament
+    document.getElementById('reg-form').addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            // Si estem al step 1, avança al step 2 (comportament del botó Next)
+            if (!document.getElementById('step1').classList.contains('hidden')) {
+                changeStep(2);
+            }
+        }
+    });
+
+    // Evita enviament si no estem al step 3
+    document.getElementById('reg-form').addEventListener('submit', function(e) {
+        if (document.getElementById('step3').classList.contains('hidden')) {
+            e.preventDefault();
+        }
+    });
+
     function changeStep(s) {
         document.getElementById('step1').classList.toggle('hidden', s !== 1);
         document.getElementById('step2').classList.toggle('hidden', s !== 2);
