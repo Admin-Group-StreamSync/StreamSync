@@ -18,6 +18,12 @@ urls_list = os.getenv('API_BASE_URLS', '').split(',')
 keys_list = os.getenv('API_KEYS_DJANGO', '').split(',')
 API_CONFIG = dict(zip(urls_list, keys_list))
 
+# LOG TEMPORAL DE DIAGNÒSTIC
+logging.basicConfig(level=logging.INFO)
+logging.info("=== DIAGNOSI API_CONFIG: %s entrades ===", len(API_CONFIG))
+for _u in API_CONFIG:
+    logging.info("  URL: %s", _u)
+
 TMDB_API_KEY = os.getenv('TMDB_API_KEY')
 
 OPTIONS = {
@@ -151,7 +157,7 @@ def get_all_movies(query=None):
         port = extract_source_key(base_url)
         params = {'title': query} if query else {}
         try:
-            response = requests.get(f"{base_url}/movies", headers=headers, params=params, timeout=2)
+            response = requests.get(f"{base_url}/movies", headers=headers, params=params, timeout=10)
             if response.status_code == 200:
                 for item in response.json():
                     obj = map_data(item, port, base_url=base_url)
@@ -201,7 +207,7 @@ def get_all_series(query=None):
         port = extract_source_key(base_url)
         params = {'title': query} if query else {}
         try:
-            response = requests.get(f"{base_url}/series", headers=headers, params=params, timeout=2)
+            response = requests.get(f"{base_url}/series", headers=headers, params=params, timeout=10)
             if response.status_code == 200:
                 for item in response.json():
                     obj = map_data(item, port, base_url=base_url)
@@ -221,7 +227,7 @@ def get_genres_from_api():
         return cached
     for base_url, key in API_CONFIG.items():
         try:
-            data = requests.get(f"{base_url}/genres", headers={'x-api-key': key}, timeout=1).json()
+            data = requests.get(f"{base_url}/genres", headers={'x-api-key': key}, timeout=10).json()
             if data:
                 _cache_set('genres', data)
                 return data
@@ -236,7 +242,7 @@ def get_directors_from_api():
         return cached
     for base_url, key in API_CONFIG.items():
         try:
-            data = requests.get(f"{base_url}/directors", headers={'x-api-key': key}, timeout=1).json()
+            data = requests.get(f"{base_url}/directors", headers={'x-api-key': key}, timeout=10).json()
             if data:
                 _cache_set('directors', data)
                 return data
@@ -251,7 +257,7 @@ def get_age_ratings_from_api():
         return cached
     for base_url, key in API_CONFIG.items():
         try:
-            data = requests.get(f"{base_url}/age-ratings", headers={'x-api-key': key}, timeout=1).json()
+            data = requests.get(f"{base_url}/age-ratings", headers={'x-api-key': key}, timeout=10).json()
             if data:
                 _cache_set('age_ratings', data)
                 return data
