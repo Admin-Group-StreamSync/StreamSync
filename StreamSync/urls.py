@@ -6,6 +6,8 @@ from django.contrib.auth import views as auth_views
 from django.views.static import serve
 from apps.users.views import StreamSyncLoginView
 from StreamSync.converters import ContentIdConverter
+
+# Registrem el converter una sola vegada aquí, abans de fer include() de les apps
 register_converter(ContentIdConverter, 'content_id')
 
 urlpatterns = [

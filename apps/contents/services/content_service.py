@@ -1,15 +1,15 @@
 """
-content_service.py — StreamSync API client amb suport per a Render Free Tier.
+content_service.py — StreamSync API client.
 
-Render Free dorm les instàncies després de 15 min d'inactivitat i tarda ~30s
-a despertar. Solució: caché en memòria + timeout adaptatiu + warm-up en background.
+Les APIs de Render Free es desperten en <1s un cop hi ha tràfic.
+El problema anterior era que TIMEOUT_COLD=30 bloquejava el thread principal.
 
-Flux:
-  1. Primera crida → timeout llarg (25s) per permetre el "cold start" de Render.
-  2. Crides posteriors → timeout curt (5s), les dades venen de caché si estan fresques.
-  3. La caché s'invalida cada CACHE_TTL_SECONDS (5 min per defecte).
-  4. Un thread de warm-up fa un ping silenciós cada 10 min per evitar que les APIs
-     tornin a adormir-se mentre la web està activa.
+Estratègia actual:
+  - Timeout sempre curt (6s): si l'API no respon en 6s, passa a la següent.
+  - Les 3 APIs es criden EN PARAL·LEL (no seqüencialment), de manera que
+    el temps total d'espera màxim és 6s, no 6s × 3 = 18s.
+  - Caché en memòria de 5 minuts: la majoria de pàgines no fan cap crida a l'API.
+  - Keep-alive cada 8 minuts en background per evitar que les APIs tornin a adormir-se.
 """
 
 import logging
@@ -41,57 +41,18 @@ OPTIONS = {
     'idiomas': ['Català', 'Castellano', 'English', 'Français']
 }
 
-# Timeout per al primer intent (Render cold start pot tardar fins a 30s)
-TIMEOUT_COLD = int(os.getenv('API_TIMEOUT_COLD', '30'))
-# Timeout per a crides normals un cop l'API està desperta
-TIMEOUT_WARM = int(os.getenv('API_TIMEOUT_WARM', '8'))
+# Timeout únic per a totes les crides (les APIs de Render desperten en <1s amb tràfic actiu)
+API_TIMEOUT = int(os.getenv('API_TIMEOUT', '6'))
 # Temps en segons que la caché és vàlida
-CACHE_TTL_SECONDS = int(os.getenv('API_CACHE_TTL', '300'))   # 5 minuts
-# Interval del keep-alive en background (en segons)
-KEEPALIVE_INTERVAL = int(os.getenv('API_KEEPALIVE_INTERVAL', '600'))  # 10 minuts
+CACHE_TTL_SECONDS = int(os.getenv('API_CACHE_TTL', '300'))  # 5 minuts
+# Interval del keep-alive en background
+KEEPALIVE_INTERVAL = int(os.getenv('API_KEEPALIVE_INTERVAL', '480'))  # 8 minuts
 
 # ---------------------------------------------------------------------------
-# Estat de les APIs (dormides o despiertes)
+# Caché en memòria (thread-safe)
 # ---------------------------------------------------------------------------
 
-_api_state: dict[str, dict] = {
-    url: {'awake': False, 'last_success': 0.0}
-    for url in API_CONFIG
-}
-_state_lock = threading.Lock()
-
-
-def _mark_awake(base_url: str) -> None:
-    with _state_lock:
-        _api_state[base_url]['awake'] = True
-        _api_state[base_url]['last_success'] = time.monotonic()
-
-
-def _mark_asleep(base_url: str) -> None:
-    with _state_lock:
-        _api_state[base_url]['awake'] = False
-
-
-def _is_awake(base_url: str) -> bool:
-    with _state_lock:
-        state = _api_state.get(base_url, {})
-        # Si han passat més de 16 min sense èxit, considerem que pot haver tornat a dormir
-        elapsed = time.monotonic() - state.get('last_success', 0.0)
-        if elapsed > 960:  # 16 minuts
-            _api_state[base_url]['awake'] = False
-        return _api_state[base_url]['awake']
-
-
-def _get_timeout(base_url: str) -> int:
-    """Retorna el timeout adequat segons si l'API sembla desperta o no."""
-    return TIMEOUT_WARM if _is_awake(base_url) else TIMEOUT_COLD
-
-
-# ---------------------------------------------------------------------------
-# Caché en memòria
-# ---------------------------------------------------------------------------
-
-_cache: dict[str, dict] = {}
+_cache: dict = {}
 _cache_lock = threading.Lock()
 
 
@@ -108,53 +69,36 @@ def _cache_set(key: str, data) -> None:
         _cache[key] = {'data': data, 'ts': time.monotonic()}
 
 
-def _cache_invalidate(key: str) -> None:
-    with _cache_lock:
-        _cache.pop(key, None)
-
-
 # ---------------------------------------------------------------------------
-# Warm-up keep-alive en background
+# Keep-alive en background
 # ---------------------------------------------------------------------------
 
 def _ping_all_apis() -> None:
-    """Fa un ping a totes les APIs per mantenir-les despiertes."""
+    """Ping silenciós a totes les APIs per mantenir-les despiertes."""
     for base_url, key in API_CONFIG.items():
         try:
-            r = requests.get(
+            requests.get(
                 f"{base_url}/movies",
                 headers={'x-api-key': key},
-                timeout=TIMEOUT_COLD,
-                params={'limit': '1'},
+                timeout=API_TIMEOUT,
             )
-            if r.status_code == 200:
-                _mark_awake(base_url)
-                logger.debug("Keep-alive OK: %s", base_url)
-            else:
-                _mark_asleep(base_url)
-        except requests.RequestException as exc:
-            _mark_asleep(base_url)
-            logger.debug("Keep-alive failed for %s: %s", base_url, exc)
-    # Invalida la caché perquè la propera crida tingui dades fresques
-    _cache_invalidate('movies')
-    _cache_invalidate('series')
+        except requests.RequestException:
+            pass  # Silenciós — és només un keep-alive
 
 
 def _keepalive_loop() -> None:
-    """Thread en background que fa warm-up periòdic."""
-    # Primer ping immediat en arrencar (per despertar les APIs al deploy)
-    logger.info("API warm-up inicial en background...")
-    _ping_all_apis()
     while True:
         time.sleep(KEEPALIVE_INTERVAL)
-        logger.info("API keep-alive ping...")
         _ping_all_apis()
+        # Invalida la caché perquè la propera visita tingui dades fresques
+        with _cache_lock:
+            _cache.clear()
 
 
-# Arrenquem el thread de keep-alive una sola vegada
-_keepalive_thread = threading.Thread(target=_keepalive_loop, daemon=True, name="api-keepalive")
+_keepalive_thread = threading.Thread(
+    target=_keepalive_loop, daemon=True, name="api-keepalive"
+)
 _keepalive_thread.start()
-
 
 # ---------------------------------------------------------------------------
 # Helpers
@@ -249,37 +193,26 @@ def deduplicate_content(llista: list) -> list:
 
 
 # ---------------------------------------------------------------------------
-# Crida a una sola API (amb timeout adaptatiu)
+# Crida a una sola API
 # ---------------------------------------------------------------------------
 
 def _fetch_from_api(base_url: str, key: str, endpoint: str, params: dict | None = None) -> list:
-    """
-    Fa una petició GET a base_url/endpoint.
-    Usa timeout llarg si l'API sembla dormida, curt si sembla desperta.
-    """
-    timeout = _get_timeout(base_url)
     headers = {'x-api-key': key}
     url = f"{base_url}/{endpoint}"
     try:
-        response = requests.get(url, headers=headers, params=params or {}, timeout=timeout)
+        response = requests.get(url, headers=headers, params=params or {}, timeout=API_TIMEOUT)
         if response.status_code == 200:
-            _mark_awake(base_url)
             return response.json()
-        logger.warning("API %s retornat status %s", url, response.status_code)
+        logger.warning("API %s va retornar status %s", url, response.status_code)
     except requests.Timeout:
-        _mark_asleep(base_url)
-        logger.warning(
-            "Timeout (%.0fs) a %s — l'API pot estar dormida (Render Free cold start).",
-            timeout, url
-        )
+        logger.warning("Timeout (%.0fs) a %s", API_TIMEOUT, url)
     except requests.RequestException as exc:
-        _mark_asleep(base_url)
         logger.warning("Error de connexió a %s: %s", url, exc)
     return []
 
 
 # ---------------------------------------------------------------------------
-# Funcions públiques de dades
+# Funcions públiques — crides en paral·lel + caché
 # ---------------------------------------------------------------------------
 
 def get_all_movies(query: str | None = None) -> list:
@@ -290,24 +223,18 @@ def get_all_movies(query: str | None = None) -> list:
 
     results = []
 
-    def fetch_movies(base_url_key):
-        base_url, key = base_url_key
+    def fetch(args):
+        base_url, key = args
         port = extract_source_key(base_url)
-        params = {'title': query} if query else {}
-        items = _fetch_from_api(base_url, key, 'movies', params)
-        return [
-            {**map_data(item, port, base_url=base_url), 'tipus': 'movie'}
-            for item in items
-        ]
+        items = _fetch_from_api(base_url, key, 'movies', {'title': query} if query else {})
+        return [{**map_data(item, port, base_url=base_url), 'tipus': 'movie'} for item in items]
 
-    # Fem les 3 crides en paral·lel per reduir el temps d'espera total
-    with ThreadPoolExecutor(max_workers=len(API_CONFIG)) as executor:
-        futures = {executor.submit(fetch_movies, item): item for item in API_CONFIG.items()}
-        for future in as_completed(futures):
+    with ThreadPoolExecutor(max_workers=len(API_CONFIG) or 3) as executor:
+        for res in as_completed([executor.submit(fetch, pair) for pair in API_CONFIG.items()]):
             try:
-                results.extend(future.result())
+                results.extend(res.result())
             except Exception as exc:
-                logger.error("Error inesperat en fetch_movies: %s", exc)
+                logger.error("Error inesperat en fetch movies: %s", exc)
 
     deduped = deduplicate_content(results)
     if deduped:
@@ -323,23 +250,18 @@ def get_all_series(query: str | None = None) -> list:
 
     results = []
 
-    def fetch_series(base_url_key):
-        base_url, key = base_url_key
+    def fetch(args):
+        base_url, key = args
         port = extract_source_key(base_url)
-        params = {'title': query} if query else {}
-        items = _fetch_from_api(base_url, key, 'series', params)
-        return [
-            {**map_data(item, port, base_url=base_url), 'tipus': 'series'}
-            for item in items
-        ]
+        items = _fetch_from_api(base_url, key, 'series', {'title': query} if query else {})
+        return [{**map_data(item, port, base_url=base_url), 'tipus': 'series'} for item in items]
 
-    with ThreadPoolExecutor(max_workers=len(API_CONFIG)) as executor:
-        futures = {executor.submit(fetch_series, item): item for item in API_CONFIG.items()}
-        for future in as_completed(futures):
+    with ThreadPoolExecutor(max_workers=len(API_CONFIG) or 3) as executor:
+        for res in as_completed([executor.submit(fetch, pair) for pair in API_CONFIG.items()]):
             try:
-                results.extend(future.result())
+                results.extend(res.result())
             except Exception as exc:
-                logger.error("Error inesperat en fetch_series: %s", exc)
+                logger.error("Error inesperat en fetch series: %s", exc)
 
     deduped = deduplicate_content(results)
     if deduped:
@@ -350,18 +272,13 @@ def get_all_series(query: str | None = None) -> list:
 def enrich_api_data(content_list: list) -> list:
     genres_api = get_genres_from_api()
     ratings_api = get_age_ratings_from_api()
-
     genre_map = {str(g['id']): g['name'] for g in genres_api}
     rating_map = {str(r['id']): r.get('description', 'N/A') for r in ratings_api}
-
     for item in content_list:
-        gid = str(item.get('genre_id'))
-        eid = str(item.get('age_rating_id'))
-        item['genere_nom'] = genre_map.get(gid, "General")
-        item['edat_nom'] = rating_map.get(eid, "N/A")
+        item['genere_nom'] = genre_map.get(str(item.get('genre_id')), "General")
+        item['edat_nom'] = rating_map.get(str(item.get('age_rating_id')), "N/A")
         if 'tipus' not in item:
             item['tipus'] = item.get('media_type', 'movie')
-
     return content_list
 
 
@@ -369,7 +286,6 @@ def get_genres_from_api() -> list:
     cached = _cache_get('genres')
     if cached is not None:
         return cached
-
     for base_url, key in API_CONFIG.items():
         data = _fetch_from_api(base_url, key, 'genres')
         if data:
@@ -382,7 +298,6 @@ def get_directors_from_api() -> list:
     cached = _cache_get('directors')
     if cached is not None:
         return cached
-
     for base_url, key in API_CONFIG.items():
         data = _fetch_from_api(base_url, key, 'directors')
         if data:
@@ -395,7 +310,6 @@ def get_age_ratings_from_api() -> list:
     cached = _cache_get('age_ratings')
     if cached is not None:
         return cached
-
     for base_url, key in API_CONFIG.items():
         data = _fetch_from_api(base_url, key, 'age-ratings')
         if data:
