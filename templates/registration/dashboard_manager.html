@@ -60,12 +60,12 @@
     .text-danger  { color: #FB7185 !important; }
     .text-muted   { color: var(--ss-light) !important; }
 
-    #downloadPdfBtn {
+    #downloadPdfBtn, #sendEmailBtn {
         background-color: var(--ss-mid); border: none;
         color: var(--ss-cream); font-weight: 600;
         transition: background-color 0.2s ease;
     }
-    #downloadPdfBtn:hover { background-color: var(--ss-light); color: var(--ss-darkest); }
+    #downloadPdfBtn:hover, #sendEmailBtn:hover { background-color: var(--ss-light); color: var(--ss-darkest); }
 
     .age-bar-container { margin-bottom: 18px; }
     .age-label-row {
@@ -100,7 +100,10 @@
 </div>
 
 <div class="container mb-5">
-    <div class="d-flex justify-content-end">
+    <div class="d-flex justify-content-end gap-2">
+        <button class="btn" id="sendEmailBtn" style="margin-bottom: 15px;">
+            <i class="bi bi-envelope-fill"></i> Email Report
+        </button>
         <button class="btn" id="downloadPdfBtn" style="margin-bottom: 15px;">
             <i class="bi bi-file-pdf"></i> Download as PDF
         </button>
@@ -444,7 +447,7 @@
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]')?.value || ''
+                        'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]')?.value || '{{ csrf_token }}'
                     },
                     body: JSON.stringify({ charts: chartImages })
                 });
@@ -455,6 +458,35 @@
             } catch (error) {
                 console.error('PDF generation error:', error);
                 showNotification('✗ Error generating PDF: ' + error.message, 'error');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = originalText;
+            }
+        });
+
+        // Email Report Handler
+        document.getElementById('sendEmailBtn').addEventListener('click', async function(e) {
+            e.preventDefault();
+            const btn = this;
+            const originalText = btn.innerHTML;
+            try {
+                btn.disabled = true;
+                btn.innerHTML = '<i class="bi bi-hourglass-split"></i> Sending...';
+                const chartImages = await captureCharts();
+                const response = await fetch('{% url "send_dashboard_email" plataforma %}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]')?.value || '{{ csrf_token }}'
+                    },
+                    body: JSON.stringify({ charts: chartImages })
+                });
+                const result = await response.json();
+                if (!response.ok) throw new Error(result.error || `HTTP error! status: ${response.status}`);
+                showNotification('✓ ' + (result.message || 'Report sent successfully!'), 'success');
+            } catch (error) {
+                console.error('Email report error:', error);
+                showNotification('✗ Error: ' + error.message, 'error');
             } finally {
                 btn.disabled = false;
                 btn.innerHTML = originalText;
@@ -488,14 +520,20 @@
         }
 
         function showNotification(message, type) {
-            if (typeof bootstrap !== 'undefined') {
-                const alertDiv = document.createElement('div');
-                alertDiv.className = `alert alert-${type === 'success' ? 'success' : 'danger'} alert-dismissible fade show`;
-                alertDiv.setAttribute('role', 'alert');
-                alertDiv.innerHTML = `${message}<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>`;
-                document.body.insertBefore(alertDiv, document.body.firstChild);
-                setTimeout(() => alertDiv.remove(), 4000);
-            }
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert alert-${type === 'success' ? 'success' : 'danger'} alert-dismissible fade show`;
+            alertDiv.style.position = 'fixed';
+            alertDiv.style.top = '20px';
+            alertDiv.style.right = '20px';
+            alertDiv.style.zIndex = '9999';
+            alertDiv.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
+            alertDiv.setAttribute('role', 'alert');
+            alertDiv.innerHTML = `${message}<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>`;
+            document.body.appendChild(alertDiv);
+            setTimeout(() => {
+                alertDiv.classList.remove('show');
+                setTimeout(() => alertDiv.remove(), 150);
+            }, 4000);
         }
     });
 </script>

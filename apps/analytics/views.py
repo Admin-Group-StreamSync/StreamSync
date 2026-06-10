@@ -15,6 +15,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from apps.contents.models import Pelicula
 from apps.analytics.services import AnalyticsService
 from apps.analytics.pdf_service import AnalyticsPDFGenerator
+from apps.analytics.email import send_report_email_async
 
 logger = logging.getLogger(__name__)
 
@@ -208,3 +209,78 @@ def download_dashboard_pdf(request, plataforma_nom):
             {"error": f"PDF generation failed: {str(error)}"},
             status=500
         )
+
+
+@login_required
+def send_dashboard_email(request, plataforma_nom):
+    """
+    Generate analytics dashboard as PDF and send it to the logged-in manager's email.
+    Expects JSON POST with base64 encoded chart images.
+    """
+    # Authorization check
+    if request.user.profile.manager_de != plataforma_nom:
+        logger.warning(
+            f"Unauthorized PDF email attempt by {request.user.username} "
+            f"for platform {plataforma_nom}"
+        )
+        return JsonResponse(
+            {"error": "Unauthorized access"},
+            status=403
+        )
+
+    # Email address check
+    recipient_email = request.user.email
+    if not recipient_email:
+        logger.error(f"User {request.user.username} does not have an email address configured.")
+        return JsonResponse(
+            {"error": "Su usuario no tiene una dirección de correo electrónico configurada."},
+            status=400
+        )
+
+    # SMTP configuration check
+    import os
+    if not os.getenv('SMTP_USER') or not os.getenv('SMTP_PASSWORD'):
+        logger.error("SMTP_USER or SMTP_PASSWORD environment variables are not configured.")
+        return JsonResponse(
+            {"error": "El servidor de correo no está configurado. Por favor, especifique SMTP_USER y SMTP_PASSWORD en el archivo .env."},
+            status=500
+        )
+
+    try:
+        # Parse incoming JSON with chart images
+        data = json.loads(request.body) if request.body else {}
+        chart_images = data.get('charts', {})
+
+        # Build dashboard context
+        context = AnalyticsService.build_dashboard_context(plataforma_nom)
+
+        # Generate PDF bytes
+        pdf_bytes = AnalyticsPDFGenerator.generate_dashboard_pdf(
+            plataforma_nom,
+            context,
+            chart_images
+        )
+
+        # Send PDF as attachment in background thread
+        filename = f"reporte_{plataforma_nom}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.pdf"
+        send_report_email_async(plataforma_nom, recipient_email, pdf_bytes, filename)
+
+        return JsonResponse({
+            "ok": True,
+            "message": f"El reporte se está enviando a {recipient_email}."
+        })
+
+    except json.JSONDecodeError:
+        logger.error("PDF email: Invalid JSON received")
+        return JsonResponse(
+            {"error": "Invalid JSON format"},
+            status=400
+        )
+
+    except Exception as error:
+        logger.error(f"PDF email generation/sending error: {str(error)}")
+        return JsonResponse(
+            {"error": f"Error al generar o enviar el reporte: {str(error)}"},
+            status=500
+        )
+
