@@ -1,10 +1,14 @@
 # StreamSync/urls.py
 from django.contrib import admin
 from django.conf import settings
-from django.urls import path, include
+from django.urls import path, include, register_converter
 from django.contrib.auth import views as auth_views
 from django.views.static import serve
 from apps.users.views import StreamSyncLoginView
+from StreamSync.converters import ContentIdConverter
+
+# Registrem el converter una sola vegada aquí, abans de fer include() de les apps
+register_converter(ContentIdConverter, 'content_id')
 
 urlpatterns = [
     path('admin/', admin.site.urls),

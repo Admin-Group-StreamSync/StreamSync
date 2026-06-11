@@ -11,6 +11,6 @@ urlpatterns = [
     path('cataleg/peliculas/', catalogo, {'tipus': 'movie'}, name='cataleg_pelis'),
     path('cataleg/series/', catalogo, {'tipus': 'series'}, name='cataleg_series'),
 
-    # CONTENT DETAIL (Updated with <str:tipus>)
-    path('cataleg/detall/<str:tipus>/<str:content_id>/', content_detail, name='pagina_contingut'),
+    # CONTENT DETAIL — <content_id:> captura punts però NO barres (evita conflicte amb /opinar/)
+    path('cataleg/detall/<str:tipus>/<content_id:content_id>/', content_detail, name='pagina_contingut'),
 ]

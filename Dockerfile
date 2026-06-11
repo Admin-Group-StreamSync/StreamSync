@@ -20,10 +20,16 @@ RUN pip install --upgrade pip && \
 
 COPY . .
 
-RUN python manage.py collectstatic --noinput || true
-
 ENV PORT=8000
 
 EXPOSE 8000
 
-CMD ["sh", "-c", "python manage.py migrate --noinput && gunicorn StreamSync.wsgi:application --bind 0.0.0.0:${PORT} --workers 2 --timeout 120"]
+# collectstatic i migrate s'executen en runtime (no en build) perquè
+# necessiten les variables d'entorn (SECRET_KEY, API_BASE_URLS, etc.)
+# Gunicorn arrenca immediatament després sense bloquejos.
+CMD ["sh", "-c", "\
+    python manage.py collectstatic --noinput && \
+    python manage.py migrate --noinput && \
+    python manage.py create_superuser_env && \
+    gunicorn StreamSync.wsgi:application --bind 0.0.0.0:${PORT} --workers 2 --timeout 120 \
+"]
