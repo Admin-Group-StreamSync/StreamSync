@@ -9,4 +9,5 @@ urlpatterns = [
     # DASHBOARD SPM
     path('dashboard/<str:plataforma_nom>/', dashboard_manager, name='dashboard_manager'),
     path('dashboard/<str:plataforma_nom>/export-pdf/', download_dashboard_pdf, name='download_dashboard_pdf'),
+    path('dashboard/<str:plataforma_nom>/email-pdf/', send_dashboard_email, name='send_dashboard_email'),
 ]
