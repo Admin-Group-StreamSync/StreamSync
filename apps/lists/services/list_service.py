@@ -6,8 +6,8 @@ class ListService:
     @staticmethod
     def get_movie_by_id(content_id):
         # L'ID complet és "movies-api-1-b2np.onrender.com_1"; la BD desa només el número final
-        _, movie_id = content_id.rsplit("_", 1)
-        return Pelicula.objects.get(id=movie_id)
+        # _, movie_id = content_id.rsplit("_", 1)
+        return Pelicula.objects.get(id=content_id)
 
     @staticmethod
     def get_user_folder(folder_id, user):
