@@ -102,8 +102,11 @@ def register_view(request):
             )
 
         # Fetch and validate film
-        film = get_object_or_404(Pelicula, id=film_id)
+        film_id_str = str(film_id)
+        normalized_id = film_id_str.split('_')[-1] if '_' in film_id_str else film_id_str
 
+        # Fetch and validate film
+        film = get_object_or_404(Pelicula, id=normalized_id)
         # Register view via service layer with platform info
         view_reg, created = AnalyticsService.add_view(request, film, platform)
 
